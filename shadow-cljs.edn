@@ -1,0 +1,33 @@
+;; shadow-cljs configuration
+{
+ :source-paths ["src" "dev" "test"]
+
+ :deps true
+
+ ;:dev-http {23012 ["target/spa" "resources/spa"]}
+
+ :nrepl {:port 43453}
+
+ :builds
+ {:spa {:target :browser
+        :output-dir "firebase/public/js"
+        :asset-path "/js"
+        :modules {:main {:init-fn legilo.spa.main/main!}}
+        :compiler-options {:infer-externs :auto
+                           :warnings-as-errors true}
+        :devtools {:repl-pprint true
+                   :reload-strategy :full
+                   :preloads [spa]
+                   :repl-init-ns spa
+                   }
+
+        :dev {:compiler-options {:output-feature-set :es6}}
+
+        :release {:compiler-options {:source-map true
+                                     :checked-arrays true}}
+
+        }
+
+  :gcf {:target :node-library
+        :output-to "firebase/functions/index.js"
+        :exports-var legilo.gcf.index/exports}}}

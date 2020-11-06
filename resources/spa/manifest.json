@@ -1,0 +1,22 @@
+{
+  "short_name": "Legilo",
+  "name": "Legilo Book Radar",
+  "description": "A Book Radar.",
+  "icons": [
+    {
+      "src": "/img/Legilo-AppIcon-192.png",
+      "type": "image/png",
+      "sizes": "192x192"
+    },
+    {
+      "src": "/img/Legilo-AppIcon-512.png",
+      "type": "image/png",
+      "sizes": "512x512"
+    }
+  ],
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "theme_color": "#1b0000",
+  "background_color": "#fafafa"
+}

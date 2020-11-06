@@ -1,0 +1,6 @@
+#!/bin/bash -e
+
+cp -r resources/spa/* firebase/public/
+
+cd firebase
+firebase serve --port 50001

@@ -1,0 +1,19 @@
+{
+  "name": "legilo",
+  "version": "0.0.1",
+  "private": true,
+  "devDependencies": {
+    "shadow-cljs": "^2.11.6"
+  },
+  "dependencies": {
+    "@material-ui/core": "^4.11.0",
+    "@material-ui/icons": "^4.9.1",
+    "@material-ui/lab": "^4.0.0-alpha.56",
+    "MY_FIREBASE_FUNCTIONS": "file:firebase/functions",
+    "firebase-tools": "^8.15.0",
+    "react": "^16.14.0",
+    "react-dom": "^16.14.0",
+    "react-refresh": "^0.8.3",
+    "react-router-dom": "^5.2.0"
+  }
+}
