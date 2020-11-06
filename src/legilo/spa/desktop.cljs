@@ -72,7 +72,7 @@
                {:id "AppTitle"
                 :variant "h6"}
                "Legilo"
-               ($ :span {:style {:font-weight "light"}}
+               ($ :span {:style {:font-weight 300}}
                   " | Book Radar"))))
       ($ mui/Toolbar
          ($ auth/SignInButtonOrMenu
