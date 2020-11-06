@@ -20,7 +20,7 @@
   (let [users (use-users)
         user (context/use-user)]
     ($ ui/Stack
-       (div "You are " (if user (-> user :display-name) "Anonymous") "!")
+       (div "You are " (if user (-> user :email) "Anonymous") "!")
        (when user
          ($ ui/Stack
             (div "And here comes all the other users:")

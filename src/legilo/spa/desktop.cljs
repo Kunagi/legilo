@@ -71,7 +71,9 @@
             ($ mui/Typography
                {:id "AppTitle"
                 :variant "h6"}
-               "Legilo Book Radar")))
+               "Legilo"
+               ($ :span {:style {:font-weight "light"}}
+                  " | Book Radar"))))
       ($ mui/Toolbar
          ($ auth/SignInButtonOrMenu
             {:to "/nav"})))))
