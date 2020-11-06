@@ -15,11 +15,7 @@
 (defonce USER (atom nil))
 
 (defn set-user [user]
-  (js/console.log "SET USER" user)
-  (js/console.log "CURRENT USER" @USER)
-  (js/console.log "USER=?" (= user @USER))
   (when-not (= user @USER)
-    (js/console.log "USER CHANGED" user)
      (log ::user-changed :user user)
      (reset! USER user)))
 
@@ -34,7 +30,6 @@
 
 (defn use-uid []
   (when-let [user (use-user)]
-    (js/console.log "USE-UID" user (-> user :uid))
     (-> user :uid)))
 
 
