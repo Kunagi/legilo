@@ -10,17 +10,16 @@
    ))
 
 
-(defonce CURRENT_UID (atom nil))
-
-(defn update-last-usage [uid]
-  (log ::update-last-usage :uid uid)
-  (-> (api/update-doc> ["users" uid]
-                       {:last-usage (api/update--timestamp)})))
+(defn update-last-usage [user]
+  (log ::update-last-usage :user user)
+  (-> (api/update-doc> ["users" (-> user :uid)]
+                       {:uid (-> user :uid)
+                        :email (-> user :email)
+                        :display-name (-> user :display-name)
+                        :last-usage (api/update--timestamp)})))
 
 
 (add-watch context/USER ::update
-           (fn [_k _r _ov ^js user]
+           (fn [_k _r _ov user]
              (when user
-               (let [uid (-> user .-uid)]
-                 (reset! CURRENT_UID uid)
-                 (update-last-usage uid)))))
+               (update-last-usage user))))

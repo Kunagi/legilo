@@ -4,8 +4,7 @@
 
    [legilo.spa.api :as api :refer [log]]
    [legilo.spa.ui :as ui :refer [defnc $ <> div]]
-   [legilo.spa.context :as context]
-   ))
+   [legilo.spa.context :as context]))
 
 
 (defn use-users []
@@ -19,9 +18,9 @@
 
 (defnc Users[]
   (let [users (use-users)
-        uid (context/use-uid)]
+        user (context/use-user)]
     ($ ui/Stack
-       (div "You are " (if uid uid "Anonymous") "!")
+       (div "You are " (if user (-> user :display-name) "Anonymous") "!")
        (div "And here comes all the other users:")
        (for [user users]
          ($ UserCard

@@ -17,7 +17,11 @@
 (defonce USER (atom nil))
 
 (defn set-user [user]
+  (js/console.log "SET USER" user)
+  (js/console.log "CURRENT USER" @USER)
+  (js/console.log "USER=?" (= user @USER))
   (when-not (= user @USER)
+    (js/console.log "USER CHANGED" user)
      (log ::user-changed :user user)
      (reset! USER user)))
 
@@ -26,13 +30,14 @@
 
 (defn uid []
   (when-let [user (user)]
-    (-> user .-uid)))
+    (-> user :uid)))
 
 (def use-user (ui/atom-hook USER))
 
 (defn use-uid []
   (when-let [user (use-user)]
-    (-> ^js user .-uid)))
+    (js/console.log "USE-UID" user (-> user :uid))
+    (-> user :uid)))
 
 
 (defn wrap-action-in-sign-in [action-f]

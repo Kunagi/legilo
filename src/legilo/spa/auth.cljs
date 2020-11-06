@@ -1,5 +1,6 @@
 (ns legilo.spa.auth
   (:require
+   [cljs-bean.core :as cljs-bean]
 
    ["@material-ui/core" :as mui]
 
@@ -16,10 +17,13 @@
 
 (-> firebase
     .auth
-    (.onAuthStateChanged (fn [^js user]
-                           (log ::auth-state-changed
-                                :user ^js user)
-                           (context/set-user (js->clj ^js user)))))
+    (.onAuthStateChanged (fn [^js user_js]
+                           (context/set-user
+                            (when user_js
+                              {:uid (-> ^js user_js .-uid)
+                               :email (-> ^js user_js .-email)
+                               :display-name (-> ^js user_js .-displayName)})))))
+
 
 (defn sign-in-with-microsoft []
   ;; https://firebase.google.com/docs/auth/web/microsoft-oauth?authuser=0
@@ -65,17 +69,8 @@
         (.catch #(log ::signInWithPopup-failed
                       :error %)))))
 
-(defn sign-in-with-javascript []
-  (js/window.legiloSignIn
-   (fn [^js result]
-     (log ::signIn-completed
-          :user-credential result))
-   (fn [^js error]
-     (log ::signIn-failed
-          :error error))))
-
 (defn sign-in []
-  (sign-in-with-javascript))
+  (sign-in-with-microsoft))
 
 (context/set-sign-in-f sign-in)
 
@@ -108,20 +103,20 @@
       :startIcon ($ LoginIcon)}
      "Sign Out"))
 
-(defnc Menu [{:keys [^ js user to]}]
+(defnc Menu [{:keys [to]}]
   ($ mui/IconButton
      {:component ui/Link
       :to to}
      (div {:class "i material-icons"} "menu")))
 
 (defnc SignInButtonOrMenu [{:keys [to]}]
-  (if-let [user (context/use-user)]
-    ($ Menu {:user user :to to})
+  (if-let [uid (context/use-uid)]
+    ($ Menu {:to to})
     ($ SignInButton)))
 
 
 (defnc Guard [{:keys [children]}]
-  (if (context/use-user)
+  (if (context/use-uid)
     children
     (div "Sign in required")))
 
@@ -134,6 +129,8 @@
            "Signed in as "
            (ui/span
             {:style {:font-weight :bold}}
-            (-> user .-email))))
+            (-> user :email)
+            " / "
+            (-> user :display-name))))
        ($ mui/CardActions
           ($ SignOutButton)))))
