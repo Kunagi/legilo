@@ -16,7 +16,10 @@
 
 (-> firebase
     .auth
-    (.onAuthStateChanged context/set-user))
+    (.onAuthStateChanged (fn [user]
+                           (log ::auth-state-changed
+                                :user user)
+                           (context/set-user user))))
 
 
 (defn sign-in-with-google []
@@ -30,7 +33,11 @@
     (.addScope ^js provider "https://www.googleapis.com/auth/userinfo.profile")
     (-> firebase
         .auth
-        (.signInWithPopup ^js provider))))
+        (.signInWithPopup ^js provider)
+        (.then #(log ::signInWithPopup-completed
+                     :user-credential %))
+        (.then #(log ::signInWithPopup-failed
+                     :error %)))))
 
 
 (defn sign-in []
