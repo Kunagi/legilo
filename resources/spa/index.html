@@ -50,6 +50,25 @@
     <!-- SPA -->
     <script src="/js/main.js"></script>
 
+    <!-- Authentication -->
+    <script>
+     window.legiloSignIn = function (onSuccess, onError) {
+       var provider = new firebase.auth.OAuthProvider('microsoft.com');
+       provider.setCustomParameters({
+         prompt: 'login', // 'consent'
+       });
+       window.firebase.auth().signInWithPopup(provider)
+               .then(function(result) {
+                 console.log('SignIn completed', result);
+                 onSuccess(result);
+               })
+               .catch(function(error) {
+                 console.log('SignIn failed', error);
+                 onError(result);
+               });
+     };
+    </script>
+
     <!-- ServiceWorker -->
     <script>
      if (!(location.hostname === "localhost" || location.hostname === "127.0.0.1")) {

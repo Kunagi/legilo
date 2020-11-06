@@ -65,9 +65,17 @@
         (.catch #(log ::signInWithPopup-failed
                       :error %)))))
 
+(defn sign-in-with-javascript []
+  (js/window.legiloSignIn
+   (fn [^js result]
+     (log ::signIn-completed
+          :user-credential result))
+   (fn [^js error]
+     (log ::signIn-failed
+          :error error))))
 
 (defn sign-in []
-  (sign-in-with-microsoft))
+  (sign-in-with-javascript))
 
 (context/set-sign-in-f sign-in)
 
