@@ -3,7 +3,9 @@
    ["@material-ui/core" :as mui]
 
    [legilo.spa.api :as api :refer [log]]
-   [legilo.spa.ui :as ui :refer [defnc $ <> div]]))
+   [legilo.spa.ui :as ui :refer [defnc $ <> div]]
+   [legilo.spa.context :as context]
+   ))
 
 
 (defn use-users []
@@ -16,9 +18,11 @@
         (ui/data user))))
 
 (defnc Users[]
-  (let [users (use-users)]
+  (let [users (use-users)
+        uid (context/use-uid)]
     ($ ui/Stack
-       (div "Here comes the users!")
+       (div "You are " (if uid uid "Anonymous") "!")
+       (div "And here comes all the other users:")
        (for [user users]
          ($ UserCard
             {:key (api/doc-id user)
