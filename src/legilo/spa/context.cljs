@@ -16,10 +16,10 @@
 
 (defonce USER (atom nil))
 
-(defn set-user [user]
+(defn set-user [^js user]
   (when-not (= user @USER)
-     (log ::user-changed :user user)
-     (reset! USER user)))
+     (log ::user-changed :user ^js user)
+     (reset! USER ^js user)))
 
 (defn user []
   @USER)
