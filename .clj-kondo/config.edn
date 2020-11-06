@@ -1,1 +1,1 @@
-{:lint-as {legilo.spa.ui/defnc clojure.core/defn}}
+{:lint-as {spa.ui/defnc clojure.core/defn}}

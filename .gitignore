@@ -1,6 +1,6 @@
 firebase/public/*
 firebase/functions/*.js
-src/legilo/spa/version-time.txt
+src/spa/version-time.txt
 
 node_modules/
 
