@@ -1,12 +1,10 @@
-(ns legilo.spa.user
+(ns spa.user
   (:require
    ["@material-ui/core" :as mui]
 
-   [legilo.utils :as u]
-
-   [legilo.spa.api :as api :refer [log]]
-   [legilo.spa.context :as context]
-   [legilo.spa.ui :as ui :refer [defnc $ <>]]
+   [spa.api :as api :refer [log]]
+   [spa.context :as context]
+   [spa.ui :as ui :refer [defnc $ <>]]
    ))
 
 

@@ -1,4 +1,4 @@
-(ns legilo.spa.desktop
+(ns spa.desktop
   (:require
    [shadow.resource :as resource]
 
@@ -8,12 +8,12 @@
    ["@material-ui/core/styles" :as styles]
    ["@material-ui/core/colors" :as colors]
 
-   [legilo.spa.api :refer [log]]
-   [legilo.spa.ui :as ui :refer [defnc $ <> div]]
-   [legilo.spa.devtools :as devtools]
-   [legilo.spa.auth :as auth]
-   [legilo.spa.nav :as nav]
-   [legilo.spa.home :as home]))
+   [spa.api :refer [log]]
+   [spa.ui :as ui :refer [defnc $ <> div]]
+   [spa.devtools :as devtools]
+   [spa.auth :as auth]
+   [spa.nav :as nav]
+   [spa.home :as home]))
 
 
 ;;; MUI Theme

@@ -1,10 +1,7 @@
-(ns legilo.gcf.index
+(ns gcf.index
   (:require
-
    ["firebase-admin" :as admin]
-
-
-   [legilo.gcf.functions :as f]))
+   ))
 
 
 (-> admin .initializeApp)

@@ -4,12 +4,12 @@
   "description": "A Book Radar.",
   "icons": [
     {
-      "src": "/img/Legilo-AppIcon-192.png",
+      "src": "/img/AppIcon-192.png",
       "type": "image/png",
       "sizes": "192x192"
     },
     {
-      "src": "/img/Legilo-AppIcon-512.png",
+      "src": "/img/AppIcon-512.png",
       "type": "image/png",
       "sizes": "512x512"
     }

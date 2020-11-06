@@ -1,5 +1,5 @@
-(ns legilo.spa.ui
-  (:require-macros [legilo.spa.ui])
+(ns spa.ui
+  (:require-macros [spa.ui])
   (:require
    [cljs.pprint :refer [pprint]]
    [cljs-bean.core :as cljs-bean]
@@ -13,10 +13,10 @@
    ["@material-ui/core" :as mui]
    ["@material-ui/core/styles" :as mui-styles]
 
-   [legilo.spa.api :refer [log]]
+   [spa.api :refer [log]]
 
-   [legilo.spa.impl.firestore-hooks :as firestore-hooks]
-   [legilo.spa.impl.firestore :as fs]
+   [spa.impl.firestore-hooks :as firestore-hooks]
+   [spa.impl.firestore :as fs]
    ))
 
 ;;;

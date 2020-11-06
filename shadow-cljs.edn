@@ -12,7 +12,7 @@
  {:spa {:target :browser
         :output-dir "firebase/public/js"
         :asset-path "/js"
-        :modules {:main {:init-fn legilo.spa.main/main!}}
+        :modules {:main {:init-fn spa.main/main!}}
         :compiler-options {:infer-externs :auto
                            :warnings-as-errors true}
         :devtools {:repl-pprint true
@@ -30,4 +30,4 @@
 
   :gcf {:target :node-library
         :output-to "firebase/functions/index.js"
-        :exports-var legilo.gcf.index/exports}}}
+        :exports-var gcf.index/exports}}}

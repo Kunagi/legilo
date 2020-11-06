@@ -1,4 +1,4 @@
-(ns legilo.spa.api
+(ns spa.api
   (:require
    [cljs.pprint :refer [pprint]]
    [helix.core :refer [defnc $]]
@@ -10,10 +10,10 @@
    ["@material-ui/core" :as mui]
    ["@material-ui/core/styles" :as mui-styles]
 
-   [legilo.spa.impl.logging :as logging]
+   [spa.impl.logging :as logging]
 
-   [legilo.spa.impl.firestore-hooks :as firestore-hooks]
-   [legilo.spa.impl.firestore :as fs]
+   [spa.impl.firestore-hooks :as firestore-hooks]
+   [spa.impl.firestore :as fs]
    ))
 
 

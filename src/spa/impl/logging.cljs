@@ -1,4 +1,4 @@
-(ns legilo.spa.impl.logging
+(ns spa.impl.logging
   (:require
    [cljs.pprint :refer [pprint]]))
 

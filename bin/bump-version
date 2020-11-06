@@ -1,10 +1,10 @@
 #!/bin/bash -e
 
-VERSION=`cat src/legilo/spa/version.txt`
+VERSION=`cat src/spa/version.txt`
 VERSION=$((VERSION+1))
 
 echo "Bumping Version to $VERSION"
-echo $VERSION > src/legilo/spa/version.txt
+echo $VERSION > src/spa/version.txt
 
-git add src/legilo/spa/version.txt
+git add src/spa/version.txt
 git commit -m "version bump: $VERSION"

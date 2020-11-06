@@ -1,12 +1,12 @@
-(ns legilo.spa.auth
+(ns spa.auth
   (:require
    [cljs-bean.core :as cljs-bean]
 
    ["@material-ui/core" :as mui]
 
-   [legilo.spa.api :refer [log]]
-   [legilo.spa.ui :as ui :refer [defnc $ <> div]]
-   [legilo.spa.context :as context]
+   [spa.api :refer [log]]
+   [spa.ui :as ui :refer [defnc $ <> div]]
+   [spa.context :as context]
    ))
 
 ;;; firebase auth setup

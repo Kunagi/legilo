@@ -5,14 +5,14 @@ if [[ -n $(git status -s) ]]; then
     exit 1
 fi
 
-VERSION=`cat src/legilo/spa/version.txt`
+VERSION=`cat src/spa/version.txt`
 
 bin/clean
 
 cp -r resources/spa/* firebase/public/
 sed -i -e "s/main\.js/main\.v${VERSION}\.js/g" firebase/public/index.html
 
-date -Iminutes > src/legilo/spa/version-time.txt
+date -Iminutes > src/spa/version-time.txt
 
 clojure -A:build-release --config-merge "{:release-version \"v"${VERSION}"\"}"
 

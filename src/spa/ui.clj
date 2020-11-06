@@ -1,4 +1,4 @@
-(ns legilo.spa.ui
+(ns spa.ui
   (:require
    [helix.core :as helix]
    [helix.hooks :as hooks]

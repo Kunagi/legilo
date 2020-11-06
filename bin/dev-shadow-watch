@@ -4,6 +4,6 @@ bin/clean
 
 npm install
 
-date -Iminutes > src/legilo/spa/version-time.txt
+date -Iminutes > src/spa/version-time.txt
 
 clojure -A:shadow-cljs watch spa gcf

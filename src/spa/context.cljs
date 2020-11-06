@@ -1,10 +1,8 @@
-(ns legilo.spa.context
+(ns spa.context
   (:require
 
-   [legilo.utils :as u]
-
-   [legilo.spa.api :refer [log]]
-   [legilo.spa.ui :as ui]))
+   [spa.api :refer [log]]
+   [spa.ui :as ui]))
 
 
 (defonce SIGN_IN (atom nil))

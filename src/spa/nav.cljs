@@ -1,11 +1,11 @@
-(ns legilo.spa.nav
+(ns spa.nav
   (:require
 
    ["@material-ui/core" :as mui]
 
-   [legilo.spa.api :refer [log]]
-   [legilo.spa.auth :as auth]
-   [legilo.spa.ui :as ui :refer [defnc $ <>]]
+   [spa.api :refer [log]]
+   [spa.auth :as auth]
+   [spa.ui :as ui :refer [defnc $ <>]]
    ))
 
 (defnc PageContent []

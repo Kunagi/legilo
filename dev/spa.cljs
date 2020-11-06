@@ -1,7 +1,7 @@
 (ns spa
   (:require
    [helix.experimental.refresh :as helix-refresh]
-   [legilo.spa.api :refer [log]]))
+   [spa.api :refer [log]]))
 
 
 (helix-refresh/inject-hook!)

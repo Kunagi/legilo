@@ -1,10 +1,10 @@
-(ns legilo.spa.devtools
+(ns spa.devtools
   (:require
 
    ["@material-ui/core" :as mui]
 
-   [legilo.spa.context :as context]
-   [legilo.spa.ui :as ui :refer [defnc $ <> div]]))
+   [spa.context :as context]
+   [spa.ui :as ui :refer [defnc $ <> div]]))
 
 
 (defnc DevTools []

@@ -1,4 +1,4 @@
-(ns legilo.spa.impl.firestore
+(ns spa.impl.firestore
   (:require
    [cljs-bean.core :as cljs-bean]))
 

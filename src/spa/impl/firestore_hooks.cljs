@@ -1,9 +1,9 @@
-(ns legilo.spa.impl.firestore-hooks
+(ns spa.impl.firestore-hooks
   (:require
    [helix.hooks :as hooks]
 
-   [legilo.spa.impl.logging :refer [log]]
-   [legilo.spa.impl.firestore :as fs]))
+   [spa.impl.logging :refer [log]]
+   [spa.impl.firestore :as fs]))
 
 
 (defn doc-atom [path]

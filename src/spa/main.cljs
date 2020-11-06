@@ -1,12 +1,12 @@
-(ns legilo.spa.main
+(ns spa.main
   (:require
    ["react-dom" :as rdom]
    [helix.core :refer [$]]
 
-   [legilo.spa.api :refer [log]]
-   [legilo.spa.desktop :as desktop]
+   [spa.api :refer [log]]
+   [spa.desktop :as desktop]
 
-   [legilo.spa.user]))
+   [spa.user]))
 
 
 (defn main! []
