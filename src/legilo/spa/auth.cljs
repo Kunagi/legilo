@@ -21,6 +21,10 @@
                                 :user user)
                            (context/set-user user))))
 
+(defn sign-in-with-microsoft []
+  ;; https://firebase.google.com/docs/auth/web/microsoft-oauth?authuser=0
+  ;; https://docs.microsoft.com/en-us/azure/active-directory/develop/quickstart-register-app
+  )
 
 (defn sign-in-with-google []
   (log ::sign-in-with-google)
@@ -35,8 +39,8 @@
         .auth
         (.signInWithPopup ^js provider)
         (.then #(log ::signInWithPopup-completed
-                     :user-credential %))
-        (.then #(log ::signInWithPopup-failed
+                     :user-credential %)
+               #(log ::signInWithPopup-failed
                      :error %)))))
 
 
