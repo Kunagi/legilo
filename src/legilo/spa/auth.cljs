@@ -24,12 +24,32 @@
 (defn sign-in-with-microsoft []
   ;; https://firebase.google.com/docs/auth/web/microsoft-oauth?authuser=0
   ;; https://docs.microsoft.com/en-us/azure/active-directory/develop/quickstart-register-app
-  )
+  ;; https://docs.microsoft.com/en-us/azure/active-directory/azuread-dev/v1-protocols-oauth-code
+  ;; pplication (client) ID: fc6ee63d-375e-432c-b3d9-2722eba6a0ee
+  ;; Directory (tenant) ID: 088fc83d-8363-42a6-8b7f-02c6f326cb17
+  ;; Object ID; 5275d8a6-c7de-4367-a67f-7955ff60c4d6
+  (let [AuthProvider (-> firebase .-auth .-OAuthProvider)
+        provider (AuthProvider. "microsoft.com")]
+    (-> ^js provider
+        (.setCustomParameters
+         (clj->js {
+                   ;; :prompt    "consent"
+                   :prompt    "login"
+                   })))
+    (-> firebase
+        .auth
+        (.signInWithPopup ^js provider)
+        (.then #(log ::signInWithPopup-completed
+                     :user-credential %)
+               #(log ::signInWithPopup-failed
+                     :error %))
+        (.catch #(log ::signInWithPopup-failed
+                      :error %)))))
 
 (defn sign-in-with-google []
   (log ::sign-in-with-google)
-  (let [GoogleAuthProvider (-> firebase .-auth .-GoogleAuthProvider)
-        provider (GoogleAuthProvider.)]
+  (let [AuthProvider (-> firebase .-auth .-GoogleAuthProvider)
+        provider (AuthProvider.)]
     (.addScope ^js provider "openid")
     (.addScope ^js provider "profile")
     (.addScope ^js provider "email")
@@ -47,7 +67,7 @@
 
 
 (defn sign-in []
-  (sign-in-with-google))
+  (sign-in-with-microsoft))
 
 (context/set-sign-in-f sign-in)
 
