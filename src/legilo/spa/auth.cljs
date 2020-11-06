@@ -19,7 +19,7 @@
     (.onAuthStateChanged (fn [^js user]
                            (log ::auth-state-changed
                                 :user ^js user)
-                           (context/set-user ^js user))))
+                           (context/set-user (js->clj ^js user)))))
 
 (defn sign-in-with-microsoft []
   ;; https://firebase.google.com/docs/auth/web/microsoft-oauth?authuser=0
