@@ -21,11 +21,13 @@
         user (context/use-user)]
     ($ ui/Stack
        (div "You are " (if user (-> user :display-name) "Anonymous") "!")
-       (div "And here comes all the other users:")
-       (for [user users]
-         ($ UserCard
-            {:key (api/doc-id user)
-             :user user})))))
+       (when user
+         ($ ui/Stack
+            (div "And here comes all the other users:")
+            (for [user users]
+              ($ UserCard
+                 {:key (api/doc-id user)
+                  :user user})))))))
 
 
 (defnc PageContent []
