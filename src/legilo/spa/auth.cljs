@@ -41,7 +41,9 @@
         (.then #(log ::signInWithPopup-completed
                      :user-credential %)
                #(log ::signInWithPopup-failed
-                     :error %)))))
+                     :error %))
+        (.catch #(log ::signInWithPopup-failed
+                      :error %)))))
 
 
 (defn sign-in []
