@@ -15,14 +15,29 @@
   (ui/use-doc ["radars" (use-radar-id)]))
 
 
+(defn use-books []
+  (ui/use-col ["radars" (use-radar-id) "books"]))
+
+
+(defnc Book[{:keys [book]}]
+  ($ mui/Card
+     ($ mui/CardContent
+        (-> book :title))))
+
+
 (defnc Radar []
-  (let [radar (use-radar)]
-    (div
+  (let [radar (use-radar)
+        books (use-books)]
+    ($ ui/Stack
      ($ mui/Typography
         {:variant "h4"
          :component "h2"}
         (-> radar :name))
-     (ui/data (use-radar)))))
+     ($ ui/Stack
+        (for [book books]
+          ($ Book
+             {:key (api/doc-id book)
+              :book book}))))))
 
 
 (defnc PageContent []
