@@ -30,7 +30,31 @@
                   :user user})))))))
 
 
+(defnc Radar [{:keys [radar]}]
+  ($ mui/Card
+     ($ mui/CardActionArea
+        {:component ui/Link
+         :to (str "/radars/" (api/doc-id radar))}
+        ($ mui/CardContent
+           (-> radar :name)))
+     ))
+
+
+(defn use-radars []
+  (ui/use-col ["radars"]))
+
+
+(defnc Radars []
+  (let [radars (use-radars)]
+    ($ ui/Stack
+     (for [radar radars]
+       ($ Radar
+          {:key (api/doc-id radar)
+           :radar radar})))))
+
+
 (defnc PageContent []
   ($ mui/Container
      {:maxWidth "sm"}
+     ($ Radars)
      ($ Users)))

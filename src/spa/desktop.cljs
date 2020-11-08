@@ -13,7 +13,8 @@
    [spa.devtools :as devtools]
    [spa.auth :as auth]
    [spa.nav :as nav]
-   [spa.home :as home]))
+   [spa.home :as home]
+   [spa.radar :as radar]))
 
 
 ;;; MUI Theme
@@ -21,8 +22,8 @@
 (def theme
   {:palette {:primary {
                        :main (-> colors .-brown (aget 900))}
-             :secondary {:main (-> colors .-orange (aget 500))}}}
-  )
+             :secondary {:main (-> colors .-orange (aget 500))}}})
+  
 
 
 (defn styles [theme]
@@ -54,6 +55,7 @@
 (defnc PageSwitch []
   ($ router/Switch
      ($ ui/Route {:path "/nav"} ($ nav/PageContent))
+     ($ ui/Route {:path "/radars/:radarId"} ($ radar/PageContent))
      ($ ui/Route {:path "/"} ($ home/PageContent))
      ))
 
