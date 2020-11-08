@@ -18,6 +18,31 @@
   (api/update-doc> book {:recommendations (api/update--array-union [uid])}))
 
 
+(defn update-book [radar-id book changes]
+  (api/update-doc>
+    (or book ["radars" radar-id "books" (str (random-uuid))])
+    changes))
+
+
+;;; Forms
+
+
+(defn book-title-field [book]
+  {:id :title
+   :label "Book Title"
+   :value (-> book :title)})
+
+
+(defn book-form [radar-id book]
+  {:fields [(book-title-field book)]
+   :submit (fn [inputs]
+             (update-book radar-id book inputs))})
+
+
+(defn show-book-form [radar-id book]
+  (ui/show-form-dialog (book-form radar-id book)))
+
+
 ;;; UI State
 
 
@@ -39,10 +64,12 @@
 (defnc Book[{:keys [book]}]
   (let [uid (context/use-uid)]
     ($ mui/Card
+       ($ ui/EditableFieldCardActionArea
+          {:doc book
+           :field (book-title-field book)})
        ($ mui/CardContent
           ($ ui/Stack
-             (-> book :title)
-             (ui/data book)
+             ;; (ui/data book)
              (div
               (book-recommendation-count book))
              ($ mui/Button
@@ -60,8 +87,11 @@
         {:variant "h4"
          :component "h2"}
         (-> radar :name))
+     ($ mui/Button
+        {:onClick #(show-book-form (api/doc-id radar) nil)}
+        "New Book")
      ($ ui/Stack
-        (for [book books]
+        (for [book (->> books (sort-by book-recommendation-count) reverse)]
           ($ Book
              {:key (api/doc-id book)
               :book book}))))))
