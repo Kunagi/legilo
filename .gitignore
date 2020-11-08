@@ -1,6 +1,7 @@
 firebase/public/*
 firebase/functions/*.js
 src/spa/version-time.txt
+.calva/output-window/
 
 node_modules/
 
