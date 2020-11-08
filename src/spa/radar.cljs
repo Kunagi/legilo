@@ -7,6 +7,20 @@
    [spa.context :as context]))
 
 
+(defn book-recommendation-count [book]
+  (-> book :recommendations count))
+
+
+;;; Commands
+
+
+(defn recommend-book [uid book]
+  (api/update-doc> book {:recommendations (api/update--array-union [uid])}))
+
+
+;;; UI State
+
+
 (defn use-radar-id []
   (-> (ui/use-params) :radarId))
 
@@ -19,10 +33,23 @@
   (ui/use-col ["radars" (use-radar-id) "books"]))
 
 
+;;; UI Rendering
+
+
 (defnc Book[{:keys [book]}]
-  ($ mui/Card
-     ($ mui/CardContent
-        (-> book :title))))
+  (let [uid (context/use-uid)]
+    ($ mui/Card
+       ($ mui/CardContent
+          ($ ui/Stack
+             (-> book :title)
+             (ui/data book)
+             (div
+              (book-recommendation-count book))
+             ($ mui/Button
+                {:onClick #(recommend-book uid book)
+                 :variant "contained"
+                 :color "secondary"}
+                "I recommend this book"))))))
 
 
 (defnc Radar []
