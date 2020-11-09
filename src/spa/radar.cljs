@@ -4,7 +4,8 @@
 
    [spa.api :as api :refer [log]]
    [spa.ui :as ui :refer [defnc $ <> div]]
-   [spa.context :as context]))
+   [spa.context :as context]
+   [spa.amazon :as amazon]))
 
 
 (defn book-recommendation-count [book]
@@ -67,8 +68,20 @@
        ($ ui/EditableFieldCardActionArea
           {:doc book
            :field (book-title-field book)})
+       ($ ui/CardRow
+          ($ ui/EditableFieldCardActionArea
+             {:doc book
+              :field {:id :isbn
+                      :label "ISBN"}})
+          ($ ui/EditableFieldCardActionArea
+             {:doc book
+              :field {:id :asin
+                      :label "ASIN"}})
+          (when-let [asin (-> book :asin)]
+            (amazon/ImageLink asin)))
        ($ mui/CardContent
           ($ ui/Stack
+
              ;; (ui/data book)
              (div
               (book-recommendation-count book))
