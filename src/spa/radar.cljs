@@ -5,43 +5,11 @@
    [spa.api :as api :refer [log]]
    [spa.ui :as ui :refer [defnc $ <> div]]
    [spa.context :as context]
+   [spa.book :as book]
    [spa.amazon :as amazon]))
 
 
-(defn book-recommendation-count [book]
-  (-> book :recommendations count))
 
-
-;;; Commands
-
-
-(defn recommend-book [uid book]
-  (api/update-doc> book {:recommendations (api/update--array-union [uid])}))
-
-
-(defn update-book [radar-id book changes]
-  (api/update-doc>
-    (or book ["radars" radar-id "books" (str (random-uuid))])
-    changes))
-
-
-;;; Forms
-
-
-(defn book-title-field [book]
-  {:id :title
-   :label "Book Title"
-   :value (-> book :title)})
-
-
-(defn book-form [radar-id book]
-  {:fields [(book-title-field book)]
-   :submit (fn [inputs]
-             (update-book radar-id book inputs))})
-
-
-(defn show-book-form [radar-id book]
-  (ui/show-form-dialog (book-form radar-id book)))
 
 
 ;;; UI State
@@ -63,33 +31,14 @@
 
 
 (defnc Book[{:keys [book]}]
-  (let [uid (context/use-uid)]
+  (let [uid (context/use-uid)
+        radar-id (use-radar-id)]
     ($ mui/Card
-       ($ ui/EditableFieldCardActionArea
-          {:doc book
-           :field (book-title-field book)})
-       ($ ui/CardRow
-          ($ ui/EditableFieldCardActionArea
-             {:doc book
-              :field {:id :isbn
-                      :label "ISBN"}})
-          ($ ui/EditableFieldCardActionArea
-             {:doc book
-              :field {:id :asin
-                      :label "ASIN"}})
-          (when-let [asin (-> book :asin)]
-            (amazon/ImageLink asin)))
-       ($ mui/CardContent
-          ($ ui/Stack
-
-             ;; (ui/data book)
-             (div
-              (book-recommendation-count book))
-             ($ mui/Button
-                {:onClick #(recommend-book uid book)
-                 :variant "contained"
-                 :color "secondary"}
-                "I recommend this book"))))))
+       ($ mui/CardActionArea
+          {:component ui/Link
+           :to (str "/radars/" radar-id "/book/" (api/doc-id book))}
+          ($ mui/CardContent
+             (-> book :title))))))
 
 
 (defnc Radar []
@@ -101,10 +50,12 @@
          :component "h2"}
         (-> radar :name))
      ($ mui/Button
-        {:onClick #(show-book-form (api/doc-id radar) nil)}
+        {:onClick #(book/show-book-form (api/doc-id radar) nil)
+         :variant "contained"
+         :color "secondary"}
         "New Book")
      ($ ui/Stack
-        (for [book (->> books (sort-by book-recommendation-count) reverse)]
+        (for [book (->> books (sort-by book/book-recommendation-count) reverse)]
           ($ Book
              {:key (api/doc-id book)
               :book book}))))))
