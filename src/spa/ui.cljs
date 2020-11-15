@@ -13,6 +13,8 @@
    ["@material-ui/core" :as mui]
    ["@material-ui/core/styles" :as mui-styles]
 
+   ["material-ui-chip-input" :default ChipInput]
+
    [spa.api :refer [log]]
 
    [spa.impl.firestore-hooks :as firestore-hooks]
@@ -112,8 +114,13 @@
   (let [theme (mui-styles/useTheme)]
     (d/div
      {:style {:display :flex
-              :gap (-> theme (.spacing (or spacing 1)))}}
-     children)))
+              ;; FIXME :gap (-> theme (.spacing (or spacing 1)))
+              }}
+     (for [[idx child] (map-indexed vector children)]
+       (d/div
+        {:key idx
+         :style {:margin-right (-> theme (.spacing (or spacing 1)))}}
+        child)))))
 
 
 (defnc CardOverline [{:keys [children]}]
@@ -167,6 +174,39 @@
         (data (use-dialog-form)))))
 
 
+
+(defmulti create-input (fn [type field update-input auto-focus?] type))
+
+(defmethod create-input "text" [type field update-input auto-focus?]
+  ($ mui/TextField
+     {
+      :id (-> field :id name)
+      :name (or (-> field :name)
+                (-> field :id name))
+      :defaultValue (get field :value)
+      :onChange #(update-input
+                  (-> field :id)
+                  (-> % .-target .-value)
+                  type)
+      :label (get field :label)
+      :autoFocus auto-focus?
+      :type type
+      :inputProps (if-let [props (-> field :input-props)]
+                    (clj->js props)
+                    (clj->js {}))
+      :margin "dense"
+      :fullWidth true}))
+
+
+(defmethod create-input "chips" [type field update-input auto-focus?]
+  ;;(js/console.log "CHIP-INPUT" mui-chip-input/ChipInput)
+  ($ ChipInput
+     {:defaultValue (clj->js (-> field :value))
+      :onChange #(update-input (-> field :id)
+                               (-> % js->clj)
+                               type)}))
+
+
 (defnc FormDialog [{:keys []}]
   (let [form (use-dialog-form)
         [inputs set-inputs] (hooks/use-state nil)
@@ -177,11 +217,16 @@
                                (case type
                                  "number" (js/parseInt value)
                                  value)))
-        update-input (fn [event type]
+        update-input (fn [id value type]
+                       (log ::update-input
+                            :id id
+                            :value value
+                            :type type
+                            :converted-value (convert-for-output value type))
                        (set-inputs
                         (assoc inputs
-                               (-> event .-target .-id keyword)
-                               (-> event .-target .-value (convert-for-output type)))))
+                               id
+                               (convert-for-output value type))))
         submit (fn []
                  (log ::submit :form form :inputs inputs)
                  (let [submit (get form :submit)]
@@ -201,21 +246,9 @@
         ($ mui/DialogContent
            (for [[idx field] (map-indexed vector (get form :fields))]
              (let [type (or (-> field :type) "text")]
-               ($ mui/TextField
-                  {:key (-> field :id)
-                   :id (-> field :id name)
-                   :name (or (-> field :name)
-                             (-> field :id name))
-                   :defaultValue (get field :value)
-                   :onChange #(update-input % type)
-                   :label (get field :label)
-                   :autoFocus (= 0 idx)
-                   :type type
-                   :inputProps (if-let [props (-> field :input-props)]
-                                 (clj->js props)
-                                 (clj->js {}))
-                   :margin "dense"
-                   :fullWidth true})))
+               (d/div
+                {:key (-> field :id)}
+                (create-input type field update-input (= 0 idx)))))
            (get form :content))
         ($ mui/DialogActions
            ($ mui/Button
@@ -255,7 +288,7 @@
           ($ Field
              {:label label}
              (case type
-               :chips ($ StringVectorChips {:values value})
+               "chips" ($ StringVectorChips {:values value})
                (str value)))))))
 
 

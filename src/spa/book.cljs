@@ -55,7 +55,7 @@
   {:id :tags
    :label "Tags"
    :value (-> book :tags)
-   :type :chips})
+   :type "chips"})
 
 
 (defn book-form [radar-id book]
