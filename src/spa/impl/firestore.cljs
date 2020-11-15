@@ -3,6 +3,10 @@
    [cljs-bean.core :as cljs-bean]))
 
 
+
+;;; Firebase
+
+
 (def ^js firebase
   (-> js/window .-firebase))
 

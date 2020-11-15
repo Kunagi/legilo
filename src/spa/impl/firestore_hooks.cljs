@@ -23,10 +23,13 @@
   (log ::col-atom :path path)
   (let [DATA (atom nil)
         ref (fs/ref path)]
+    (log ::subscribing
+         :collection path)
     (-> ref
-        (.onSnapshot (fn [query-col-snapshot]
+        (.onSnapshot (fn [^js query-col-snapshot]
                        (log ::query-snapshot-received
                             :collection path
+                            :count (-> query-col-snapshot .-docs count)
                             :snapshot query-col-snapshot)
                        (->> ^js query-col-snapshot
                             .-docs
@@ -56,14 +59,15 @@
 (defn use-col
   "React hook for a collection."
   [path]
+  (log ::use-col
+       :path path)
   (let [DATA (col-sub path)
         [docs set-docs] (hooks/use-state @DATA)
         watch-ref (random-uuid)]
 
     (hooks/use-effect
-     :once
-     (log ::requesting-collection
-          :path path)
+     :always
+     (set-docs @DATA)
      (add-watch DATA
                 watch-ref
                 (fn [_ _ _ nv]
@@ -81,9 +85,8 @@
         watch-ref (random-uuid)]
 
     (hooks/use-effect
-     :once
-     (log ::requesting-document
-          :path path)
+     :always
+     (set-doc @DATA)
      (add-watch DATA
                 watch-ref
                 (fn [_ _ _ nv]
