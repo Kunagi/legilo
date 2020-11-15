@@ -199,12 +199,23 @@
 
 
 (defmethod create-input "chips" [type field update-input auto-focus?]
-  ;;(js/console.log "CHIP-INPUT" mui-chip-input/ChipInput)
   ($ ChipInput
-     {:defaultValue (clj->js (-> field :value))
+     {
+      :id (-> field :id name)
+      :name (or (-> field :name)
+                (-> field :id name))
+      :defaultValue (clj->js (-> field :value))
       :onChange #(update-input (-> field :id)
                                (-> % js->clj)
-                               type)}))
+                               type)
+      :dataSource (clj->js ["hallo" "welt"])
+      :label (get field :label)
+      :autoFocus auto-focus?
+      ;; :inputProps (if-let [props (-> field :input-props)]
+      ;;               (clj->js props)
+      ;;               (clj->js {}))
+      :margin "dense"
+      :fullWidth true}))
 
 
 (defnc FormDialog [{:keys []}]
