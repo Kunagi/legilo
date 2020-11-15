@@ -234,18 +234,29 @@
      children))
 
 
+(defnc StringVectorChips [{:keys [values]}]
+  ($ Flexbox
+   (for [value values]
+     ($ mui/Chip
+        {:key value
+         :label value}))))
+
+
 (defnc EditableFieldCardActionArea [{:keys [doc field]}]
   (let [id (get field :id)
         label (get field :label)
         value (get doc id)
-        submit #(fs/update-doc> doc {id (get % id)})]
+        submit #(fs/update-doc> doc {id (get % id)})
+        type (get field :type)]
     ($ EditableCardActionArea
        {:form {:fields [(assoc field :value value)]
                :submit submit}}
        ($ mui/CardContent
           ($ Field
              {:label label}
-             value)))))
+             (case type
+               :chips ($ StringVectorChips {:values value})
+               (str value)))))))
 
 
 (defnc EditableFieldCard [{:keys [doc field]}]

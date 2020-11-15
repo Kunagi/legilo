@@ -51,6 +51,13 @@
    :value (-> book :asin)})
 
 
+(defn tags-field [book]
+  {:id :tags
+   :label "Tags"
+   :value (-> book :tags)
+   :type :chips})
+
+
 (defn book-form [radar-id book]
   {:fields [(book-title-field book)
             (book-asin-field book)]
@@ -79,6 +86,9 @@
               :field (book-asin-field book)})
           (when-let [asin (-> book :asin)]
             (amazon/ImageLink asin)))
+       ($ ui/EditableFieldCardActionArea
+          {:doc book
+           :field (tags-field book)})
        ($ mui/CardContent
           ($ ui/Stack
 
