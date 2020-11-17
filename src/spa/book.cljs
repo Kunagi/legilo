@@ -91,7 +91,7 @@
            :field (tags-field book)})
        ($ mui/CardContent
           ($ ui/Stack
-             ($ amazon/SearchWidget {:title (-> book :title)})
+             ;; ($ amazon/SearchWidget {:title (-> book :title)})
              ;; (ui/data book)
              (div
               (book-recommendation-count book))
