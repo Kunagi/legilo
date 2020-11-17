@@ -2,4 +2,4 @@
 
 rm -rf .cpcache
 rm -rf firebase/public/*
-rm -rf firebase/functions/js.*
+rm -rf firebase/functions/*.js
