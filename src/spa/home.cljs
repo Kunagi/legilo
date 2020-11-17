@@ -3,31 +3,7 @@
    ["@material-ui/core" :as mui]
 
    [spa.api :as api :refer [log]]
-   [spa.ui :as ui :refer [defnc $ <> div]]
-   [spa.context :as context]))
-
-
-(defn use-users []
-  (ui/use-col ["users"]))
-
-
-(defnc UserCard [{:keys [user]}]
-  ($ mui/Card
-     ($ mui/CardContent
-        (ui/data user))))
-
-(defnc Users[]
-  (let [users (use-users)
-        user (context/use-user)]
-    ($ ui/Stack
-       (div "You are " (if user (-> user :email) "Anonymous") "!")
-       (when user
-         ($ ui/Stack
-            (div "And here comes all the other users:")
-            (for [user users]
-              ($ UserCard
-                 {:key (api/doc-id user)
-                  :user user})))))))
+   [spa.ui :as ui :refer [defnc $ <> div]]))
 
 
 (defnc Radar [{:keys [radar]}]
@@ -36,8 +12,7 @@
         {:component ui/Link
          :to (str "/ui/radars/" (api/doc-id radar))}
         ($ mui/CardContent
-           (-> radar :name)))
-     ))
+           (-> radar :name)))))
 
 
 (defn use-radars []
@@ -56,5 +31,4 @@
 (defnc PageContent []
   ($ mui/Container
      {:maxWidth "sm"}
-     ($ Radars)
-     ($ Users)))
+     ($ Radars)))
