@@ -2,41 +2,18 @@
   (:require
    [helix.core :as helix]
    [helix.hooks :as hooks]
-   [helix.dom :as d]))
+   [helix.dom :as d]
+
+   [commons.mui :as cmui]))
 
 
-;; https://cljdoc.org/d/lilactown/helix/0.0.13/doc/pro-tips
-(defmacro defnc [type params & body]
-  (let [[docstring params body] (if (string? params)
-                                  [params (first body) (rest body)]
-                                  [nil params body])
-        opts? (map? (first body)) ;; whether an opts map was passed in
-        opts (if opts?
-               (first body)
-               {})
-        body (if opts?
-               (rest body)
-               body)
-        ;; feature flags to enable by default
-        default-opts {:helix/features {:fast-refresh true
-                                       :check-invalid-hooks-usage true}}]
-    `(helix.core/defnc ~type ~@(when docstring [docstring]) ~params
-       ;; we use `merge` here to allow indidivual consumers to override feature
-       ;; flags in special cases
-       ~(merge default-opts opts)
-       ~@body)))
+;;;
+;;; Helix
+;;;
 
-
-
-(defmacro $ [type & args]
-  `(helix/$ ~type ~@args))
-
-(defmacro <> [& children]
-  `(helix/<> ~@children))
-
-(comment
-  (macroexpand-1 '($ Test 1 2)))
-
+(defmacro defnc [& body] `(cmui/defnc ~@body))
+(defmacro $ [type & args] `(helix/$ ~type ~@args))
+(defmacro <> [& children] `(helix/<> ~@children))
 
 ;;;
 ;;; Hooks
@@ -53,5 +30,3 @@
 (defmacro span [& body] `(d/span ~@body))
 (defmacro img [& body] `(d/img ~@body))
 
-(comment
-  (macroexpand-1 '(div "bla" "bla")))
