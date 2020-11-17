@@ -55,9 +55,9 @@
 
 (defnc PageSwitch []
   ($ router/Switch
-     ($ ui/Route {:path "/nav"} ($ nav/PageContent))
-     ($ ui/Route {:path "/radars/:radarId/book/:bookId"} ($ book/PageContent))
-     ($ ui/Route {:path "/radars/:radarId"} ($ radar/PageContent))
+     ($ ui/Route {:path "/ui/nav"} ($ nav/PageContent))
+     ($ ui/Route {:path "/ui/radars/:radarId/book/:bookId"} ($ book/PageContent))
+     ($ ui/Route {:path "/ui/radars/:radarId"} ($ radar/PageContent))
      ($ ui/Route {:path "/"} ($ home/PageContent))
      ))
 

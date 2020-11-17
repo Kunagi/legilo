@@ -34,7 +34,7 @@
   ($ mui/Card
      ($ mui/CardActionArea
         {:component ui/Link
-         :to (str "/radars/" (api/doc-id radar))}
+         :to (str "/ui/radars/" (api/doc-id radar))}
         ($ mui/CardContent
            (-> radar :name)))
      ))
