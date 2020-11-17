@@ -55,7 +55,7 @@
      if (!(location.hostname === "localhost" || location.hostname === "127.0.0.1")) {
        window.addEventListener("load", () => {
          if ("serviceWorker" in navigator) {
-           navigator.serviceWorker.register("service-worker.js");
+           navigator.serviceWorker.register("/service-worker.js");
          }
        });
      }
