@@ -16,8 +16,7 @@
 
    [commons.mui :as ui]
 
-   ;; FIXME
-   [spa.impl.firestore :as fs]
+   [commons.firestore :as fs]
    ))
 
 
@@ -40,7 +39,7 @@
 
 (defmulti create-input (fn [type field update-input auto-focus?] type))
 
-(defmethod create-input "text" [type field update-input auto-focus?]
+(defmethod create-input "text" [_type field update-input auto-focus?]
   ($ mui/TextField
      {
       :id (-> field :id name)
@@ -50,18 +49,31 @@
       :onChange #(update-input
                   (-> field :id)
                   (-> % .-target .-value)
-                  type)
+                  (-> field :type))
       :label (get field :label)
       :autoFocus auto-focus?
-      :type type
+      :type (-> field :type)
+      :multiline (boolean (get field :rows))
+      :rows (get field :rows)
       :inputProps (if-let [props (-> field :input-props)]
                     (clj->js props)
                     (clj->js {}))
       :margin "dense"
       :fullWidth true}))
 
+(defmethod create-input "tel" [_type field update-input auto-focus?]
+  (create-input "text" field update-input auto-focus?))
 
-(defmethod create-input "chips" [type field update-input auto-focus?]
+(defmethod create-input "time" [_type field update-input auto-focus?]
+  (create-input "text" field update-input auto-focus?))
+
+(defmethod create-input "date" [_type field update-input auto-focus?]
+  (create-input "text" field update-input auto-focus?))
+
+(defmethod create-input "number" [_type field update-input auto-focus?]
+  (create-input "text" field update-input auto-focus?))
+
+(defmethod create-input "chips" [_type field update-input auto-focus?]
   ($ ChipInput
      {
       :id (-> field :id name)
@@ -70,7 +82,7 @@
       :defaultValue (clj->js (-> field :value))
       :onChange #(update-input (-> field :id)
                                (-> % js->clj)
-                               type)
+                               (-> field :type))
       :dataSource (clj->js ["hallo" "welt"])
       :label (get field :label)
       :autoFocus auto-focus?

@@ -15,10 +15,8 @@
 
    ["material-ui-chip-input" :default ChipInput]
 
-   [spa.api :refer [log]]
-
-   [spa.impl.firestore-hooks :as firestore-hooks]
-   [spa.impl.firestore :as fs]
+   [commons.firestore :as fs]
+   [commons.firestore-hooks :as firestore-hooks]
    ))
 
 ;;;

@@ -13,6 +13,5 @@
 (def exports
   #js
   {
-   :debugAmazon (f/https-debug> amazon/handle-debug>)
-   ;; :debugMywareLokationen (f/https-debug> mw-lok/handle-debug>)
+   ;; :debugAmazon (f/https-debug> amazon/handle-debug>)
    })

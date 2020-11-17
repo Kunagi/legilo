@@ -1,4 +1,4 @@
-(ns spa.impl.logging
+(ns commons.logging
   (:require
    [cljs.pprint :refer [pprint]]))
 

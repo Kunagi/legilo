@@ -1,4 +1,4 @@
-(ns spa.impl.firestore
+(ns commons.firestore
   (:require
    [cljs-bean.core :as cljs-bean]))
 

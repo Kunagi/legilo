@@ -1,9 +1,9 @@
-(ns spa.impl.firestore-hooks
+(ns commons.firestore-hooks
   (:require
    [helix.hooks :as hooks]
 
-   [spa.impl.logging :refer [log]]
-   [spa.impl.firestore :as fs]))
+   [commons.logging :refer [log]]
+   [commons.firestore :as fs]))
 
 
 (defn doc-atom [path]

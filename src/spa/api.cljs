@@ -10,10 +10,9 @@
    ["@material-ui/core" :as mui]
    ["@material-ui/core/styles" :as mui-styles]
 
-   [spa.impl.logging :as logging]
-
-   [spa.impl.firestore-hooks :as firestore-hooks]
-   [spa.impl.firestore :as fs]
+   [commons.logging :as logging]
+   [commons.firestore-hooks :as firestore-hooks]
+   [commons.firestore :as fs]
    ))
 
 

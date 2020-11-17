@@ -17,11 +17,9 @@
 
    [commons.mui :as cmui]
    [commons.mui-form :as cmui-form]
-
-   [spa.api :refer [log]]
-
-   [spa.impl.firestore-hooks :as firestore-hooks]
-   [spa.impl.firestore :as fs]
+   [commons.logging :refer [log]]
+   [commons.firestore :as fs]
+   [commons.firestore-hooks :as firestore-hooks]
    ))
 
 
