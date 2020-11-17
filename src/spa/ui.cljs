@@ -41,6 +41,9 @@
 (defn use-params []
   (cljs-bean/->clj (router/useParams)))
 
+(defn use-param [param-key]
+  (-> (use-params) (get param-key)))
+
 ;;;
 ;;; styles
 ;;;
@@ -52,6 +55,7 @@
    :background-position-y "top"
    :background-size "contain"})
 
+(def use-theme mui-styles/useTheme)
 
 ;;;
 ;;; Hooks
@@ -90,15 +94,16 @@
       (with-out-str (pprint data))))))
 
 
-;;;
-;;; common components
-;;;
-
-
 (defn icon [icon-name]
   (d/div
    {:class "i material-icons"}
    icon-name))
+
+
+
+;;;
+;;; common components
+;;;
 
 
 (defnc Spacer[{:keys [width height]}]
@@ -140,13 +145,18 @@
    {:style {:display :flex}}
    children))
 
+
+(defnc FieldLabel [{:keys [text]}]
+  (d/div
+   {:style {:color "grey"}}
+   text))
+
 (defnc Field [{:keys [label children]}]
   ($ Stack
      {:spacing 0.5
       :class "EditableField"}
-     (d/div
-      {:style {:color "grey"}}
-      label)
+     ($ FieldLabel
+        {:text label})
      (d/div
       {:style {:min-height "15px"}}
       children)))
