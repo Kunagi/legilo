@@ -95,6 +95,12 @@
 ;;;
 
 
+(defn icon [icon-name]
+  (d/div
+   {:class "i material-icons"}
+   icon-name))
+
+
 (defnc Spacer[{:keys [width height]}]
   (let [theme (mui-styles/useTheme)]
     (d/div

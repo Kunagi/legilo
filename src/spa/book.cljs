@@ -69,7 +69,7 @@
   (ui/show-form-dialog (book-form radar-id book)))
 
 
-(defnc Book[{:keys []}]
+(defnc Book [{:keys []}]
   (let [book (use-book)
         uid (context/use-uid)]
     ($ mui/Card
@@ -91,15 +91,26 @@
            :field (tags-field book)})
        ($ mui/CardContent
           ($ ui/Stack
-
+             ($ amazon/SearchWidget {:title (-> book :title)})
              ;; (ui/data book)
              (div
               (book-recommendation-count book))
-             ($ mui/Button
-                {:onClick #(recommend-book uid book)
-                 :variant "contained"
-                 :color "secondary"}
-                "I recommend this book"))))))
+             ($ ui/Flexbox
+                ($ mui/Button
+                   {:onClick #(recommend-book uid book)
+                    :variant "contained"
+                    :color "secondary"
+                    :startIcon (ui/icon "thumb_up")}
+                   "I recommend this book")
+                ($ mui/Button
+                   {:href (if-let [asin (-> book :asin)]
+                            (amazon/href asin)
+                            (amazon/search-href (-> book :title)))
+                    :target :_blank
+                    :variant "contained"
+                    :color "secondary"
+                    :startIcon (ui/icon "shopping_cart")}
+                   "View on Amazon")))))))
 
 
 (defnc PageContent []
