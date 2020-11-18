@@ -1,6 +1,7 @@
 (ns commons.firestore
   (:require
-   [cljs-bean.core :as cljs-bean]))
+   [cljs-bean.core :as cljs-bean]
+   [commons.logging :refer [log]]))
 
 
 

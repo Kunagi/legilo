@@ -14,6 +14,7 @@
 
    ["material-ui-chip-input" :default ChipInput]
 
+   [commons.logging :refer [log]]
    [commons.mui :as ui]
 
    [commons.firestore :as fs]
@@ -113,15 +114,25 @@
                         (assoc inputs
                                id
                                (convert-for-output value type))))
+
         submit (fn []
-                 ;; (log ::submit :form form :inputs inputs)
-                 (let [submit (get form :submit)]
+                 (log ::pre-submit :form form :inputs inputs)
+                 (let [submit (get form :submit)
+                       inputs (merge
+                               (reduce (fn [inputs field]
+                                         (assoc inputs
+                                                (-> field :id)
+                                                (-> field :value)))
+                                       {} (get form :fields))
+                               inputs)]
                    (when-not submit
                      (throw (ex-info (str "Missing :submit function in form.")
                                      {:form form})))
                    (when (or inputs (-> form :submit-unchanged?))
+                     (log ::submit :form form :inputs inputs)
                      (submit inputs)))
-                 (close-form-dialog))]
+                 (close-form-dialog))
+]
     (when (and (not (-> form :open?))
                (not (nil? inputs)))
       (set-inputs nil))

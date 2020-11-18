@@ -15,7 +15,11 @@
                        (log ::doc-snapshot-received
                             :collection path
                             :snapshot doc-snapshot)
-                       (reset! DATA (fs/wrap-doc doc-snapshot)))))
+                       (reset! DATA (fs/wrap-doc doc-snapshot)))
+                     (fn [^js error]
+                       (log ::doc-atom-error
+                            :path path
+                            :exception error))))
     DATA))
 
 
@@ -34,7 +38,11 @@
                        (->> ^js query-col-snapshot
                             .-docs
                             (map fs/wrap-doc)
-                            (reset! DATA)))))
+                            (reset! DATA)))
+                     (fn [^js error]
+                       (log ::col-atom-error
+                            :path path
+                            :exception error))))
     DATA))
 
 
