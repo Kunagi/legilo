@@ -51,7 +51,9 @@
                   (-> field :id)
                   (-> % .-target .-value)
                   (-> field :type))
-      :label (get field :label)
+      :label (or (-> field :label)
+                 (-> field :name)
+                 (-> field :id name))
       :autoFocus auto-focus?
       :type (-> field :type)
       :multiline (boolean (get field :rows))

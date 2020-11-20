@@ -28,9 +28,20 @@
   (ui/use-col ["radars"]))
 
 
+(defn show-new-radar-form []
+  (ui/show-form-dialog
+   {:fields [{:id :name
+              :label "Pick a name for your Radar"}]
+    :submit #(service/create-radar> (get % :name))}))
+
+
 (defnc Radars []
   (let [radars (use-radars)]
     ($ cmui/Stack
+       ($ cmui/Flexbox
+          ($ cmui/Button
+             {:text "Create new Radar"
+              :onClick show-new-radar-form}))
      (for [radar radars]
        ($ Radar
           {:key (-> radar :firestore/id)

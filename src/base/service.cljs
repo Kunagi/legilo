@@ -102,3 +102,12 @@
 (defn sign-out []
   (-> firebase .auth .signOut)
   (js/window.location.replace "/"))
+
+
+;;;
+;;; Radars
+;;;
+
+
+(defn create-radar> [radar-name]
+  (firestore/create-doc> ["radars"] {:name radar-name}))
