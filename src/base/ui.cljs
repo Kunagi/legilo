@@ -1,5 +1,5 @@
 (ns base.ui
-  (:require-macros [spa.ui])
+  (:require-macros [base.ui])
   (:require
    [cljs.pprint :refer [pprint]]
    [cljs-bean.core :as cljs-bean]

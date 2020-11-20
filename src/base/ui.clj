@@ -1,4 +1,4 @@
-(ns spa.ui
+(ns base.ui
   (:require
    [helix.core :as helix]
    [helix.hooks :as hooks]
