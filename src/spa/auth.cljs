@@ -22,7 +22,9 @@
                             (when user_js
                               {:uid (-> ^js user_js .-uid)
                                :email (-> ^js user_js .-email)
-                               :display-name (-> ^js user_js .-displayName)})))))
+                               :display-name (-> ^js user_js .-displayName)
+                               :photoURL (-> ^js user_js .-photoURL)
+                               :phoneNumber (-> ^js user_js .-phoneNumber)})))))
 
 
 (defn sign-in-with-microsoft []

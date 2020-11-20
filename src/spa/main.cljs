@@ -3,6 +3,8 @@
    ["react-dom" :as rdom]
    [helix.core :refer [$]]
 
+   [commons.firestore-init-spa]
+
    [spa.api :refer [log]]
    [spa.desktop :as desktop]
 

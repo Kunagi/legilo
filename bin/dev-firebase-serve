@@ -3,4 +3,5 @@
 cp -r resources/spa/* firebase/public/
 
 cd firebase
-firebase serve --port 50001
+#firebase serve
+firebase emulators:start

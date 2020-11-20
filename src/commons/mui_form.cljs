@@ -93,6 +93,28 @@
       :margin "dense"
       :fullWidth true}))
 
+(defmethod create-input "boolean" [_type field update-input auto-focus?]
+  ($ mui/FormControl
+     {:component "fieldset"}
+     ($ mui/FormLabel
+        {:component "legend"}
+        (-> field :label))
+     ($ mui/RadioGroup
+        {:name (or (-> field :name)
+                   (-> field :id name))
+         :defaultValue (if (-> field :value) "true" "false")
+         :onChange #(update-input (-> field :id)
+                                  (= "true" (-> % .-target .-value))
+                                  (-> field :type))}
+        ($ mui/FormControlLabel
+           {:value "true"
+            :label "Ja"
+            :control ($ mui/Radio)})
+        ($ mui/FormControlLabel
+           {:value "false"
+            :label "Nein"
+            :control ($ mui/Radio)}))))
+
 
 (defnc FormDialog [{:keys []}]
   (let [form (use-dialog-form)
@@ -105,11 +127,11 @@
                                  "number" (js/parseInt value)
                                  value)))
         update-input (fn [id value type]
-                       ;; (log ::update-input
-                       ;;      :id id
-                       ;;      :value value
-                       ;;      :type type
-                       ;;      :converted-value (convert-for-output value type))
+                       (log ::update-input
+                            :id id
+                            :value value
+                            :type type
+                            :converted-value (convert-for-output value type))
                        (set-inputs
                         (assoc inputs
                                id
@@ -164,11 +186,15 @@
      children))
 
 
-(defnc EditableFieldCardActionArea [{:keys [doc field]}]
+(defnc EditableFieldCardActionArea [{:keys [doc doc-path field update-wrapper]}]
   (let [id (get field :id)
         label (get field :label)
         value (get doc id)
-        submit #(fs/update-doc> doc {id (get % id)})
+        submit #(let [changes {id (get % id)}
+                      changes (if update-wrapper
+                                (update-wrapper changes)
+                                changes)]
+                  (fs/update-fields> (or doc doc-path) changes))
         type (get field :type)]
     ($ EditableCardActionArea
        {:form {:fields [(assoc field :value value)]

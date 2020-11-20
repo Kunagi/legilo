@@ -2,22 +2,34 @@
   (:require
    ["@material-ui/core" :as mui]
 
+   [commons.firestore :as firestore]
    [spa.api :as api :refer [log]]
    [spa.context :as context]
    [spa.ui :as ui :refer [defnc $ <>]]
    ))
 
 
-(defn update-last-usage [user]
-  (log ::update-last-usage :user user)
-  (-> (api/update-doc> ["users" (-> user :uid)]
-                       {:uid (-> user :uid)
-                        :email (-> user :email)
-                        :display-name (-> user :display-name)
-                        :last-usage (api/update--timestamp)})))
+(defn update-last-usage [uid email display-name photo-url phone-number]
+  (log ::update-last-usage
+       :uid uid
+       :email email)
+  (firestore/load-and-save>
+   ["users" uid]
+   #(merge % {:last-usage (firestore/timestamp)
+              :auth-email email
+              :auth-display-name display-name
+              :auth-photo photo-url
+              :auth-phone phone-number})))
 
 
-(add-watch context/USER ::update
-           (fn [_k _r _ov user]
+(add-watch context/USER
+           ::update
+           (fn [_k _r _ov ^js user]
              (when user
-               (update-last-usage user))))
+               (log ::user-changed
+                    :user user)
+               (update-last-usage (-> user :uid)
+                                  (-> user :email)
+                                  (-> user :displayName)
+                                  (-> user :photoURL)
+                                  (-> user :phoneNumber)))))

@@ -1,78 +1,108 @@
 (ns commons.firestore
   (:require
+   [clojure.spec.alpha :as s]
+
    [cljs-bean.core :as cljs-bean]
-   [commons.logging :refer [log]]))
+   [commons.logging :refer [log]]
+   [commons.utils :as u]))
+
+(declare doc?)
+(s/def ::doc doc?)
+
+(s/def ::path (s/or :string string?
+                    :vector vector?
+                    :doc doc?))
 
 
-
-;;; Firebase
-
-
-(def ^js firebase
-  (-> js/window .-firebase))
+(defonce FIRESTORE (atom nil))
 
 (defn ^js firestore []
-  (-> firebase (.firestore)))
+  (if-let [firestore @FIRESTORE]
+    firestore
+    (throw (js/Error. "FIRESTORE atom not initialized!"))))
 
 
-;;; wrap docs to have access to id and ref
+;;; wrap docs to have access to id and path
 
 (defn wrap-doc [^js query-doc-snapshot]
-  (-> (cljs-bean/->clj (.data query-doc-snapshot))
-      (assoc :firestore/meta {:id (.-id query-doc-snapshot)
-                             :ref (.-ref query-doc-snapshot)})))
+  (let [data (-> query-doc-snapshot .data)]
+    (-> (cljs-bean/->clj data)
+        (assoc :firestore/id (-> query-doc-snapshot .-id)
+               :firestore/path (-> query-doc-snapshot .-ref .-path)
+               :firestore/exists? (boolean data)))))
 
 (defn wrap-docs [^js query-snapshot]
   (mapv wrap-doc (-> query-snapshot .-docs)))
 
 (defn doc? [doc]
-  (-> doc :firestore/meta boolean))
+  (-> doc :firestore/path boolean))
 
 (defn doc-id [doc]
-  (-> doc :firestore/meta :id))
-
-(defn doc-ref [doc]
-  (-> doc :firestore/meta :ref))
+  (-> doc :firestore/id))
 
 (defn doc-path [doc]
-  (-> doc doc-ref .-path (.split "/") (->> (into []))))
+  (-> doc :firestore/path))
 
-(defn unwrap-doc [doc]
-  (cljs-bean/->js (dissoc doc :firestore/meta)))
+(defn doc-exists? [doc]
+  (-> doc :firestore/exists? boolean))
 
+(defn ^js unwrap-doc [doc]
+  (-> doc
+      (dissoc :firestore/id :firestore/path :firestore/exists?)
+      clj->js))
 
 ;;; helpers
 
+(defn ^js FieldValue []
+  (if (exists? js/firebase)
+    (-> js/firebase.firestore.FieldValue)
+    (-> js/FireStore.FieldValue)))
 
 (defn ^js update--array-remove [elements]
-  (-> js/firebase.firestore.FieldValue .-arrayRemove (apply (clj->js elements))))
+  (-> ^js (FieldValue) .-arrayRemove (apply (clj->js elements))))
 
 (defn ^js update--array-union [elements]
-  (-> js/firebase.firestore.FieldValue .-arrayUnion (apply (clj->js elements))))
+  (-> ^js (FieldValue) .-arrayUnion (apply (clj->js elements))))
 
 (defn ^js update--timestamp []
-  (-> js/firebase.firestore.FieldValue .serverTimestamp))
+  (-> ^js (FieldValue) .serverTimestamp))
 
+(defn ^js array-remove [elements]
+  (-> ^js (FieldValue) .-arrayRemove (apply (clj->js elements))))
 
+(defn ^js array-union [elements]
+  (-> ^js (FieldValue) .-arrayUnion (apply (clj->js elements))))
+
+(defn ^js timestamp []
+  (-> ^js (FieldValue) .serverTimestamp))
 
 ;;; collection and doc references
+
+
+(defn as-path [thing]
+  (cond
+    (string? thing) (-> thing ( .split "/"))
+    (doc? thing)    (-> thing doc-path as-path)
+    :else           (do (s/assert ::path thing) thing)))
 
 
 (defn- fs-collection [source path-elem]
   (if (map? path-elem)
     (let [{:keys [id wheres where]} path-elem
           wheres (if where
-                   (conj wheres where))
+                   (conj wheres where)
+                   wheres)
           collection (-> ^js source (.collection id))]
       (reduce (fn [collection [attr op val]]
                 (-> ^js collection (.where attr op val)))
               collection wheres))
     (-> ^js source (.collection path-elem))))
 
+
 (defn ^js ref [path]
   (loop [col nil
          doc nil
-         path path]
+         path (as-path path)]
     (if (empty? path)
       (if doc doc col)
       (cond
@@ -101,16 +131,80 @@
      (-> (ref path)
          .get
          (.then (fn [^js doc]
-                  (resolve (wrap-doc doc))))))))
+                  (resolve (wrap-doc doc)))
+                reject)))))
+
+(defn col> [path]
+  (js/Promise.
+   (fn [resolve reject]
+     (-> (ref path)
+         .get
+         (.then (fn [^js query-snapshot]
+                  (resolve (wrap-docs query-snapshot)))
+                reject)))))
 
 
-(defn update-doc> [path props]
-  (let [path (if (doc? path)
-               (doc-path path)
-               path)]
-    (if (fn? props)
-      (-> (doc> path)
-          (.then #(update-doc> path (props %))))
-      (-> (ref path)
-          (.set (unwrap-doc props)
-                (clj->js {"merge" true}))))))
+(defn create-doc>
+  "Creates a new document.
+  An existing document will be replaced."
+  [path data]
+  (log ::create-doc>
+       :path path
+       :data data)
+  (s/assert ::path path)
+  (let [^js ref (ref path)
+        col-ref? (-> ref .-where boolean)]
+    (if col-ref?
+      (-> ref (.add (clj->js data)))
+      (-> ref (.set (clj->js data))))))
+
+
+(defn save-doc>
+  "Saves the document `doc`."
+  [doc]
+  #_(s/assert ::doc doc)
+  (-> doc
+      doc-path
+      ref
+      (.set ^js (unwrap-doc doc))))
+
+
+(defn update-fields>
+  "Updates fields in an existing document."
+  [doc-path fields]
+  (log ::update-fields>
+       :doc-path doc-path
+       :fields fields)
+  (s/assert ::path doc-path)
+  (s/assert map? fields)
+  (-> doc-path
+      ref
+      (.update (clj->js fields))))
+
+
+(defn delete-doc>
+  "Deletes the document `doc`."
+  [doc]
+  (log ::delete-doc
+       :doc doc)
+  (-> doc doc-path ref .delete))
+
+
+(defn load-and-save>
+  "Load, update and save/delete.
+  Deletes the document if `update-f` returns nil."
+  [doc-path update-f]
+  (log ::load-and-save>
+       :doc-path doc-path
+       :update-f update-f)
+  (s/assert ::path doc-path)
+  (-> (doc> doc-path)
+      (.then #(if (doc-exists? %)
+                (let [doc (update-f %)]
+                  (if doc
+                    (save-doc> doc)
+                    (delete-doc> %)))
+                (let [data (update-f nil)]
+                  (if (seq data)
+                    (create-doc> doc-path data)
+                    (js/Promise.resolve nil)))))))

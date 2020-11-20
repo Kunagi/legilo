@@ -80,7 +80,7 @@
                   " | Book Radar"))))
       ($ mui/Toolbar
          ($ auth/SignInButtonOrMenu
-            {:to "/nav"})))))
+            {:to "/ui/nav"})))))
 
 
 (defn VersionInfo []

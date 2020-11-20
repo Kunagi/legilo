@@ -27,21 +27,5 @@
 ;;;
 
 (def doc-id fs/doc-id)
-(def update-doc> fs/update-doc>)
-(def update--array-remove fs/update--array-remove)
-(def update--array-union fs/update--array-union)
-(def update--timestamp fs/update--timestamp)
 
 
-;;;
-;;; Formats
-;;;
-
-(def ^js eur-number-format
-  (-> js/Intl (.NumberFormat "de-DE"
-                             (clj->js {:style "currency"
-                                       :currency "EUR"}))))
-
-(defn eur [v]
-  (when v
-    (-> eur-number-format (.format v))))

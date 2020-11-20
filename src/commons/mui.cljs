@@ -8,6 +8,7 @@
    [helix.hooks :as hooks]
    [helix.dom :as d]
 
+   ["react" :as react]
    ["react-router-dom" :as router]
 
    ["@material-ui/core" :as mui]
@@ -18,6 +19,10 @@
    [commons.firestore :as fs]
    [commons.firestore-hooks :as firestore-hooks]
    ))
+
+
+(defn create-context [value]
+  (-> react (.createContext value)))
 
 ;;;
 ;;; Styles / Theme
@@ -53,19 +58,22 @@
 ;;; Hooks
 ;;;
 
-(defn atom-hook [ATOM]
-  (fn use-atom []
-    (let [[value set-value] (hooks/use-state @ATOM)
-          watch-key (random-uuid)]
+(defn atom-hook
+  ([ATOM]
+   (atom-hook ATOM identity))
+  ([ATOM transformator]
+   (fn use-atom []
+     (let [[value set-value] (hooks/use-state @ATOM)
+           watch-key (random-uuid)]
 
-      (hooks/use-effect
-       :once
-       (add-watch ATOM watch-key
-                  (fn [_k _r _ov nv]
-                    (set-value nv)))
-       #(remove-watch ATOM watch-key))
+       (hooks/use-effect
+        :once
+        (add-watch ATOM watch-key
+                   (fn [_k _r _ov nv]
+                     (set-value nv)))
+        #(remove-watch ATOM watch-key))
 
-      value)))
+       (transformator value)))))
 
 ;;;
 ;;; common ui functions
@@ -111,11 +119,25 @@
      {:style {:display :flex
               ;; FIXME :gap (-> theme (.spacing (or spacing 1)))
               }}
-     (for [[idx child] (map-indexed vector children)]
+     (for [[idx child] (map-indexed vector (if (seqable? children)
+                                             children
+                                             [children]))]
        (d/div
         {:key idx
          :style {:margin-right (-> theme (.spacing (or spacing 1)))}}
         child)))))
+
+
+(defnc SimpleCard [{:keys [title children]}]
+  ($ mui/Card
+     ($ mui/CardContent
+        ($ Stack
+           (when title
+             ($ mui/Typography
+                {:variant "overline"}
+                title))
+           ($ Stack children)))))
+
 
 (defnc CardRow [{:keys [children]}]
   (d/div

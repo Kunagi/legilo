@@ -2,6 +2,7 @@
   (:require
    ["@material-ui/core" :as mui]
 
+   [commons.firestore :as firestore]
    [spa.api :as api :refer [log]]
    [spa.ui :as ui :refer [defnc $ <> div]]
    [spa.context :as context]
@@ -27,13 +28,13 @@
 
 
 (defn recommend-book [uid book]
-  (api/update-doc> book {:recommendations (api/update--array-union [uid])}))
+  (firestore/update-fields> book {:recommendations (firestore/array-union [uid])}))
 
 
 (defn update-book [radar-id book changes]
-  (api/update-doc>
+  (firestore/load-and-save>
    (or book ["radars" radar-id "books" (str (random-uuid))])
-   changes))
+   #(merge % changes)))
 
 
 ;;; Forms
