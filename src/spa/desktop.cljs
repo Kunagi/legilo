@@ -14,8 +14,7 @@
    [spa.auth :as auth]
    [spa.nav :as nav]
    [spa.home :as home]
-   [spa.radar :as radar]
-   [spa.book :as book]))
+   [radar.ui :as radar]))
 
 
 ;;; MUI Theme
@@ -56,8 +55,8 @@
 (defnc PageSwitch []
   ($ router/Switch
      ($ ui/Route {:path "/ui/nav"} ($ nav/PageContent))
-     ($ ui/Route {:path "/ui/radars/:radarId/book/:bookId"} ($ book/PageContent))
-     ($ ui/Route {:path "/ui/radars/:radarId"} ($ radar/PageContent))
+     ($ ui/Route {:path "/ui/radars/:radarId/book/:bookId"} ($ radar/BookPageContent))
+     ($ ui/Route {:path "/ui/radars/:radarId"} ($ radar/RadarPageContent))
      ($ ui/Route {:path "/"} ($ home/PageContent))
      ))
 

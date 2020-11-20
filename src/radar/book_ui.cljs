@@ -1,4 +1,4 @@
-(ns spa.book
+(ns radar.book-ui
   (:require
    ["@material-ui/core" :as mui]
 
@@ -6,11 +6,12 @@
    [spa.api :as api :refer [log]]
    [spa.ui :as ui :refer [defnc $ <> div]]
    [spa.context :as context]
-   [spa.amazon :as amazon]))
+   [spa.amazon :as amazon]
+
+   [radar.service :as service]
+   ))
 
 
-(defn book-recommendation-count [book]
-  (-> book :recommendations count))
 
 (defn use-radar-id []
   (-> (ui/use-params) :radarId))
@@ -27,14 +28,6 @@
 ;;; Commands
 
 
-(defn recommend-book [uid book]
-  (firestore/update-fields> book {:recommendations (firestore/array-union [uid])}))
-
-
-(defn update-book [radar-id book changes]
-  (firestore/load-and-save>
-   (or book ["radars" radar-id "books" (str (random-uuid))])
-   #(merge % changes)))
 
 
 ;;; Forms
@@ -63,7 +56,7 @@
   {:fields [(book-title-field book)
             (book-asin-field book)]
    :submit (fn [inputs]
-             (update-book radar-id book inputs))})
+             (service/update-book radar-id book inputs))})
 
 
 (defn show-book-form [radar-id book]
@@ -95,10 +88,10 @@
              ;; ($ amazon/SearchWidget {:title (-> book :title)})
              ;; (ui/data book)
              (div
-              (book-recommendation-count book))
+              (service/book-recommendation-count book))
              ($ ui/Flexbox
                 ($ mui/Button
-                   {:onClick #(recommend-book uid book)
+                   {:onClick #(service/recommend-book uid book)
                     :variant "contained"
                     :color "secondary"
                     :startIcon (ui/icon "thumb_up")}
@@ -112,9 +105,3 @@
                     :color "secondary"
                     :startIcon (ui/icon "shopping_cart")}
                    "View on Amazon")))))))
-
-
-(defnc PageContent []
-  ($ mui/Container
-     {:maxWidth "sm"}
-     ($ Book)))

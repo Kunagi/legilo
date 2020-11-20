@@ -1,14 +1,15 @@
-(ns spa.radar
+(ns radar.ui
   (:require
    ["@material-ui/core" :as mui]
 
    [spa.api :as api :refer [log]]
    [spa.ui :as ui :refer [defnc $ <> div]]
    [spa.context :as context]
-   [spa.book :as book]
-   [spa.amazon :as amazon]))
+   [spa.amazon :as amazon]
 
-
+   [radar.service :as service]
+   [radar.book-ui :as book-ui]
+   ))
 
 
 
@@ -31,8 +32,7 @@
 
 
 (defnc Book[{:keys [book]}]
-  (let [uid (context/use-uid)
-        radar-id (use-radar-id)]
+  (let [radar-id (use-radar-id)]
     ($ mui/Card
        ($ mui/CardActionArea
           {:component ui/Link
@@ -47,7 +47,7 @@
       {:component "h3"
        :variant "h5"}
       (-> section :name))
-   (for [book (->> books (sort-by book/book-recommendation-count) reverse)]
+   (for [book (->> books (sort-by service/book-recommendation-count) reverse)]
      ($ Book
         {:key (api/doc-id book)
          :book book}))))
@@ -85,7 +85,7 @@
            :component "h2"}
           (-> radar :name))
        ($ mui/Button
-          {:onClick #(book/show-book-form (api/doc-id radar) nil)
+          {:onClick #(book-ui/show-book-form (api/doc-id radar) nil)
            :variant "contained"
            :color "secondary"}
           "New Book")
@@ -98,7 +98,13 @@
           ))))
 
 
-(defnc PageContent []
+(defnc RadarPageContent []
   ($ mui/Container
      {:maxWidth "sm"}
      ($ Radar)))
+
+
+(defnc BookPageContent []
+  ($ mui/Container
+     {:maxWidth "sm"}
+     ($ book-ui/Book)))

@@ -128,6 +128,21 @@
         child)))))
 
 
+(defnc Button [{:keys [text onClick to href variant color]}]
+  (if to
+    ($ mui/Button
+       {:to to
+        :component router/Link
+        :variant (or variant "contained")
+        :color (or color "primary")}
+       (or text "click me"))
+    ($ mui/Button
+       {:onClick onClick
+        :variant (or variant "contained")
+        :color (or color "primary")}
+       (or text "click me"))))
+
+
 (defnc SimpleCard [{:keys [title children]}]
   ($ mui/Card
      ($ mui/CardContent
