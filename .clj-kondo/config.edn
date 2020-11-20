@@ -1,1 +1,2 @@
-{:lint-as {spa.ui/defnc clojure.core/defn}}
+{:lint-as {spa.ui/defnc      clojure.core/defn
+           commons.mui/defnc clojure.core/defn}}

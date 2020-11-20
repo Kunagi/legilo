@@ -57,7 +57,7 @@
   {:fields [(book-title-field book)
             (book-asin-field book)]
    :submit (fn [inputs]
-             (service/update-book radar-id book inputs))})
+             (service/update-book> radar-id book inputs))})
 
 
 (defn show-book-form [radar-id book]

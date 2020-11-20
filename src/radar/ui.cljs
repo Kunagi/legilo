@@ -85,17 +85,19 @@
           {:variant "h4"
            :component "h2"}
           (-> radar :name))
-       ($ mui/Button
-          {:onClick #(book-ui/show-book-form (-> radar :firestore/id) nil)
-           :variant "contained"
-           :color "secondary"}
-          "New Book")
+       ($ cmui/Button
+          {:text "Add Book"
+           :onClick #(book-ui/show-book-form (-> radar :firestore/id) nil)})
        ($ ui/Stack
           (for [section sections]
             ($ Section
                {:key (-> section :idx)
                 :section section
                 :books (get books-by-section-key (-> section :key))}))
+          (when (empty? books)
+            ($ cmui/Button
+               {:text "Add example Books"
+                :onClick #( service/add-example-books> (-> radar :firestore/id))}))
           ))))
 
 

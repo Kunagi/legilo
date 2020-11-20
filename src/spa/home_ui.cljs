@@ -31,7 +31,8 @@
 (defn show-new-radar-form []
   (ui/show-form-dialog
    {:fields [{:id :name
-              :label "Pick a name for your Radar"}]
+              :label "Pick a name for your Radar"
+              :value "My Radar"}]
     :submit #(service/create-radar> (get % :name))}))
 
 
