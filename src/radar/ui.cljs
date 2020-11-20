@@ -2,10 +2,10 @@
   (:require
    ["@material-ui/core" :as mui]
 
-   [spa.api :as api :refer [log]]
-   [spa.ui :as ui :refer [defnc $ <> div]]
-   [spa.context :as context]
-   [spa.amazon :as amazon]
+   [commons.logging :refer [log]]
+   [commons.mui :as cmui :refer [defnc $ <> div]]
+
+   [base.ui :as ui]
 
    [radar.service :as service]
    [radar.book-ui :as book-ui]
@@ -32,11 +32,12 @@
 
 
 (defnc Book[{:keys [book]}]
-  (let [radar-id (use-radar-id)]
+  (let [radar-id (use-radar-id)
+        book-id (-> book :firestore/id)]
     ($ mui/Card
        ($ mui/CardActionArea
           {:component ui/Link
-           :to (str "/ui/radars/" radar-id "/book/" (api/doc-id book))}
+           :to (str "/ui/radars/" radar-id "/book/" book-id)}
           ($ mui/CardContent
              (-> book :title))))))
 
@@ -49,7 +50,7 @@
       (-> section :name))
    (for [book (->> books (sort-by service/book-recommendation-count) reverse)]
      ($ Book
-        {:key (api/doc-id book)
+        {:key (-> book :firestore/id)
          :book book}))))
 
 
@@ -85,7 +86,7 @@
            :component "h2"}
           (-> radar :name))
        ($ mui/Button
-          {:onClick #(book-ui/show-book-form (api/doc-id radar) nil)
+          {:onClick #(book-ui/show-book-form (-> radar :firestore/id) nil)
            :variant "contained"
            :color "secondary"}
           "New Book")

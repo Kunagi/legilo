@@ -26,3 +26,14 @@
        ;; flags in special cases
        ~(merge default-opts opts)
        ~@body)))
+
+
+(defmacro $ [type & args] `(helix/$ ~type ~@args))
+(defmacro <> [& children] `(helix/<> ~@children))
+
+(defmacro use-state [& body] `(hooks/use-state ~@body))
+(defmacro use-effect [& body] `(hooks/use-effect ~@body))
+
+(defmacro div [& body] `(d/div ~@body))
+(defmacro span [& body] `(d/span ~@body))
+(defmacro img [& body] `(d/img ~@body))

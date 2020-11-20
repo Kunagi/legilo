@@ -1,4 +1,4 @@
-(ns spa.ui
+(ns base.ui
   (:require-macros [spa.ui])
   (:require
    [cljs.pprint :refer [pprint]]
@@ -20,6 +20,8 @@
    [commons.logging :refer [log]]
    [commons.firestore :as fs]
    [commons.firestore-hooks :as firestore-hooks]
+
+   [base.context :as context]
    ))
 
 
@@ -82,3 +84,9 @@
 (def FormDialog cmui-form/FormDialog)
 (def EditableCardActionArea cmui-form/EditableCardActionArea)
 (def EditableFieldCardActionArea cmui-form/EditableFieldCardActionArea)
+
+
+(defnc Guard [{:keys [children]}]
+  (if (context/use-uid)
+    children
+    (d/div "Sign in required")))

@@ -8,12 +8,15 @@
    ["@material-ui/core/styles" :as styles]
    ["@material-ui/core/colors" :as colors]
 
-   [spa.api :refer [log]]
-   [spa.ui :as ui :refer [defnc $ <> div]]
+   [commons.logging :refer [log]]
+   [commons.mui :refer [defnc $]]
+
+   [base.context :as context]
+   [base.service :as service]
+   [base.ui :as ui]
+
    [spa.devtools :as devtools]
-   [spa.auth :as auth]
-   [spa.nav :as nav]
-   [spa.home :as home]
+   [spa.home-ui :as home]
    [radar.ui :as radar]))
 
 
@@ -54,17 +57,46 @@
 
 (defnc PageSwitch []
   ($ router/Switch
-     ($ ui/Route {:path "/ui/nav"} ($ nav/PageContent))
-     ($ ui/Route {:path "/ui/radars/:radarId/book/:bookId"} ($ radar/BookPageContent))
-     ($ ui/Route {:path "/ui/radars/:radarId"} ($ radar/RadarPageContent))
-     ($ ui/Route {:path "/"} ($ home/PageContent))
+     ($ router/Route {:path "/ui/menu"} ($ home/MenuPageContent))
+     ($ router/Route {:path "/ui/radars/:radarId/book/:bookId"} ($ radar/BookPageContent))
+     ($ router/Route {:path "/ui/radars/:radarId"} ($ radar/RadarPageContent))
+     ($ router/Route {:path "/"} ($ home/HomePageContent))
      ))
+
+(defnc LoginIcon []
+  ($ :div {:class "i material-icons"} "login"))
+
+
+(defnc SignInButton []
+  ($ mui/Button
+     {:onClick service/sign-in
+      :size "small"
+      :variant "contained"
+      :color "secondary"
+      :startIcon ($ LoginIcon)}
+     "Sign in"))
+
+
+
+
+
+(defnc MenuButton [{:keys [to]}]
+  ($ mui/IconButton
+     {:component ui/Link
+      :to to}
+     ($ :div {:class "i material-icons"} "menu")))
+
+
+(defnc SignInButtonOrMenu [{:keys [to]}]
+  (if (context/use-uid)
+    ($ MenuButton {:to to})
+    ($ SignInButton)))
 
 
 (defn AppBar []
   ($ mui/AppBar
      {:position "static"}
-     (div
+     ($ :div
       {:style {:display :flex
                :justify-content "space-between"}}
       ($ mui/Toolbar
@@ -78,12 +110,12 @@
                ($ :span {:style {:font-weight 300}}
                   " | Book Radar"))))
       ($ mui/Toolbar
-         ($ auth/SignInButtonOrMenu
-            {:to "/ui/nav"})))))
+         ($ SignInButtonOrMenu
+            {:to "/ui/menu"})))))
 
 
 (defn VersionInfo []
-  (div
+  ($ :div
    {:style {:margin-top "4rem"
             :text-align :right
             :color "lightgrey"
@@ -95,7 +127,7 @@
 
 
 (defn AppContent []
-  (div
+  ($ :div
    {:id "AppContent"}
    ($ PageSwitch)
    (VersionInfo)
@@ -111,7 +143,7 @@
         styles (use-app-styles theme)]
     ($ router/BrowserRouter
        {}
-       (div
+       ($ :div
         {:class (-> styles .-root)}
         (AppBar)
         (AppContent)

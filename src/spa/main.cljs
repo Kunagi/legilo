@@ -3,12 +3,13 @@
    ["react-dom" :as rdom]
    [helix.core :refer [$]]
 
+   [commons.logging :refer [log]]
    [commons.firestore-init-spa]
 
-   [spa.api :refer [log]]
-   [spa.desktop :as desktop]
+   [base.service]
 
-   [spa.user]))
+   [spa.desktop :as desktop]
+))
 
 
 (defn main! []

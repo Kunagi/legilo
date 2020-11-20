@@ -2,11 +2,12 @@
   (:require
    ["@material-ui/core" :as mui]
 
-   [commons.firestore :as firestore]
-   [spa.api :as api :refer [log]]
-   [spa.ui :as ui :refer [defnc $ <> div]]
-   [spa.context :as context]
-   [spa.amazon :as amazon]
+   [commons.mui :refer [defnc $ <> div]]
+   [base.ui :as ui]
+
+   [base.context :as context]
+
+   [amazon.ui :as amazon]
 
    [radar.service :as service]
    ))

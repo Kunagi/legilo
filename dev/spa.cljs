@@ -1,7 +1,8 @@
 (ns spa
   (:require
    [helix.experimental.refresh :as helix-refresh]
-   [spa.api :refer [log]]))
+
+   [commons.logging :refer [log]]))
 
 
 (helix-refresh/inject-hook!)

@@ -21,6 +21,9 @@
    ))
 
 
+(def Link router/Link)
+
+
 (defn create-context [value]
   (-> react (.createContext value)))
 
@@ -98,7 +101,7 @@
 ;;; common components
 ;;;
 
-(defnc Spacer[{:keys [width height]}]
+(defnc Spacer [{:keys [width height]}]
   (let [theme (mui-styles/useTheme)]
     (d/div
      {:style {:width (-> theme (.spacing (or width 1)))

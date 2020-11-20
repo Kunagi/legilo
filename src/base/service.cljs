@@ -1,15 +1,42 @@
-(ns spa.auth
+(ns base.service
   (:require
-   [cljs-bean.core :as cljs-bean]
-
    ["@material-ui/core" :as mui]
 
-   [spa.api :refer [log]]
-   [spa.ui :as ui :refer [defnc $ <> div]]
-   [spa.context :as context]
+   [commons.firestore :as firestore]
+   [commons.logging :refer [log]]
+
+   [base.context :as context]
    ))
 
+
+(defn update-last-usage [uid email display-name photo-url phone-number]
+  (log ::update-last-usage
+       :uid uid
+       :email email)
+  (firestore/load-and-save>
+   ["users" uid]
+   #(merge % {:last-usage (firestore/timestamp)
+              :auth-email email
+              :auth-display-name display-name
+              :auth-photo photo-url
+              :auth-phone phone-number})))
+
+
+(add-watch context/USER
+           ::update
+           (fn [_k _r _ov ^js user]
+             (when user
+               (log ::user-changed
+                    :user user)
+               (update-last-usage (-> user :uid)
+                                  (-> user :email)
+                                  (-> user :displayName)
+                                  (-> user :photoURL)
+                                  (-> user :phoneNumber)))))
+
+;;;
 ;;; firebase auth setup
+;;;
 
 (def ^js firebase (-> js/window .-firebase))
 
@@ -44,13 +71,8 @@
                    })))
     (-> firebase
         .auth
-        (.signInWithPopup ^js provider)
-        (.then #(log ::signInWithPopup-completed
-                     :user-credential %)
-               #(log ::signInWithPopup-failed
-                     :error %))
-        (.catch #(log ::signInWithPopup-failed
-                      :error %)))))
+        (.signInWithRedirect ^js provider))))
+
 
 (defn sign-in-with-google []
   (log ::sign-in-with-google)
@@ -80,59 +102,3 @@
 (defn sign-out []
   (-> firebase .auth .signOut)
   (js/window.location.replace "/"))
-
-
-;;; ui
-
-
-(defnc LoginIcon []
-  (div {:class "i material-icons"} "login"))
-
-(defnc SignInButton []
-  ($ mui/Button
-     {:onClick sign-in
-      :size "small"
-      :variant "contained"
-      :color "secondary"
-      :startIcon ($ LoginIcon)}
-     "Sign in"))
-
-(defnc SignOutButton []
-  ($ mui/Button
-     {:onClick sign-out
-      :variant "contained"
-      :color "secondary"
-      :startIcon ($ LoginIcon)}
-     "Sign Out"))
-
-(defnc Menu [{:keys [to]}]
-  ($ mui/IconButton
-     {:component ui/Link
-      :to to}
-     (div {:class "i material-icons"} "menu")))
-
-(defnc SignInButtonOrMenu [{:keys [to]}]
-  (if-let [uid (context/use-uid)]
-    ($ Menu {:to to})
-    ($ SignInButton)))
-
-
-(defnc Guard [{:keys [children]}]
-  (if (context/use-uid)
-    children
-    (div "Sign in required")))
-
-
-(defnc CurrentUserCard []
-  (when-let [user (context/use-user)]
-    ($ mui/Card
-       ($ mui/CardContent
-          (div
-           "Signed in as "
-           (ui/span
-            {:style {:font-weight :bold}}
-            (-> user :email)
-            " / "
-            (-> user :display-name))))
-       ($ mui/CardActions
-          ($ SignOutButton)))))

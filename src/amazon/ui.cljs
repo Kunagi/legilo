@@ -1,10 +1,8 @@
-(ns spa.amazon
+(ns amazon.ui
   (:require
    ["@material-ui/core" :as mui]
 
-   [spa.api :as api :refer [log]]
-   [spa.ui :as ui :refer [defnc $ <> div]]
-   [spa.context :as context]))
+   [commons.mui :as ui :refer [defnc $ <> div]]))
 
 
 (def partner-id "legilo-21")

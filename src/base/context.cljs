@@ -1,8 +1,9 @@
-(ns spa.context
+(ns base.context
   (:require
 
-   [spa.api :refer [log]]
-   [spa.ui :as ui]))
+   [commons.logging :refer [log]]
+   [commons.mui :as cmui]
+   ))
 
 
 (defonce SIGN_IN (atom nil))
@@ -26,7 +27,7 @@
   (when-let [user (user)]
     (-> user :uid)))
 
-(def use-user (ui/atom-hook USER))
+(def use-user (cmui/atom-hook USER))
 
 (defn use-uid []
   (when-let [user (use-user)]

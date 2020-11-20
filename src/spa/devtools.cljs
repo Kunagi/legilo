@@ -3,8 +3,8 @@
 
    ["@material-ui/core" :as mui]
 
-   [spa.context :as context]
-   [spa.ui :as ui :refer [defnc $ <> div]]))
+   [commons.mui :as ui :refer [defnc $ <> div]]
+   [base.context :as context]))
 
 
 (defnc DevTools []
