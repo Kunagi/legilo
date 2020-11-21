@@ -24,10 +24,15 @@
         :dev {:compiler-options {:output-feature-set :es6}}
 
         :release {:compiler-options {:source-map true
-                                     :checked-arrays true}}
-
-        }
+                                     :checked-arrays true}}}
 
   :gcf {:target :node-library
         :output-to "firebase/functions/index.js"
-        :exports-var gcf.index/exports}}}
+        :exports-var gcf.index/exports}
+
+  :test {:target    :browser-test
+         :test-dir  "firebase/public/js/test"
+         ;; :ns-regexp "-spec$"
+         ;; :runner-ns tests.client-test-main
+         :devtools  {:http-port          8021
+                     :http-root          "firebase/public/js/test"}}}}

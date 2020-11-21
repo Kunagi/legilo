@@ -16,6 +16,7 @@
 
    [commons.logging :refer [log]]
    [commons.mui :as ui]
+   [commons.form :as form]
 
    [commons.firestore :as fs]
    ))
@@ -129,11 +130,11 @@
                                  "number" (js/parseInt value)
                                  value)))
         update-input (fn [id value type]
-                       (log ::update-input
-                            :id id
-                            :value value
-                            :type type
-                            :converted-value (convert-for-output value type))
+                       ;; (log ::update-input
+                       ;;      :id id
+                       ;;      :value value
+                       ;;      :type type
+                       ;;      :converted-value (convert-for-output value type))
                        (set-inputs
                         (assoc inputs
                                id

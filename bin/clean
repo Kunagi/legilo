@@ -1,5 +1,6 @@
 #!/bin/bash -e
 
 rm -rf .cpcache
+rm -rf .shadow-cljs
 rm -rf firebase/public/*
 rm -rf firebase/functions/*.js

@@ -7,7 +7,7 @@
  :aliases {
 
            :shadow-cljs
-           {:extra-paths ["dev"]
+           {:extra-paths ["dev" "test"]
             :extra-deps  {thheller/shadow-cljs {:mvn/version "RELEASE"}
                           binaryage/devtools   {:mvn/version "RELEASE"}
                           cider/cider-nrepl    {:mvn/version "RELEASE"}}

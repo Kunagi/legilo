@@ -6,4 +6,4 @@ npm install
 
 date -Iminutes > src/spa/version-time.txt
 
-clojure -A:shadow-cljs watch spa gcf
+clojure -A:shadow-cljs watch spa gcf test
