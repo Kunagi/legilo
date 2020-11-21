@@ -59,6 +59,8 @@
       :helperText (-> field :error)
       :onChange #((:on-change field)
                   (-> % .-target .-value))
+      :onKeyPress #(when (= "Enter" (-> ^js % .-nativeEvent .-code))
+                     ((:on-submit field)))
       :label (-> field :label)
       :type (-> field :type)
       :multiline (boolean (get field :rows))
@@ -149,6 +151,7 @@
                  (assoc field
                         :form form
                         :error error
+                        :on-submit on-submit
                         :on-change #(update-form
                                      form/on-field-value-change
                                      field-id %))))))
