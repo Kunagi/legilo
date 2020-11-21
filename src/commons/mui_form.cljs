@@ -141,7 +141,9 @@
                                (convert-for-output value type))))
 
         submit (fn []
-                 (log ::pre-submit :form form :inputs inputs)
+                 (log ::pre-submit
+                      :form form
+                      :inputs inputs)
                  (let [submit (get form :submit)
                        inputs (merge
                                (reduce (fn [inputs field]
@@ -153,11 +155,9 @@
                    (when-not submit
                      (throw (ex-info (str "Missing :submit function in form.")
                                      {:form form})))
-                   (when (or inputs (-> form :submit-unchanged?))
-                     (log ::submit :form form :inputs inputs)
-                     (submit inputs)))
-                 (close-form-dialog))
-]
+                   (log ::submit :form form :inputs inputs)
+                   (submit inputs))
+                 (close-form-dialog))]
     (when (and (not (-> form :open?))
                (not (nil? inputs)))
       (set-inputs nil))
