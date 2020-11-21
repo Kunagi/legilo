@@ -33,6 +33,7 @@
 (defn book-title-field [book]
   {:id :title
    :label "Book Title"
+   :required? true
    :value (-> book :title)})
 
 

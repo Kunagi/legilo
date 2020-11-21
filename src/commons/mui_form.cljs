@@ -52,7 +52,11 @@
      {
       :id (-> field :id name)
       :name (-> field :name)
+      :autoComplete (-> field :auto-complete)
       :defaultValue (-> field :value)
+      :required (-> field :required?)
+      :error (boolean (-> field :error))
+      :helperText (-> field :error)
       :onChange #((:on-change field)
                   (-> % .-target .-value))
       :label (-> field :label)
@@ -113,58 +117,50 @@
 
 (defnc FormDialog [{:keys [form]}]
   (let [form-id (-> form :id)
+        form (form/initialize form)
         [form set-form] (hooks/use-state form)
+        update-form (fn [f & args]
+                      (set-form (apply f (into [form] args))))
         close (fn []
-                (set-form (assoc form :open? false))
+                (update-form assoc :open? false)
                 (close-form-dialog form-id))
-        submit (fn []
-                 (log ::pre-submit
-                      :form form)
-                 (let [submit (get form :submit)
-                       inputs (merge
-                               (reduce (fn [inputs field]
-                                         (assoc inputs
-                                                (-> field :id)
-                                                (-> field :value)))
-                                       {} (get form :fields))
-                               (-> form :values))]
-                   (when-not submit
-                     (throw (ex-info (str "Missing :submit function in form.")
-                                     {:form form})))
-                   (log ::submit
-                        :form form
-                        :inputs inputs)
-                   (submit inputs))
-                 (close))]
-    (when (and (not (-> form :open?))
-               (not (nil? (-> form :values))))
-      (set-form (dissoc form :values)))
+        on-submit (fn []
+                    (let [form (form/on-submit form)]
+                      (update-form (fn [_] form))
+                      (when-not (form/contains-errors? form)
+                        (let [submit (get form :submit)
+                              values (form/values form)]
+                          (log ::submit
+                               :form form
+                               :values values )
+                          (submit values )
+                          (close)))))]
     (d/div
      ($ mui/Dialog
         {:open (-> form :open? boolean)
          :onClose close}
         ($ mui/DialogContent
-           (for [[idx field] (map-indexed vector (get form :fields))]
-             (let [type (or (-> field :type) "text")]
+           (for [field (get form :fields)]
+             (let [field-id (-> field :id)
+                   error (form/field-error form field-id)]
                (d/div
-                {:key (-> field :id)}
-                (create-input (assoc field
-                                     :form form
-                                     :on-change #(set-form (form/on-field-value-change
-                                                            form (-> field :id) %))
-                                     :auto-focus? (= 0 idx)
-                                     :name (or (-> field :name)
-                                               (-> field :id name))
-                                     :label (or (-> field :label)
-                                                (-> field :name)
-                                                (-> field :id name)))))))
-           (get form :content))
+                {:key field-id}
+                (create-input
+                 (assoc field
+                        :form form
+                        :error error
+                        :on-change #(update-form
+                                     form/on-field-value-change
+                                     field-id %))))))
+           (get form :content)
+           ;; (ui/data form)
+           )
         ($ mui/DialogActions
            ($ mui/Button
               {:onClick close}
               "Abbrechen")
            ($ mui/Button
-              {:onClick submit
+              {:onClick on-submit
                :variant "contained"
                :color "primary"}
               "Ok"))))))
