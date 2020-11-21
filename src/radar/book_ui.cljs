@@ -9,6 +9,7 @@
 
    [amazon.ui :as amazon]
 
+   [radar.book :as book]
    [radar.service :as service]
    ))
 
@@ -30,29 +31,8 @@
 ;;; Forms
 
 
-(defn book-title-field [book]
-  {:id :title
-   :label "Book Title"
-   :required? true
-   :value (-> book :title)})
-
-
-(defn book-asin-field [book]
-  {:id :asin
-   :label "ASIN"
-   :value (-> book :asin)})
-
-
-(defn tags-field [book]
-  {:id :tags
-   :label "Tags"
-   :value (-> book :tags)
-   :type "chips"})
-
-
 (defn book-form [radar-id book]
-  {:fields [(book-title-field book)
-            (book-asin-field book)]
+  {:fields [book/title book/asin]
    :submit (fn [inputs]
              (if book
                (service/update-book> book inputs)
@@ -69,20 +49,19 @@
     ($ mui/Card
        ($ ui/EditableFieldCardActionArea
           {:doc book
-           :field (book-title-field book)})
+           :field book/title})
        ($ ui/CardRow
           ($ ui/EditableFieldCardActionArea
              {:doc book
-              :field {:id :isbn
-                      :label "ISBN"}})
+              :field book/isbn})
           ($ ui/EditableFieldCardActionArea
              {:doc book
-              :field (book-asin-field book)})
+              :field book/asin})
           (when-let [asin (-> book :asin)]
             (amazon/ImageLink asin)))
        ($ ui/EditableFieldCardActionArea
           {:doc book
-           :field (tags-field book)})
+           :field book/tags})
        ($ mui/CardContent
           ($ ui/Stack
              ;; ($ amazon/SearchWidget {:title (-> book :title)})

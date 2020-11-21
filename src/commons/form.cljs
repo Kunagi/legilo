@@ -19,6 +19,7 @@
          :label (or (-> field :label)
                     (-> field :name)
                     (-> field :id name))
+         :multiline? (-> field :rows boolean)
          :auto-complete (get field :auto-complete "off")))
 
 
