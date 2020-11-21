@@ -1,12 +1,13 @@
 (ns spa
   (:require
+   [clojure.spec.alpha :as s]
    [helix.experimental.refresh :as helix-refresh]
 
    [commons.logging :refer [log]]))
 
 
 (helix-refresh/inject-hook!)
-
+(s/check-asserts true)
 
 (defn ^:dev/after-load after-load []
   (log ::dev-after-load)

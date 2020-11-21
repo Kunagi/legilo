@@ -33,5 +33,7 @@
          :test-dir  "firebase/public/js/test"
          ;; :ns-regexp "-spec$"
          ;; :runner-ns tests.client-test-main
-         :devtools  {:http-port          8021
+         :devtools  {:preloads [spa]
+                     :repl-init-ns spa
+                     :http-port          8021
                      :http-root          "firebase/public/js/test"}}}}

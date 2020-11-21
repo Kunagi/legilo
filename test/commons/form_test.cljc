@@ -12,7 +12,8 @@
 (def adr-form
   {:fields [name-field
             {:id :city
-             :label "City"}]})
+             :label "City"}]
+   :submit #(println "SUBMIT:" %)})
 
 
 (deftest field-by-id-test
