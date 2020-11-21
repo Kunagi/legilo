@@ -11,3 +11,11 @@
 (defn ^:dev/after-load after-load []
   (log ::dev-after-load)
   (helix-refresh/refresh!))
+
+
+(comment
+  (let [do-more> (fn [s] (js/Promise.resolve (str s " more")))
+        do-it> (fn [] (js/Promise.resolve (do-more> "do-it")))
+        result (do-it>)]
+    (-> result
+        (.then js/console.log))))

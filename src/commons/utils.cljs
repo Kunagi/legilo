@@ -30,6 +30,15 @@
     m))
 
 
+;;; vectors
+
+(defn v-contains?
+  "Checks if `vec` contains `elem`."
+  [vec elem]
+  (->> vec
+       (some #(= % elem))
+       boolean))
+
 ;;; promises
 
 (defn transform>

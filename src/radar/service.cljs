@@ -1,25 +1,26 @@
 (ns radar.service
   (:require
-
-   [commons.firestore :as firestore]))
+   [commons.utils :as u]
+   [radar.repository :as repository]))
 
 
 (defn book-recommendation-count [book]
   (-> book :recommendations count))
 
-
-(defn recommend-book [uid book]
-  (firestore/update-fields> book {:recommendations (firestore/array-union [uid])}))
+(defn book-recommended-by-user? [book uid]
+  (-> book :recommendations (u/v-contains? uid)))
 
 
 (defn add-book> [radar-id fields]
-  (firestore/create-doc> ["radars" radar-id "books"] fields))
+  (repository/add-book> radar-id fields))
 
 
-(defn update-book> [radar-id book fields]
-  (if book
-    (firestore/update-fields> book fields)
-    (add-book> radar-id fields)))
+(defn update-book> [book fields]
+  (repository/update-book> book fields))
+
+
+(defn recommend-book> [uid book]
+  (repository/update-book> book {:recommendations [:db/array-union [uid]]}))
 
 
 (defn add-example-books> [radar-id]

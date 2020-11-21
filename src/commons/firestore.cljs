@@ -21,6 +21,36 @@
     firestore
     (throw (js/Error. "FIRESTORE atom not initialized!"))))
 
+;;; helpers
+
+(defn ^js FieldValue []
+  (if (exists? js/firebase)
+    (-> js/firebase.firestore.FieldValue)
+    (-> js/FireStore.FieldValue)))
+
+(defn ^js array-remove [elements]
+  (-> ^js (FieldValue) .-arrayRemove (apply (clj->js elements))))
+
+(defn ^js array-union [elements]
+  (-> ^js (FieldValue) .-arrayUnion (apply (clj->js elements))))
+
+(defn ^js timestamp []
+  (-> ^js (FieldValue) .serverTimestamp))
+
+(defn convert-FieldValue-or-nil [v]
+  (when-let [k (if (vector? v) (first v) nil)]
+    (cond
+      (= k :db/array-union)  (array-union (second v))
+      (= k :db/array-remove) (array-remove (second v))
+      (= k :db/array-timestamp) (timestamp)
+      :else nil)))
+
+(defn inject-FieldValues [data]
+  (reduce (fn [data [k v]]
+            (if-let [converted-v (convert-FieldValue-or-nil v)]
+              (assoc data k converted-v)
+              data))
+          data data))
 
 ;;; wrap docs to have access to id and path
 
@@ -49,32 +79,8 @@
 (defn ^js unwrap-doc [doc]
   (-> doc
       (dissoc :firestore/id :firestore/path :firestore/exists?)
+      inject-FieldValues
       clj->js))
-
-;;; helpers
-
-(defn ^js FieldValue []
-  (if (exists? js/firebase)
-    (-> js/firebase.firestore.FieldValue)
-    (-> js/FireStore.FieldValue)))
-
-(defn ^js update--array-remove [elements]
-  (-> ^js (FieldValue) .-arrayRemove (apply (clj->js elements))))
-
-(defn ^js update--array-union [elements]
-  (-> ^js (FieldValue) .-arrayUnion (apply (clj->js elements))))
-
-(defn ^js update--timestamp []
-  (-> ^js (FieldValue) .serverTimestamp))
-
-(defn ^js array-remove [elements]
-  (-> ^js (FieldValue) .-arrayRemove (apply (clj->js elements))))
-
-(defn ^js array-union [elements]
-  (-> ^js (FieldValue) .-arrayUnion (apply (clj->js elements))))
-
-(defn ^js timestamp []
-  (-> ^js (FieldValue) .serverTimestamp))
 
 ;;; collection and doc references
 
@@ -155,8 +161,8 @@
   (let [^js ref (ref path)
         col-ref? (-> ref .-where boolean)]
     (if col-ref?
-      (-> ref (.add (clj->js data)))
-      (-> ref (.set (clj->js data))))))
+      (-> ref (.add (unwrap-doc data)))
+      (-> ref (.set (unwrap-doc data))))))
 
 
 (defn save-doc>
@@ -179,7 +185,7 @@
   (s/assert map? fields)
   (-> doc-path
       ref
-      (.update (clj->js fields))))
+      (.update (unwrap-doc fields))))
 
 
 (defn delete-doc>

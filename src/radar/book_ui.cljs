@@ -26,10 +26,6 @@
   (ui/use-doc ["radars" (use-radar-id) "books" (use-book-id)]))
 
 
-;;; Commands
-
-
-
 
 ;;; Forms
 
@@ -57,7 +53,9 @@
   {:fields [(book-title-field book)
             (book-asin-field book)]
    :submit (fn [inputs]
-             (service/update-book> radar-id book inputs))})
+             (if book
+               (service/update-book> book inputs)
+               (service/add-book> radar-id inputs)))})
 
 
 (defn show-book-form [radar-id book]
@@ -92,7 +90,7 @@
               (service/book-recommendation-count book))
              ($ ui/Flexbox
                 ($ mui/Button
-                   {:onClick #(service/recommend-book uid book)
+                   {:onClick #(service/recommend-book> uid book)
                     :variant "contained"
                     :color "secondary"
                     :startIcon (ui/icon "thumb_up")}
