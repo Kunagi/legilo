@@ -4,6 +4,7 @@
    ["@material-ui/core" :as mui]
 
    [commons.mui :as ui :refer [defnc $ <> div]]
+   [commons.mui-form :as mui-form]
    [base.context :as context]))
 
 
@@ -13,6 +14,8 @@
    ($ ui/Stack
       ($ mui/Divider)
       (div {:style {:color "grey"}} "DevTools")
+
+      ($ mui-form/DialogFormDebugCard)
 
       (ui/data {:goog.DEBUG js/goog.DEBUG
                 :uid (context/use-uid)})

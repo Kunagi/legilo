@@ -5,11 +5,20 @@
 
    ))
 
+(def name-field {:id :name
+                 :label "Name"
+                 :type "text"})
+
+(def adr-form
+  {:fields [name-field
+            {:id :city
+             :label "City"}]})
+
 
 (deftest field-by-id-test
-  (is (= {:id :name :label "Name"}
-         (-> {:fields [{:id :name
-                        :label "Name"}
-                       {:id :city
-                        :label "City"}]}
-             (sut/field-by-id :name)))))
+  (is (= name-field (sut/field-by-id adr-form :name))))
+
+
+(deftest field-type-test
+  (is (= "text" (sut/field-type adr-form :name)))
+  (is (= "text" (sut/field-type adr-form :city))))

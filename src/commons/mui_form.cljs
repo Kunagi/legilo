@@ -39,23 +39,21 @@
 
 
 
-(defmulti create-input (fn [type field update-input auto-focus?] type))
+(defmulti create-input (fn [field] (-> field :type (or "text"))))
 
-(defmethod create-input "text" [_type field update-input auto-focus?]
+(defmethod create-input "text" [field]
   ($ mui/TextField
      {
       :id (-> field :id name)
       :name (or (-> field :name)
                 (-> field :id name))
       :defaultValue (get field :value)
-      :onChange #(update-input
-                  (-> field :id)
-                  (-> % .-target .-value)
-                  (-> field :type))
+      :onChange #((:on-change field)
+                  (-> % .-target .-value))
       :label (or (-> field :label)
                  (-> field :name)
                  (-> field :id name))
-      :autoFocus auto-focus?
+      :autoFocus (-> field :auto-focus?)
       :type (-> field :type)
       :multiline (boolean (get field :rows))
       :rows (get field :rows)
@@ -65,38 +63,36 @@
       :margin "dense"
       :fullWidth true}))
 
-(defmethod create-input "tel" [_type field update-input auto-focus?]
-  (create-input "text" field update-input auto-focus?))
+(defmethod create-input "tel" [field]
+  (create-input (assoc field :type "text")))
 
-(defmethod create-input "time" [_type field update-input auto-focus?]
-  (create-input "text" field update-input auto-focus?))
+(defmethod create-input "time" [field]
+  (create-input (assoc field :type "text")))
 
-(defmethod create-input "date" [_type field update-input auto-focus?]
-  (create-input "text" field update-input auto-focus?))
+(defmethod create-input "date" [field]
+  (create-input (assoc field :type "text")))
 
-(defmethod create-input "number" [_type field update-input auto-focus?]
-  (create-input "text" field update-input auto-focus?))
+(defmethod create-input "number" [field]
+  (create-input (assoc field :type "text")))
 
-(defmethod create-input "chips" [_type field update-input auto-focus?]
+(defmethod create-input "chips" [field]
   ($ ChipInput
      {
       :id (-> field :id name)
       :name (or (-> field :name)
                 (-> field :id name))
       :defaultValue (clj->js (-> field :value))
-      :onChange #(update-input (-> field :id)
-                               (-> % js->clj)
-                               (-> field :type))
+      :onChange #((:on-change field) (-> % js->clj))
       :dataSource (clj->js ["hallo" "welt"])
-      :label (get field :label)
-      :autoFocus auto-focus?
+      :label (-> field :label)
+      :autoFocus (-> field :auto-focus?)
       ;; :inputProps (if-let [props (-> field :input-props)]
       ;;               (clj->js props)
       ;;               (clj->js {}))
       :margin "dense"
       :fullWidth true}))
 
-(defmethod create-input "boolean" [_type field update-input auto-focus?]
+(defmethod create-input "boolean" [field]
   ($ mui/FormControl
      {:component "fieldset"}
      ($ mui/FormLabel
@@ -106,9 +102,7 @@
         {:name (or (-> field :name)
                    (-> field :id name))
          :defaultValue (if (-> field :value) "true" "false")
-         :onChange #(update-input (-> field :id)
-                                  (= "true" (-> % .-target .-value))
-                                  (-> field :type))}
+         :onChange #((:on-change field) (= "true" (-> % .-target .-value)))}
         ($ mui/FormControlLabel
            {:value "true"
             :label "Ja"
@@ -120,58 +114,57 @@
 
 
 (defnc FormDialog [{:keys []}]
-  (let [form (use-dialog-form)
-        [inputs set-inputs] (hooks/use-state nil)
-        convert-for-output (fn [value type]
-                             (if (or (nil? value)
-                                     (= "" value))
-                               nil
-                               (case type
-                                 "number" (js/parseInt value)
-                                 value)))
-        update-input (fn [id value type]
+  (let [form-spec (use-dialog-form)
+        [form set-form] (hooks/use-state form-spec)
+        update-input (fn [id value]
                        ;; (log ::update-input
                        ;;      :id id
                        ;;      :value value
                        ;;      :type type
                        ;;      :converted-value (convert-for-output value type))
-                       (set-inputs
-                        (assoc inputs
-                               id
-                               (convert-for-output value type))))
+                       (set-form
+                        (assoc-in form
+                                  [:values id]
+                                  (form/convert-value-for-output value form id))))
 
         submit (fn []
                  (log ::pre-submit
-                      :form form
-                      :inputs inputs)
-                 (let [submit (get form :submit)
+                      :form-spec form-spec
+                      :form form)
+                 (let [submit (get form-spec :submit)
                        inputs (merge
                                (reduce (fn [inputs field]
                                          (assoc inputs
                                                 (-> field :id)
                                                 (-> field :value)))
-                                       {} (get form :fields))
-                               inputs)]
+                                       {} (get form-spec :fields))
+                               (-> form :values))]
                    (when-not submit
                      (throw (ex-info (str "Missing :submit function in form.")
-                                     {:form form})))
-                   (log ::submit :form form :inputs inputs)
+                                     {:form form
+                                      :form-spec form-spec})))
+                   (log ::submit
+                        :form-spec form-spec
+                        :form form)
                    (submit inputs))
                  (close-form-dialog))]
-    (when (and (not (-> form :open?))
-               (not (nil? inputs)))
-      (set-inputs nil))
+    (when (and (not (-> form-spec :open?))
+               (not (nil? (-> form :values))))
+      (set-form (dissoc form :values)))
     (d/div
      ($ mui/Dialog
-        {:open (-> form :open? boolean)
+        {:open (-> form-spec :open? boolean)
          :onClose close-form-dialog}
         ($ mui/DialogContent
-           (for [[idx field] (map-indexed vector (get form :fields))]
+           (for [[idx field] (map-indexed vector (get form-spec :fields))]
              (let [type (or (-> field :type) "text")]
                (d/div
                 {:key (-> field :id)}
-                (create-input type field update-input (= 0 idx)))))
-           (get form :content))
+                (create-input (assoc field
+                                     :form form
+                                     :on-change (partial update-input (-> field :id))
+                                     :auto-focus? (= 0 idx))))))
+           (get form-spec :content))
         ($ mui/DialogActions
            ($ mui/Button
               {:onClick close-form-dialog}
