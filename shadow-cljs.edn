@@ -18,8 +18,7 @@
         :devtools {:repl-pprint true
                    :reload-strategy :full
                    :preloads [spa]
-                   :repl-init-ns spa
-                   }
+                   :repl-init-ns spa}
 
         :dev {:compiler-options {:output-feature-set :es6}}
 

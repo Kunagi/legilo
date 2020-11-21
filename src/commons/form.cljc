@@ -11,10 +11,3 @@
   (s/assert ::form form)
   (some #(when (= field-id (-> % :id)) %)
         (-> form :fields)))
-
-(comment
-  (-> {:fields [{:id :name
-                 :label "Name"}
-                {:id :city
-                 :label "City"}]}
-      (field-by-id :name)))
