@@ -3,7 +3,6 @@
    ["@material-ui/core" :as mui]
 
    [commons.mui :as cmui :refer [defnc $ <> div]]
-   [commons.mui-form :as form]
    [base.ui :as ui]
 
    [base.context :as context]
@@ -11,37 +10,19 @@
    [amazon.ui :as amazon]
 
    [radar.book :as book]
+   [radar.repository :as repository]
    [radar.service :as service]
    ))
-
 
 
 (defn use-radar-id []
   (-> (ui/use-params) :radarId))
 
-
 (defn use-book-id []
   (-> (ui/use-params) :bookId))
 
-
 (defn use-book []
-  (ui/use-doc ["radars" (use-radar-id) "books" (use-book-id)]))
-
-
-
-;;; Forms
-
-
-(defn book-form [radar-id book]
-  {:fields [book/title book/asin]
-   :submit (fn [inputs]
-             (if book
-               (service/update-book> book inputs)
-               (service/add-book> radar-id inputs)))})
-
-
-(defn show-book-form [radar-id book]
-  (ui/show-form-dialog (book-form radar-id book)))
+  (ui/use-doc (repository/book-path (use-radar-id) (use-book-id))))
 
 
 (defn counter [book]
@@ -67,34 +48,40 @@
                 :grid-template-columns "auto minmax(100px,200px)"
                 :grid-gap "8px"}}
 
-       ($ form/DocumentFieldsCard
+       ($ cmui/DocFieldsCard
           {:doc book
            :fields [book/title book/author book/isbn book/asin book/tags]})
 
-       ($ cmui/Stack
-          {:spacing 3}
-
-          ($ :div)
-
-          (counter book)
-
+       ($ :div
           ($ cmui/Stack
+             {:spacing 3}
 
-             ($ cmui/Button
-                {:action book/recommend
-                 :onClick #(service/recommend-book> uid book)
-                 :color "secondary"})
+             ($ :div)
 
-             ($ cmui/Button
-                {:action book/view-on-amazon
-                 :href (if-let [asin (-> book :asin)]
-                         (amazon/href asin)
-                         (amazon/search-href (-> book :title)))
-                 :target :_blank
-                 :color "secondary"}))
+             (counter book)
 
-          (when-let [asin (-> book :asin)]
-            ($ :img
-               {:src (amazon/image-url asin)
-                :class "MuiPaper-root MuiPaper-elevation1 MuiPaper-rounded"
-                :style {:margin "0 auto"}}))))))
+             ($ cmui/Stack
+
+                (if (service/book-recommended-by-user? book uid)
+                  ($ cmui/Button
+                     {:command book/un-recommend
+                      :onClick #(service/un-recommend-book> uid book)
+                      :color "default"})
+                  ($ cmui/Button
+                     {:command book/recommend
+                      :onClick #(service/recommend-book> uid book)
+                      :color "secondary"}))
+
+                ($ cmui/Button
+                   {:command book/view-on-amazon
+                    :href (if-let [asin (-> book :asin)]
+                            (amazon/href asin)
+                            (amazon/search-href (-> book :title)))
+                    :target :_blank
+                    :color "secondary"}))
+
+             (when-let [asin (-> book :asin)]
+               ($ :img
+                  {:src (amazon/image-url asin)
+                   :class "MuiPaper-root MuiPaper-elevation1 MuiPaper-rounded"
+                   :style {:margin "0 auto"}})))))))

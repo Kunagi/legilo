@@ -1,6 +1,8 @@
 (ns radar.service
   (:require
    [commons.utils :as u]
+
+   [radar.book :as book]
    [radar.repository :as repository]))
 
 
@@ -14,14 +16,23 @@
 (defn add-book> [radar-id fields]
   (repository/add-book> radar-id fields))
 
+(defn add-book-command [radar-id]
+  (-> book/add
+      (assoc-in [:form :submit] #(add-book> radar-id %))))
+
 
 (defn update-book> [book fields]
   (repository/update-book> book fields))
 
-
 (defn recommend-book> [uid book]
   (repository/update-book> book {:recommendations [:db/array-union [uid]]}))
 
+(defn un-recommend-book> [uid book]
+  (repository/update-book> book {:recommendations [:db/array-remove [uid]]}))
+
+;;;
+;;; Example Data
+;;;
 
 (defn add-example-books> [radar-id]
   (js/Promise.all

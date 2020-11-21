@@ -5,7 +5,6 @@
    [cljs-bean.core :as cljs-bean]
 
    [helix.core :refer [defnc $]]
-   [helix.hooks :as hooks]
    [helix.dom :as d]
 
    ["react" :as react]
@@ -18,8 +17,16 @@
 
    [commons.firestore :as fs]
    [commons.firestore-hooks :as firestore-hooks]
+   [commons.context :as context]
+   [commons.form-ui :as form-ui]
    ))
 
+
+(def StringVectorChips form-ui/StringVectorChips)
+(def DocFieldsCard form-ui/DocFieldsCard)
+(def FormDialogsContainer form-ui/FormDialogsContainer)
+
+(def show-form-dialog form-ui/show-form-dialog)
 
 (def Link router/Link)
 
@@ -61,22 +68,8 @@
 ;;; Hooks
 ;;;
 
-(defn atom-hook
-  ([ATOM]
-   (atom-hook ATOM identity))
-  ([ATOM transformator]
-   (fn use-atom []
-     (let [[value set-value] (hooks/use-state @ATOM)
-           watch-key (random-uuid)]
+(def atom-hook context/atom-hook)
 
-       (hooks/use-effect
-        :once
-        (add-watch ATOM watch-key
-                   (fn [_k _r _ov nv]
-                     (set-value nv)))
-        #(remove-watch ATOM watch-key))
-
-       (transformator value)))))
 
 ;;;
 ;;; common ui functions
@@ -131,12 +124,16 @@
         child)))))
 
 
-(defnc Button [{:keys [text icon onClick to href target variant color action]}]
-  (let [text (or text (-> action :label) ":text missing")
-        icon (when-let [icon (or icon (-> action :icon))]
+(defnc Button [{:keys [text icon onClick to href target variant color command]}]
+  (let [text (or text (-> command :label) ":text missing")
+        icon (when-let [icon (or icon (-> command :icon))]
                (if (string? icon)
                  (d/div {:class "i material-icons"} icon)
-                 icon))]
+                 icon))
+        onClick (or onClick
+                    (-> command :onClick)
+                    (when-let [form (-> command :form)]
+                      #(show-form-dialog form)))]
     (if to
       ($ mui/Button
          {:to to
@@ -172,29 +169,11 @@
             :grid-template-columns (str "repeat(" (count children) ", auto)")}}
    children))
 
-(defnc FieldLabel [{:keys [text]}]
-  (d/div
-   {:style {:color "grey"}}
-   text))
-
-(defnc Field [{:keys [label children]}]
-  ($ Stack
-     {:spacing 0.5
-      :class "EditableField"}
-     ($ FieldLabel
-        {:text label})
-     (d/div
-      {:style {:min-height "15px"}}
-      children)))
+(def FieldLabel form-ui/FieldLabel)
+(def Field form-ui/Field)
 
 (defnc FieldCardContent [{:keys [label children]}]
   ($ mui/CardContent
      ($ Field {:label label}
         children)))
 
-(defnc StringVectorChips [{:keys [values]}]
-  ($ Flexbox
-     (for [value values]
-       ($ mui/Chip
-          {:key value
-           :label value}))))

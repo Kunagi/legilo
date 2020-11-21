@@ -1,4 +1,4 @@
-(ns commons.mui-form
+(ns commons.form-ui
   (:require
    [clojure.spec.alpha :as s]
    [cljs.pprint :refer [pprint]]
@@ -16,9 +16,9 @@
    ["material-ui-chip-input" :default ChipInput]
 
    [commons.logging :refer [log]]
-   [commons.mui :as ui]
+   ;; [commons.mui :as ui]
    [commons.form :as form]
-
+   [commons.context :as context]
    [commons.firestore :as fs]
    ))
 
@@ -36,12 +36,12 @@
                     :id form-id)]
     (swap! DIALOG_FORMS assoc form-id form)))
 
-(def use-dialog-forms (ui/atom-hook DIALOG_FORMS))
+(def use-dialog-forms (context/atom-hook DIALOG_FORMS))
 
-(defnc DialogFormsDebugCard []
-  ($ mui/Card
-     ($ mui/CardContent
-        (ui/data (use-dialog-forms)))))
+;; (defnc DialogFormsDebugCard []
+;;   ($ mui/Card
+;;      ($ mui/CardContent
+;;         (ui/data (use-dialog-forms)))))
 
 
 
@@ -183,47 +183,69 @@
      {:onClick #(show-form-dialog form)}
      children))
 
+(defnc FieldLabel [{:keys [text]}]
+  (d/div
+   {:style {:color "grey"}}
+   text))
 
-(defnc DocumentFieldCardArea [{:keys [doc doc-path field update-wrapper]}]
+(defnc Field [{:keys [label children]}]
+  ($ :div
+     {:spacing 0.5
+      :class "EditableField"}
+     ($ FieldLabel
+        {:text label})
+     (d/div
+      {:style {:min-height "15px"}}
+      children)))
+
+
+(defnc StringVectorChips [{:keys [values]}]
+  ($ :div
+     {:style {:display :flex}}
+     (for [value values]
+       ($ :div
+          {:key value
+           :style {:margin-right "8px"}}
+          ($ mui/Chip
+             {:label value})))))
+
+(defnc DocFieldCardArea [{:keys [doc doc-path field]}]
   (let [id (get field :id)
         label (get field :label)
         value (get doc id)
-        submit #(let [changes {id (get % id)}
-                      changes (if update-wrapper
-                                (update-wrapper changes)
-                                changes)]
+        submit #(let [changes {id (get % id)}]
                   (fs/update-fields> (or doc doc-path) changes))
         type (get field :type)]
     ($ FormCardArea
        {:form {:fields [(assoc field :value value)]
                :submit submit}}
        ($ mui/CardContent
-          ($ ui/Field
+          ($ Field
              {:label label}
              (case type
-               "chips" ($ ui/StringVectorChips {:values value})
+               "chips" ($ StringVectorChips {:values value})
                (str value)))))))
 
 
-(defnc DocumentFieldsCardAreas [{:keys [doc fields update-wrapper]}]
+(defnc DocFieldsCardAreas [{:keys [doc fields update-wrapper]}]
   (<> (for [field fields]
-        ($ DocumentFieldCardArea
+        ($ DocFieldCardArea
            {:key (-> field :id)
             :doc doc
             :field field
             :update-wrapper update-wrapper}))))
 
 
-(defnc DocumentFieldCard [{:keys [doc field]}]
+(defnc DocFieldCard [{:keys [doc field]}]
   ($ mui/Card
-     ($ DocumentFieldCardArea
+     ($ DocFieldCardArea
         {:doc doc
          :field field})))
 
 
-(defnc DocumentFieldsCard [{:keys [doc fields update-wrapper]}]
+(defnc DocFieldsCard [{:keys [doc fields update-wrapper]}]
   ($ mui/Card
-     ($ DocumentFieldsCardAreas
+     ($ DocFieldsCardAreas
         {:doc doc
          :fields fields
          :update-wrapper update-wrapper})))

@@ -7,6 +7,8 @@
 
    [base.ui :as ui]
 
+   [radar.book :as book]
+   [radar.repository :as repository]
    [radar.service :as service]
    [radar.book-ui :as book-ui]
    ))
@@ -72,6 +74,7 @@
 
 (defnc Radar []
   (let [radar (use-radar)
+        radar-id (-> radar :firestore/id)
         books (use-books)
         books-by-section-key (->> books
                                   (group-by #(let [c (-> % :recommendations count)]
@@ -86,8 +89,8 @@
            :component "h2"}
           (-> radar :name))
        ($ cmui/Button
-          {:text "Add Book"
-           :onClick #(book-ui/show-book-form (-> radar :firestore/id) nil)})
+          {:command (service/add-book-command radar-id)
+           :color "secondary"})
        ($ ui/Stack
           (for [section sections]
             ($ Section
@@ -97,8 +100,7 @@
           (when (empty? books)
             ($ cmui/Button
                {:text "Add example Books"
-                :onClick #( service/add-example-books> (-> radar :firestore/id))}))
-          ))))
+                :onClick #(service/add-example-books> (-> radar :firestore/id))}))))))
 
 
 (defnc RadarPageContent []

@@ -4,8 +4,15 @@
    [commons.firestore :as firestore]))
 
 
+(defn book-col-path [radar-id]
+  ["radars" radar-id "books"])
+
+(defn book-path [radar-id book-id]
+  (conj (book-col-path radar-id) book-id))
+
+
 (defn add-book> [radar-id fields]
-  (firestore/create-doc> ["radars" radar-id "books"] fields))
+  (firestore/create-doc> (book-col-path radar-id) fields))
 
 
 (defn update-book> [book fields]

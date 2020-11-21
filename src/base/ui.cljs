@@ -16,7 +16,6 @@
    ["material-ui-chip-input" :default ChipInput]
 
    [commons.mui :as cmui]
-   [commons.mui-form :as cmui-form]
    [commons.logging :refer [log]]
    [commons.firestore :as fs]
    [commons.firestore-hooks :as firestore-hooks]
@@ -74,16 +73,6 @@
 (def FieldLabel cmui/FieldLabel)
 (def Field cmui/Field)
 (def FieldCardContent cmui/FieldCardContent)
-
-;;;
-;;; Dialog Form
-;;;
-
-(def show-form-dialog cmui-form/show-form-dialog)
-
-
-
-
 
 
 (defnc Guard [{:keys [children]}]

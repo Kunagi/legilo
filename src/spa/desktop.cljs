@@ -10,7 +10,6 @@
 
    [commons.logging :refer [log]]
    [commons.mui :as cmui :refer [defnc $]]
-   [commons.mui-form :as form-ui]
 
    [base.context :as context]
    [base.service :as service]
@@ -152,7 +151,7 @@
         {:class (-> styles .-root)}
         (AppBar)
         (AppContent)
-        ($ form-ui/FormDialogsContainer)
+        ($ cmui/FormDialogsContainer)
         ))))
 
 

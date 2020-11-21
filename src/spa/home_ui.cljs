@@ -3,7 +3,7 @@
    ["@material-ui/core" :as mui]
 
    [commons.logging :refer [log]]
-   [commons.mui :as cmui :refer [defnc $ <> div]]
+   [commons.mui :as cui :refer [defnc $ <> div]]
 
    [base.context :as context]
    [base.service :as service]
@@ -18,7 +18,7 @@
 (defnc Radar [{:keys [radar]}]
   ($ mui/Card
      ($ mui/CardActionArea
-        {:component cmui/Link
+        {:component cui/Link
          :to (str "/ui/radars/" (-> radar :firestore/id))}
         ($ mui/CardContent
            (-> radar :name)))))
@@ -29,7 +29,7 @@
 
 
 (defn show-new-radar-form []
-  (ui/show-form-dialog
+  (cui/show-form-dialog
    {:fields [{:id :name
               :label "Pick a name for your Radar"
               :value "My Radar"}]
@@ -38,9 +38,9 @@
 
 (defnc Radars []
   (let [radars (use-radars)]
-    ($ cmui/Stack
-       ($ cmui/Flexbox
-          ($ cmui/Button
+    ($ cui/Stack
+       ($ cui/Flexbox
+          ($ cui/Button
              {:text "Create new Radar"
               :onClick show-new-radar-form}))
      (for [radar radars]
@@ -75,7 +75,7 @@
        ($ mui/CardContent
           (div
            "Signed in as "
-           (cmui/span
+           (cui/span
             {:style {:font-weight :bold}}
             (-> user :email)
             " / "
@@ -84,9 +84,9 @@
           ($ SignOutButton)))))
 
 (defnc MenuDevCard []
-  ($ cmui/SimpleCard
+  ($ cui/SimpleCard
      {:title "Developer Tools"}
-     ($ cmui/Button
+     ($ cui/Button
         {:text "Create Example Radar"
          :onClick create-example-radar>})))
 
