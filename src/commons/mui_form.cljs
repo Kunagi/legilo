@@ -4,7 +4,7 @@
    [cljs.pprint :refer [pprint]]
    [cljs-bean.core :as cljs-bean]
 
-   [helix.core :refer [defnc $]]
+   [helix.core :refer [defnc $ <>]]
    [helix.hooks :as hooks]
    [helix.dom :as d]
 
@@ -178,13 +178,13 @@
           :form form}))))
 
 
-(defnc EditableCardActionArea [{:keys [form children]}]
+(defnc FormCardArea [{:keys [form children]}]
   ($ mui/CardActionArea
      {:onClick #(show-form-dialog form)}
      children))
 
 
-(defnc EditableFieldCardActionArea [{:keys [doc doc-path field update-wrapper]}]
+(defnc DocumentFieldCardArea [{:keys [doc doc-path field update-wrapper]}]
   (let [id (get field :id)
         label (get field :label)
         value (get doc id)
@@ -194,7 +194,7 @@
                                 changes)]
                   (fs/update-fields> (or doc doc-path) changes))
         type (get field :type)]
-    ($ EditableCardActionArea
+    ($ FormCardArea
        {:form {:fields [(assoc field :value value)]
                :submit submit}}
        ($ mui/CardContent
@@ -205,8 +205,25 @@
                (str value)))))))
 
 
-(defnc EditableFieldCard [{:keys [doc field]}]
+(defnc DocumentFieldsCardAreas [{:keys [doc fields update-wrapper]}]
+  (<> (for [field fields]
+        ($ DocumentFieldCardArea
+           {:key (-> field :id)
+            :doc doc
+            :field field
+            :update-wrapper update-wrapper}))))
+
+
+(defnc DocumentFieldCard [{:keys [doc field]}]
   ($ mui/Card
-     ($ EditableFieldCardActionArea
+     ($ DocumentFieldCardArea
         {:doc doc
          :field field})))
+
+
+(defnc DocumentFieldsCard [{:keys [doc fields update-wrapper]}]
+  ($ mui/Card
+     ($ DocumentFieldsCardAreas
+        {:doc doc
+         :fields fields
+         :update-wrapper update-wrapper})))

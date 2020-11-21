@@ -131,19 +131,28 @@
         child)))))
 
 
-(defnc Button [{:keys [text onClick to href variant color]}]
-  (if to
-    ($ mui/Button
-       {:to to
-        :component router/Link
-        :variant (or variant "contained")
-        :color (or color "primary")}
-       (or text "click me"))
-    ($ mui/Button
-       {:onClick onClick
-        :variant (or variant "contained")
-        :color (or color "primary")}
-       (or text "click me"))))
+(defnc Button [{:keys [text icon onClick to href target variant color action]}]
+  (let [text (or text (-> action :label) ":text missing")
+        icon (when-let [icon (or icon (-> action :icon))]
+               (if (string? icon)
+                 (d/div {:class "i material-icons"} icon)
+                 icon))]
+    (if to
+      ($ mui/Button
+         {:to to
+          :component router/Link
+          :variant (or variant "contained")
+          :color (or color "primary")
+          :startIcon icon}
+         text)
+      ($ mui/Button
+         {:onClick onClick
+          :href href
+          :target target
+          :variant (or variant "contained")
+          :color (or color "primary")
+          :startIcon icon}
+         text))))
 
 
 (defnc SimpleCard [{:keys [title children]}]
@@ -159,7 +168,8 @@
 
 (defnc CardRow [{:keys [children]}]
   (d/div
-   {:style {:display :flex}}
+   {:style {:display :grid
+            :grid-template-columns (str "repeat(" (count children) ", auto)")}}
    children))
 
 (defnc FieldLabel [{:keys [text]}]

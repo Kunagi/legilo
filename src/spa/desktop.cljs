@@ -9,7 +9,8 @@
    ["@material-ui/core/colors" :as colors]
 
    [commons.logging :refer [log]]
-   [commons.mui :refer [defnc $]]
+   [commons.mui :as cmui :refer [defnc $]]
+   [commons.mui-form :as form-ui]
 
    [base.context :as context]
    [base.service :as service]
@@ -30,8 +31,7 @@
 
 
 (defn styles [theme]
-  {:root {
-          :position       "absolute"
+  {:root {:position       "absolute"
           :height         "100%"
           :width          "100%"
           :display        "flex"
@@ -51,8 +51,13 @@
 
           "& #AppContent" {:height   "100%"
                            :overflow "auto"
-                           :padding ((-> theme .-spacing) 1)}}})
+                           :padding ((-> theme .-spacing) 1)}
 
+          "& .BookCardMedia" {:width "140px"
+                              :padding-bottom "150%"
+                              ;:background-size "cover"
+                              ;:background-position "center"
+                              }}})
 
 
 (defnc PageSwitch []
@@ -147,10 +152,8 @@
         {:class (-> styles .-root)}
         (AppBar)
         (AppContent)
-        ($ ui/FormDialogsContainer)
+        ($ form-ui/FormDialogsContainer)
         ))))
-
-
 
 
 (defnc Desktop []

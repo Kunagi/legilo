@@ -2,7 +2,8 @@
   (:require
    ["@material-ui/core" :as mui]
 
-   [commons.mui :refer [defnc $ <> div]]
+   [commons.mui :as cmui :refer [defnc $ <> div]]
+   [commons.mui-form :as form]
    [base.ui :as ui]
 
    [base.context :as context]
@@ -43,44 +44,57 @@
   (ui/show-form-dialog (book-form radar-id book)))
 
 
+(defn counter [book]
+  (let [c (service/book-recommendation-count book)]
+    ($ :div
+       {:style {:margin "0 auto"
+                :text-align "center"}}
+       ($ :div
+          {:style {:font-weight 900
+                   :font-size "300%"}}
+          c)
+       ($ :div
+          (if (= c 1)
+            " Recommendation"
+            " Recommendations")))))
+
+
 (defnc Book [{:keys []}]
   (let [book (use-book)
         uid (context/use-uid)]
-    ($ mui/Card
-       ($ ui/EditableFieldCardActionArea
+    ($ :div
+       {:style {:display :grid
+                :grid-template-columns "auto minmax(100px,200px)"
+                :grid-gap "8px"}}
+
+       ($ form/DocumentFieldsCard
           {:doc book
-           :field book/title})
-       ($ ui/CardRow
-          ($ ui/EditableFieldCardActionArea
-             {:doc book
-              :field book/isbn})
-          ($ ui/EditableFieldCardActionArea
-             {:doc book
-              :field book/asin})
+           :fields [book/title book/author book/isbn book/asin book/tags]})
+
+       ($ cmui/Stack
+          {:spacing 3}
+
+          ($ :div)
+
+          (counter book)
+
+          ($ cmui/Stack
+
+             ($ cmui/Button
+                {:action book/recommend
+                 :onClick #(service/recommend-book> uid book)
+                 :color "secondary"})
+
+             ($ cmui/Button
+                {:action book/view-on-amazon
+                 :href (if-let [asin (-> book :asin)]
+                         (amazon/href asin)
+                         (amazon/search-href (-> book :title)))
+                 :target :_blank
+                 :color "secondary"}))
+
           (when-let [asin (-> book :asin)]
-            (amazon/ImageLink asin)))
-       ($ ui/EditableFieldCardActionArea
-          {:doc book
-           :field book/tags})
-       ($ mui/CardContent
-          ($ ui/Stack
-             ;; ($ amazon/SearchWidget {:title (-> book :title)})
-             ;; (ui/data book)
-             (div
-              (service/book-recommendation-count book))
-             ($ ui/Flexbox
-                ($ mui/Button
-                   {:onClick #(service/recommend-book> uid book)
-                    :variant "contained"
-                    :color "secondary"
-                    :startIcon (ui/icon "thumb_up")}
-                   "I recommend this book")
-                ($ mui/Button
-                   {:href (if-let [asin (-> book :asin)]
-                            (amazon/href asin)
-                            (amazon/search-href (-> book :title)))
-                    :target :_blank
-                    :variant "contained"
-                    :color "secondary"
-                    :startIcon (ui/icon "shopping_cart")}
-                   "View on Amazon")))))))
+            ($ :img
+               {:src (amazon/image-url asin)
+                :class "MuiPaper-root MuiPaper-elevation1 MuiPaper-rounded"
+                :style {:margin "0 auto"}}))))))

@@ -17,15 +17,19 @@
        "?tag=" partner-id
        "&k=" text))
 
+(defn image-url [asin]
+  (str "//ws-eu.amazon-adsystem.com/widgets/q?MarketPlace=DE&ASIN="
+       asin
+       "&ServiceVersion=20070822&ID=AsinImage&WS=1&Format=_SL160_&tag="
+       partner-id))
+
 (defn ImageLink [asin]
   ($ :a
      {:target "_blank"
       :href (href asin)}
      ($ :img
         {:border 0
-         :src (str "//ws-eu.amazon-adsystem.com/widgets/q?MarketPlace=DE&ASIN="
-                   asin
-                   "&ServiceVersion=20070822&ID=AsinImage&WS=1&Format=_SL160_&tag=" partner-id)}
+         :src (image-url asin)}
         )))
 
 

@@ -4,8 +4,11 @@
 
 
 (def-attr title
-  {:label "Book Title"
+  {:label "Title"
    :required? true})
+
+(def-attr author
+  {:label "Author"})
 
 (def-attr asin
   {:label "ASIN"})
@@ -16,6 +19,11 @@
 (def-attr tags
   {:label "Tags"
    :type "chips"})
+
+
+(def-command recommend
+  {:label "Recommend"
+   :icon "thumb_up"})
 
 
 (def-command view-on-amazon
