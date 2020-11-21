@@ -181,7 +181,7 @@
   (log ::update-fields>
        :doc-path doc-path
        :fields fields)
-  (s/assert ::path doc-path)
+  ;; (s/assert ::path doc-path)
   (s/assert map? fields)
   (-> doc-path
       ref

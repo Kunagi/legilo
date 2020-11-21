@@ -1,5 +1,6 @@
 (ns commons.mui-form
   (:require
+   [clojure.spec.alpha :as s]
    [cljs.pprint :refer [pprint]]
    [cljs-bean.core :as cljs-bean]
 
@@ -22,20 +23,25 @@
    ))
 
 
-(defonce DIALOG_FORM (atom nil))
+(defonce DIALOG_FORMS (atom {}))
 
-(defn close-form-dialog []
-  (swap! DIALOG_FORM assoc :open? false))
+(defn close-form-dialog [form-id]
+  (swap! DIALOG_FORMS assoc-in [form-id :open?] false)
+  (js/setTimeout #(swap! DIALOG_FORMS dissoc form-id) 1000))
 
 (defn show-form-dialog [form]
-  (reset! DIALOG_FORM (assoc form :open? true)))
+  (let [form-id (random-uuid)
+        form (assoc form
+                    :open? true
+                    :id form-id)]
+    (swap! DIALOG_FORMS assoc form-id form)))
 
-(def use-dialog-form (ui/atom-hook DIALOG_FORM))
+(def use-dialog-forms (ui/atom-hook DIALOG_FORMS))
 
-(defnc DialogFormDebugCard []
+(defnc DialogFormsDebugCard []
   ($ mui/Card
      ($ mui/CardContent
-        (ui/data (use-dialog-form)))))
+        (ui/data (use-dialog-forms)))))
 
 
 
@@ -45,18 +51,15 @@
   ($ mui/TextField
      {
       :id (-> field :id name)
-      :name (or (-> field :name)
-                (-> field :id name))
-      :defaultValue (get field :value)
+      :name (-> field :name)
+      :defaultValue (-> field :value)
       :onChange #((:on-change field)
                   (-> % .-target .-value))
-      :label (or (-> field :label)
-                 (-> field :name)
-                 (-> field :id name))
-      :autoFocus (-> field :auto-focus?)
+      :label (-> field :label)
       :type (-> field :type)
       :multiline (boolean (get field :rows))
       :rows (get field :rows)
+      :autoFocus (-> field :auto-focus?)
       :inputProps (if-let [props (-> field :input-props)]
                     (clj->js props)
                     (clj->js {}))
@@ -79,16 +82,12 @@
   ($ ChipInput
      {
       :id (-> field :id name)
-      :name (or (-> field :name)
-                (-> field :id name))
+      :name (-> field :name)
       :defaultValue (clj->js (-> field :value))
       :onChange #((:on-change field) (-> % js->clj))
       :dataSource (clj->js ["hallo" "welt"])
       :label (-> field :label)
       :autoFocus (-> field :auto-focus?)
-      ;; :inputProps (if-let [props (-> field :input-props)]
-      ;;               (clj->js props)
-      ;;               (clj->js {}))
       :margin "dense"
       :fullWidth true}))
 
@@ -99,8 +98,7 @@
         {:component "legend"}
         (-> field :label))
      ($ mui/RadioGroup
-        {:name (or (-> field :name)
-                   (-> field :id name))
+        {:name (-> field :name)
          :defaultValue (if (-> field :value) "true" "false")
          :onChange #((:on-change field) (= "true" (-> % .-target .-value)))}
         ($ mui/FormControlLabel
@@ -113,67 +111,71 @@
             :control ($ mui/Radio)}))))
 
 
-(defnc FormDialog [{:keys []}]
-  (let [form-spec (use-dialog-form)
-        [form set-form] (hooks/use-state form-spec)
-        update-input (fn [id value]
-                       ;; (log ::update-input
-                       ;;      :id id
-                       ;;      :value value
-                       ;;      :type type
-                       ;;      :converted-value (convert-for-output value type))
-                       (set-form
-                        (assoc-in form
-                                  [:values id]
-                                  (form/convert-value-for-output value form id))))
-
+(defnc FormDialog [{:keys [form]}]
+  (let [form-id (-> form :id)
+        [form set-form] (hooks/use-state form)
+        close (fn []
+                (set-form (assoc form :open? false))
+                (close-form-dialog form-id))
         submit (fn []
                  (log ::pre-submit
-                      :form-spec form-spec
                       :form form)
-                 (let [submit (get form-spec :submit)
+                 (let [submit (get form :submit)
                        inputs (merge
                                (reduce (fn [inputs field]
                                          (assoc inputs
                                                 (-> field :id)
                                                 (-> field :value)))
-                                       {} (get form-spec :fields))
+                                       {} (get form :fields))
                                (-> form :values))]
                    (when-not submit
                      (throw (ex-info (str "Missing :submit function in form.")
-                                     {:form form
-                                      :form-spec form-spec})))
+                                     {:form form})))
                    (log ::submit
-                        :form-spec form-spec
-                        :form form)
+                        :form form
+                        :inputs inputs)
                    (submit inputs))
-                 (close-form-dialog))]
-    (when (and (not (-> form-spec :open?))
+                 (close))]
+    (when (and (not (-> form :open?))
                (not (nil? (-> form :values))))
       (set-form (dissoc form :values)))
     (d/div
      ($ mui/Dialog
-        {:open (-> form-spec :open? boolean)
-         :onClose close-form-dialog}
+        {:open (-> form :open? boolean)
+         :onClose close}
         ($ mui/DialogContent
-           (for [[idx field] (map-indexed vector (get form-spec :fields))]
+           (for [[idx field] (map-indexed vector (get form :fields))]
              (let [type (or (-> field :type) "text")]
                (d/div
                 {:key (-> field :id)}
                 (create-input (assoc field
                                      :form form
-                                     :on-change (partial update-input (-> field :id))
-                                     :auto-focus? (= 0 idx))))))
-           (get form-spec :content))
+                                     :on-change #(set-form (form/on-field-value-change
+                                                            form (-> field :id) %))
+                                     :auto-focus? (= 0 idx)
+                                     :name (or (-> field :name)
+                                               (-> field :id name))
+                                     :label (or (-> field :label)
+                                                (-> field :name)
+                                                (-> field :id name)))))))
+           (get form :content))
         ($ mui/DialogActions
            ($ mui/Button
-              {:onClick close-form-dialog}
+              {:onClick close}
               "Abbrechen")
            ($ mui/Button
               {:onClick submit
                :variant "contained"
                :color "primary"}
               "Ok"))))))
+
+
+(defnc FormDialogsContainer []
+  (let [forms (use-dialog-forms)]
+    (for [form (-> forms vals)]
+      ($ FormDialog
+         {:key (-> form :id)
+          :form form}))))
 
 
 (defnc EditableCardActionArea [{:keys [form children]}]

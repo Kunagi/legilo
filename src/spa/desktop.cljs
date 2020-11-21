@@ -147,7 +147,7 @@
         {:class (-> styles .-root)}
         (AppBar)
         (AppContent)
-        ($ ui/FormDialog)
+        ($ ui/FormDialogsContainer)
         ))))
 
 

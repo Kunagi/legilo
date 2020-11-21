@@ -15,7 +15,7 @@
       ($ mui/Divider)
       (div {:style {:color "grey"}} "DevTools")
 
-      ($ mui-form/DialogFormDebugCard)
+      ($ mui-form/DialogFormsDebugCard)
 
       (ui/data {:goog.DEBUG js/goog.DEBUG
                 :uid (context/use-uid)})

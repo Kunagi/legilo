@@ -81,7 +81,7 @@
 
 (def show-form-dialog cmui-form/show-form-dialog)
 
-(def FormDialog cmui-form/FormDialog)
+(def FormDialogsContainer cmui-form/FormDialogsContainer)
 (def EditableCardActionArea cmui-form/EditableCardActionArea)
 (def EditableFieldCardActionArea cmui-form/EditableFieldCardActionArea)
 
