@@ -21,10 +21,7 @@
    :type "chips"})
 
 
-(def-command add
-  {:label "Add Book"
-   :icon "add"
-   :form {:fields [title author isbn asin tags]}})
+
 
 (def-command recommend
   {:label "Recommend"

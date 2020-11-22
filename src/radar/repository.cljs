@@ -3,9 +3,11 @@
 
    [commons.firestore :as firestore]))
 
+(defn radar-path [radar-id]
+  ["radars" radar-id])
 
 (defn book-col-path [radar-id]
-  ["radars" radar-id "books"])
+  (conj (radar-path radar-id) "books"))
 
 (defn book-path [radar-id book-id]
   (conj (book-col-path radar-id) book-id))

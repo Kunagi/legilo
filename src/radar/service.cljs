@@ -2,6 +2,7 @@
   (:require
    [commons.utils :as u]
 
+   [radar.radar :as radar]
    [radar.book :as book]
    [radar.repository :as repository]))
 
@@ -17,7 +18,7 @@
   (repository/add-book> radar-id fields))
 
 (defn add-book-command [radar-id]
-  (-> book/add
+  (-> radar/add-book
       (assoc-in [:form :submit] #(add-book> radar-id %))))
 
 
@@ -50,3 +51,7 @@
          {:title "Consider the Lobster" :asin "0316156116"}
          {:title "Leitfaden für faule Eltern" :asin "3499626721"}
          ])))
+
+(defn add-example-books-command [radar-id]
+  (-> radar/add-example-books
+      (assoc :onClick #(add-example-books> radar-id))))

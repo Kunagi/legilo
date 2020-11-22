@@ -2,7 +2,7 @@
   (:require
 
    [commons.logging :refer [log]]
-   [commons.mui :as cmui]
+   [commons.context :as commons]
    ))
 
 
@@ -27,7 +27,7 @@
   (when-let [user (user)]
     (-> user :uid)))
 
-(def use-user (cmui/atom-hook USER))
+(def use-user (commons/atom-hook USER))
 
 (defn use-uid []
   (when-let [user (use-user)]

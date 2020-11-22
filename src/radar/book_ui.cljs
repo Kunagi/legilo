@@ -2,27 +2,14 @@
   (:require
    ["@material-ui/core" :as mui]
 
-   [commons.mui :as cmui :refer [defnc $ <> div]]
-   [base.ui :as ui]
-
-   [base.context :as context]
+   [commons.mui :as cui :refer [defnc $ <> div]]
 
    [amazon.ui :as amazon]
 
    [radar.book :as book]
-   [radar.repository :as repository]
    [radar.service :as service]
+   [radar.context :as context]
    ))
-
-
-(defn use-radar-id []
-  (-> (ui/use-params) :radarId))
-
-(defn use-book-id []
-  (-> (ui/use-params) :bookId))
-
-(defn use-book []
-  (ui/use-doc (repository/book-path (use-radar-id) (use-book-id))))
 
 
 (defn counter [book]
@@ -41,38 +28,38 @@
 
 
 (defnc Book [{:keys []}]
-  (let [book (use-book)
+  (let [book (context/use-book)
         uid (context/use-uid)]
     ($ :div
        {:style {:display :grid
                 :grid-template-columns "auto minmax(100px,200px)"
                 :grid-gap "8px"}}
 
-       ($ cmui/DocFieldsCard
+       ($ cui/DocFieldsCard
           {:doc book
            :fields [book/title book/author book/isbn book/asin book/tags]})
 
        ($ :div
-          ($ cmui/Stack
+          ($ cui/Stack
              {:spacing 3}
 
              ($ :div)
 
              (counter book)
 
-             ($ cmui/Stack
+             ($ cui/Stack
 
                 (if (service/book-recommended-by-user? book uid)
-                  ($ cmui/Button
+                  ($ cui/Button
                      {:command book/un-recommend
                       :onClick #(service/un-recommend-book> uid book)
                       :color "default"})
-                  ($ cmui/Button
+                  ($ cui/Button
                      {:command book/recommend
                       :onClick #(service/recommend-book> uid book)
                       :color "secondary"}))
 
-                ($ cmui/Button
+                ($ cui/Button
                    {:command book/view-on-amazon
                     :href (if-let [asin (-> book :asin)]
                             (amazon/href asin)

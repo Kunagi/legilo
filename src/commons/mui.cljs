@@ -68,6 +68,7 @@
 ;;; Hooks
 ;;;
 
+;; TODO deprecated
 (def atom-hook context/atom-hook)
 
 

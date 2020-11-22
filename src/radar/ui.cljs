@@ -3,38 +3,24 @@
    ["@material-ui/core" :as mui]
 
    [commons.logging :refer [log]]
-   [commons.mui :as cmui :refer [defnc $ <> div]]
+   [commons.mui :as cui :refer [defnc $ <> div]]
 
    [base.ui :as ui]
 
+   [radar.radar :as radar]
    [radar.book :as book]
    [radar.repository :as repository]
    [radar.service :as service]
+   [radar.context :as context]
    [radar.book-ui :as book-ui]
    ))
-
-
-
-;;; UI State
-
-
-(defn use-radar-id []
-  (-> (ui/use-params) :radarId))
-
-
-(defn use-radar []
-  (ui/use-doc ["radars" (use-radar-id)]))
-
-
-(defn use-books []
-  (ui/use-col ["radars" (use-radar-id) "books"]))
 
 
 ;;; UI Rendering
 
 
 (defnc Book[{:keys [book]}]
-  (let [radar-id (use-radar-id)
+  (let [radar-id (context/use-radar-id)
         book-id (-> book :firestore/id)]
     ($ mui/Card
        ($ mui/CardActionArea
@@ -56,51 +42,27 @@
          :book book}))))
 
 
-(def sections
-  [{:key :must-read
-    :name "Must Read"
-    :idx 0}
-   {:key :should-read
-    :name "Should Read"
-    :idx 1}
-   {:key :trial
-    :name "Trial"
-    :idx 2}
-   {:key :to-read
-    :name "To Read"
-    :idx 3}
-   ])
-
-
 (defnc Radar []
-  (let [radar (use-radar)
+  (let [radar (context/use-radar)
         radar-id (-> radar :firestore/id)
-        books (use-books)
-        books-by-section-key (->> books
-                                  (group-by #(let [c (-> % :recommendations count)]
-                                               (cond
-                                                 (>= c 5) :must-read
-                                                 (>= c 2) :should-read
-                                                 (>= c 1) :trial
-                                                 :else :to-read))))]
+        books (context/use-books)]
     ($ ui/Stack
        ($ mui/Typography
           {:variant "h4"
            :component "h2"}
           (-> radar :name))
-       ($ cmui/Button
+       ($ cui/Button
           {:command (service/add-book-command radar-id)
            :color "secondary"})
        ($ ui/Stack
-          (for [section sections]
+          (for [section radar/sections]
             ($ Section
                {:key (-> section :idx)
                 :section section
-                :books (get books-by-section-key (-> section :key))}))
+                :books (get (radar/books-by-section-key books) (-> section :key))}))
           (when (empty? books)
-            ($ cmui/Button
-               {:text "Add example Books"
-                :onClick #(service/add-example-books> (-> radar :firestore/id))}))))))
+            ($ cui/Button
+               {:command (service/add-example-books-command radar-id)}))))))
 
 
 (defnc RadarPageContent []
