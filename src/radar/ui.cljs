@@ -94,7 +94,7 @@
   (let [radar (context/use-radar)]
     ($ cui/DocFieldsCard
        {:doc radar
-        :fields [radar/title]})))
+        :fields [radar/title radar/allow-domain]})))
 
 
 (defnc RadarConfigPageContent []

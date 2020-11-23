@@ -32,7 +32,7 @@
 
 (defn show-new-radar-form [uid]
   (cui/show-form-dialog
-   {:fields [radar/title]
+   {:fields [radar/title radar/allow-domain]
     :submit #(service/create-radar> uid %)}))
 
 

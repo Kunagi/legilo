@@ -11,6 +11,10 @@
    :required? true})
 
 
+(def-attr allow-domain
+  {:label "Allow Domain"})
+
+
 
 (def-command add-book
   {:label "Add Book"
