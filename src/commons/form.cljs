@@ -29,10 +29,21 @@
       (assoc :fields (map-indexed initialize-field (-> form :fields)))
       (assoc :values
              (reduce (fn [values field]
-                       (assoc values
-                              (-> field :id)
-                              (-> field :value)))
-                     {} (-> form :fields)))))
+                       (let [field-id (-> field :id)]
+                         (if (get values field-id)
+                           values
+                           (assoc values
+                                  field-id
+                                  (-> field :value)))))
+                     (or (-> form :values) {}) (-> form :fields)))))
+
+
+(defn load-values [form values-map]
+  (s/assert ::fields (-> form :fields))
+  (update form :fields
+          #(mapv (fn [field]
+                   (assoc field :value (get values-map (-> field :id))))
+                 %)))
 
 
 (defn field-by-id [form field-id]

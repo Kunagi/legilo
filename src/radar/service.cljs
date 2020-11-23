@@ -14,13 +14,12 @@
   (-> book :recommendations (u/v-contains? uid)))
 
 
-(defn add-book> [radar-id fields]
-  (repository/add-book> radar-id fields))
+(defn add-book> [radar-id data]
+  (repository/add-book> radar-id data))
 
 (defn add-book-command [radar-id]
   (-> radar/add-book
       (assoc-in [:form :submit] #(add-book> radar-id %))))
-
 
 (defn update-book> [book fields]
   (repository/update-book> book fields))

@@ -15,6 +15,7 @@
 
    ["material-ui-chip-input" :default ChipInput]
 
+   [commons.utils :as u]
    [commons.firestore :as fs]
    [commons.firestore-hooks :as firestore-hooks]
    [commons.context :as context]
@@ -23,6 +24,10 @@
 
 
 (def StringVectorChips form-ui/StringVectorChips)
+(def CommandCardArea form-ui/CommandCardArea)
+(def FormCardArea form-ui/FormCardArea)
+(def DocFieldCardArea form-ui/DocFieldCardArea)
+(def DocFieldCard form-ui/DocFieldCard)
 (def DocFieldsCard form-ui/DocFieldsCard)
 (def FormDialogsContainer form-ui/FormDialogsContainer)
 
@@ -68,7 +73,6 @@
 ;;; Hooks
 ;;;
 
-;; TODO deprecated
 (def atom-hook context/atom-hook)
 
 
@@ -125,8 +129,12 @@
         child)))))
 
 
-(defnc Button [{:keys [text icon onClick to href target variant color command]}]
-  (let [text (or text (-> command :label) ":text missing")
+(defnc Button [{:keys [text icon
+                       onClick to href target
+                       variant color size
+                       command]}]
+  (let [command (u/trampoline-if command)
+        text (or text (-> command :label) ":text missing")
         icon (when-let [icon (or icon (-> command :icon))]
                (if (string? icon)
                  (d/div {:class "i material-icons"} icon)
@@ -141,7 +149,8 @@
           :component router/Link
           :variant (or variant "contained")
           :color (or color "primary")
-          :startIcon icon}
+          :startIcon icon
+          :size size}
          text)
       ($ mui/Button
          {:onClick onClick
@@ -149,12 +158,33 @@
           :target target
           :variant (or variant "contained")
           :color (or color "primary")
-          :startIcon icon}
+          :startIcon icon
+          :size size}
          text))))
 
 
-(defnc SimpleCard [{:keys [title children]}]
+(defnc IconButton [{:keys [icon onClick color size command]}]
+  (let [command (u/trampoline-if command)
+        onClick (or onClick
+                    (-> command :onClick)
+                    (when-let [form (-> command :form)]
+                      #(show-form-dialog form)))
+        icon (when-let [icon (or icon
+                                 (-> command :icon)
+                                 "play_arrow")]
+               (if (string? icon)
+                 (d/div {:class "i material-icons"} icon)
+                 icon))]
+    ($ mui/IconButton
+       {:onClick onClick
+        :color color
+        :size size}
+       icon)))
+
+
+(defnc SimpleCard [{:keys [title children className]}]
   ($ mui/Card
+     {:className className}
      ($ mui/CardContent
         ($ Stack
            (when title

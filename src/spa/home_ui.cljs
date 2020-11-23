@@ -8,6 +8,7 @@
    [base.context :as context]
    [base.service :as service]
    [base.ui :as ui]
+   [radar.radar :as radar]
    ))
 
 
@@ -21,29 +22,30 @@
         {:component cui/Link
          :to (str "/ui/radars/" (-> radar :firestore/id))}
         ($ mui/CardContent
-           (-> radar :name)))))
+           (-> radar :title)))))
 
 
 (defn use-radars []
-  (ui/use-col ["radars"]))
+  (ui/use-col [{:id "radars"
+                :where ["uids" "array-contains" (context/use-uid)]}]))
 
 
-(defn show-new-radar-form []
+(defn show-new-radar-form [uid]
   (cui/show-form-dialog
-   {:fields [{:id :name
-              :label "Pick a name for your Radar"
-              :value "My Radar"}]
-    :submit #(service/create-radar> (get % :name))}))
+   {:fields [radar/title]
+    :submit #(service/create-radar> uid %)}))
 
 
 (defnc Radars []
-  (let [radars (use-radars)]
+  (let [radars (use-radars)
+        uid (context/use-uid)]
     ($ cui/Stack
        ($ cui/Flexbox
           ($ cui/Button
              {:text "Create new Radar"
-              :onClick show-new-radar-form}))
-     (for [radar radars]
+              :onClick #(show-new-radar-form uid)}))
+       (for [radar (->> radars (sort-by #(when-let [title (-> % :title)]
+                                           (-> title .toLowerCase))))]
        ($ Radar
           {:key (-> radar :firestore/id)
            :radar radar})))))

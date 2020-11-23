@@ -50,9 +50,9 @@
        ($ mui/Typography
           {:variant "h4"
            :component "h2"}
-          (-> radar :name))
+          (-> radar :title))
        ($ cui/Button
-          {:command (service/add-book-command radar-id)
+          {:command #(service/add-book-command radar-id)
            :color "secondary"})
        ($ ui/Stack
           (for [section radar/sections]
@@ -75,3 +75,29 @@
   ($ mui/Container
      {:maxWidth "sm"}
      ($ book-ui/Book)))
+
+
+;;;
+;;; Radar Config
+;;;
+
+
+(defnc MenuIcon []
+  (let [radar-id (context/use-radar-id)]
+    ($ mui/IconButton
+       {:component ui/Link
+        :to (str "/ui/radars/" radar-id "/config")}
+       ($ :div {:class "i material-icons"} "settings"))))
+
+
+(defnc RadarConfigCard []
+  (let [radar (context/use-radar)]
+    ($ cui/DocFieldsCard
+       {:doc radar
+        :fields [radar/title]})))
+
+
+(defnc RadarConfigPageContent []
+  ($ mui/Container
+     {:maxWidth "sm"}
+     ($ RadarConfigCard)))

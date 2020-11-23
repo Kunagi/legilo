@@ -15,6 +15,7 @@
 
    ["material-ui-chip-input" :default ChipInput]
 
+   [commons.utils :as u]
    [commons.logging :refer [log]]
    ;; [commons.mui :as ui]
    [commons.form :as form]
@@ -178,9 +179,20 @@
           :form form}))))
 
 
+;; TODO deprecated
 (defnc FormCardArea [{:keys [form children]}]
   ($ mui/CardActionArea
      {:onClick #(show-form-dialog form)}
+     children))
+
+
+(defnc CommandCardArea [{:keys [command children]}]
+  ($ mui/CardActionArea
+     {:onClick #(let [command (u/trampoline-if command)]
+                  (cond
+                    (-> command :form) (show-form-dialog (-> command :form))
+                    :else (throw (ex-info "Unsupported Command"
+                                          {:command (-> command :form)}))))}
      children))
 
 (defnc FieldLabel [{:keys [text]}]

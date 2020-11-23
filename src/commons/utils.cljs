@@ -39,6 +39,18 @@
        (some #(= % elem))
        boolean))
 
+
+;;; functions
+
+(defn trampoline-if
+  "Calls `trampoline` if `fn-or-value` is `fn?`,
+  otherwise returns `fn-or-value`."
+  [fn-or-value]
+  (if (fn? fn-or-value)
+    (trampoline fn-or-value)
+    fn-or-value))
+
+
 ;;; promises
 
 (defn transform>

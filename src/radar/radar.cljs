@@ -5,6 +5,13 @@
    [radar.book :as book]
    ))
 
+
+(def-attr title
+  {:label "Name"
+   :required? true})
+
+
+
 (def-command add-book
   {:label "Add Book"
    :icon "add"

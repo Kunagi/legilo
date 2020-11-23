@@ -63,6 +63,7 @@
   ($ router/Switch
      ($ router/Route {:path "/ui/menu"} ($ home/MenuPageContent))
      ($ router/Route {:path "/ui/radars/:radarId/book/:bookId"} ($ radar/BookPageContent))
+     ($ router/Route {:path "/ui/radars/:radarId/config"} ($ radar/RadarConfigPageContent))
      ($ router/Route {:path "/ui/radars/:radarId"} ($ radar/RadarPageContent))
      ($ router/Route {:path "/"} ($ home/HomePageContent))
      ))
@@ -101,21 +102,25 @@
   ($ mui/AppBar
      {:position "static"}
      ($ :div
-      {:style {:display :flex
-               :justify-content "space-between"}}
-      ($ mui/Toolbar
-         ($ ui/Link
-            {:to "/"
-             :stlye {:color "white"}}
-            ($ mui/Typography
-               {:id "AppTitle"
-                :variant "h6"}
-               "Legilo"
-               ($ :span {:style {:font-weight 300}}
-                  " | Book Radar"))))
-      ($ mui/Toolbar
-         ($ SignInButtonOrMenu
-            {:to "/ui/menu"})))))
+        {:style {:display :flex
+                 :justify-content "space-between"}}
+        ($ mui/Toolbar
+           ($ ui/Link
+              {:to "/"
+               :stlye {:color "white"}}
+              ($ mui/Typography
+                 {:id "AppTitle"
+                  :variant "h6"}
+                 "Legilo"
+                 ($ :span {:style {:font-weight 300}}
+                    " | Book Radar"))))
+        ($ mui/Toolbar
+           ($ router/Switch
+              ($ router/Route {:path "/ui/radars/:radarId"}
+                 ($ radar/MenuIcon)))
+           ($ SignInButtonOrMenu
+              {:to "/ui/menu"}))
+        )))
 
 
 (defn VersionInfo []

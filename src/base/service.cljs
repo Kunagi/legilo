@@ -109,5 +109,6 @@
 ;;;
 
 
-(defn create-radar> [radar-name]
-  (firestore/create-doc> ["radars"] {:name radar-name}))
+(defn create-radar> [uid data]
+  (firestore/create-doc> ["radars"] (assoc data
+                                           :uids [uid])))
