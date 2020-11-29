@@ -8,7 +8,9 @@
    [base.context :as context]
    [base.service :as service]
    [base.ui :as ui]
+
    [radar.radar :as radar]
+   [radar.service :as radar-service]
    ))
 
 
@@ -30,11 +32,6 @@
                 :where ["uids" "array-contains" (context/use-uid)]}]))
 
 
-(defn show-new-radar-form [uid]
-  (cui/show-form-dialog
-   {:fields [radar/title radar/allow-domain]
-    :submit #(service/create-radar> uid %)}))
-
 
 (defnc Radars []
   (let [radars (use-radars)
@@ -42,8 +39,7 @@
     ($ cui/Stack
        ($ cui/Flexbox
           ($ cui/Button
-             {:text "Create new Radar"
-              :onClick #(show-new-radar-form uid)}))
+             {:command (radar-service/create-radar-command uid)}))
        (for [radar (->> radars (sort-by #(when-let [title (-> % :title)]
                                            (-> title .toLowerCase))))]
        ($ Radar

@@ -107,8 +107,3 @@
 ;;;
 ;;; Radars
 ;;;
-
-
-(defn create-radar> [uid data]
-  (firestore/create-doc> ["radars"] (assoc data
-                                           :uids [uid])))

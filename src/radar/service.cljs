@@ -30,6 +30,14 @@
 (defn un-recommend-book> [uid book]
   (repository/update-book> book {:recommendations [:db/array-remove [uid]]}))
 
+(defn create-radar> [uid data]
+  (repository/create-radar> (assoc data :uids [uid])))
+
+(defn create-radar-command [uid]
+  {:label "Create new Radar"
+   :form {:fields [radar/title radar/allow-domain]
+    :submit #(create-radar> uid %)}})
+
 ;;;
 ;;; Example Data
 ;;;
