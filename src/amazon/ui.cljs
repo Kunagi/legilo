@@ -2,34 +2,18 @@
   (:require
    ["@material-ui/core" :as mui]
 
-   [commons.mui :as ui :refer [defnc $ <> div]]))
+   [commons.mui :as ui :refer [defnc $ <> div]]
+   [amazon.service :as service]))
 
 
-(def partner-id "legilo-21")
-
-
-(defn href [asin]
-  (str "https://www.amazon.de/gp/product/" asin
-       "?tag=" partner-id))
-
-(defn search-href [text]
-  (str "https://www.amazon.de/s"
-       "?tag=" partner-id
-       "&k=" text))
-
-(defn image-url [asin]
-  (str "//ws-eu.amazon-adsystem.com/widgets/q?MarketPlace=DE&ASIN="
-       asin
-       "&ServiceVersion=20070822&ID=AsinImage&WS=1&Format=_SL160_&tag="
-       partner-id))
 
 (defn ImageLink [asin]
   ($ :a
      {:target "_blank"
-      :href (href asin)}
+      :href (service/href asin)}
      ($ :img
         {:border 0
-         :src (image-url asin)}
+         :src (service/image-url asin)}
         )))
 
 
@@ -38,7 +22,7 @@
    {:id "AMAZSEARCH"}
    ($ :script (str "
 amzn_assoc_ad_type ='responsive_search_widget';
-amzn_assoc_tracking_id ='" partner-id "';
+amzn_assoc_tracking_id ='" service/partner-id "';
 amzn_assoc_marketplace ='amazon';
 amzn_assoc_region ='DE';
 amzn_assoc_placement ='';
