@@ -169,6 +169,8 @@
   "Saves the document `doc`."
   [doc]
   #_(s/assert ::doc doc)
+  (log ::save-doc
+       :doc doc)
   (-> doc
       doc-path
       ref
