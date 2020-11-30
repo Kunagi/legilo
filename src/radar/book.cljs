@@ -20,7 +20,8 @@ picture of the book will be shown."})
 
 (def-attr tags
   {:label "Tags"
-   :type "chips"})
+   :type "chips"
+   :helptext "Type in a tag and submit with RETURN."})
 
 
 
