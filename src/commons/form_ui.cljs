@@ -156,7 +156,11 @@
                         :on-submit on-submit
                         :on-change #(update-form
                                      form/on-field-value-change
-                                     field-id %))))))
+                                     field-id %)))
+                (when-let [helptext (-> field :helptext)]
+                  (d/div
+                   {:style {:color "#666"}}
+                   helptext)))))
            (get form :content)
            ;; (ui/data form)
            )

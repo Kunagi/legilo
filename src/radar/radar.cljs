@@ -12,7 +12,9 @@
 
 
 (def-attr allow-domain
-  {:label "Allow Domain"})
+  {:label "Allow Domain"
+   :helptext "Here you can specify a domain, like example.com or your-org.com.
+All users from this domain will have access to this Radar."})
 
 
 
