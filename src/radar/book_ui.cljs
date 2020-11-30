@@ -4,6 +4,7 @@
 
    [commons.mui :as cui :refer [defnc $ <> div]]
 
+   [amazon.service :as amazon-service]
    [amazon.ui :as amazon]
 
    [radar.book :as book]
@@ -62,14 +63,14 @@
                 ($ cui/Button
                    {:command book/view-on-amazon
                     :href (if-let [asin (-> book :asin)]
-                            (amazon/href asin)
-                            (amazon/search-href (-> book :title)))
+                            (amazon-service/href asin)
+                            (amazon-service/search-href (-> book :title)))
                     :target :_blank
                     :color "secondary"}))
 
              (when-let [asin (-> book :asin)]
                ($ :img
-                  {:src (amazon/image-url asin)
+                  {:src (amazon-service/image-url asin)
                    :referrer-policy "no-referrer"
                    :class "MuiPaper-root MuiPaper-elevation1 MuiPaper-rounded"
                    :style {:margin "0 auto"}})))))))

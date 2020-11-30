@@ -11,7 +11,9 @@
   {:label "Author"})
 
 (def-attr asin
-  {:label "ASIN"})
+  {:label "ASIN"
+   :helptext "Amazon Standard Identification Number. If you provide this, a
+picture of the book will be shown."})
 
 (def-attr isbn
   {:label "ISBN"})
