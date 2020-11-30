@@ -19,12 +19,7 @@
 (defn use-radar []
   (fsh/use-doc (repository/radar-path (use-radar-id))))
 
-(defn use-books []
-  (fsh/use-col (repository/books-col-path (use-radar-id))))
-
 
 (defn use-book-id []
   (-> (cui/use-params) :bookId))
 
-(defn use-book []
-  (fsh/use-doc (repository/book-path (use-radar-id) (use-book-id))))

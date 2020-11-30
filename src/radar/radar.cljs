@@ -56,3 +56,9 @@ All users from this domain will have access to this Radar."})
 (defn title-in-lowercase [radar]
   (when-let [title (-> radar :title)]
     (-> title .toLowerCase)))
+
+(defn books [radar]
+  (-> radar :books vals))
+
+(defn book-by-id [radar book-id]
+  (get-in radar [:books (keyword book-id)]))

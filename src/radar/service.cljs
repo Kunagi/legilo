@@ -15,20 +15,32 @@
 
 
 (defn add-book> [radar-id data]
-  (repository/add-book> radar-id data))
+  (let [book-id (str (random-uuid))
+        book (assoc data :id book-id)]
+    (repository/update-radar>
+     radar-id
+     {(str  "books." book-id) book})))
 
 (defn add-book-command [radar-id]
   (-> radar/add-book
       (assoc-in [:form :submit] #(add-book> radar-id %))))
 
-(defn update-book> [book fields]
-  (repository/update-book> book fields))
+;; ;; TODO
+;; (defn update-book> [radar-id book-id fields]
+;;   (repository/update-radar>
+;;    radar-id
+;;    {(str "books." book-id) fields}))
 
-(defn recommend-book> [uid book]
-  (repository/update-book> book {:recommendations [:db/array-union [uid]]}))
 
-(defn un-recommend-book> [uid book]
-  (repository/update-book> book {:recommendations [:db/array-remove [uid]]}))
+(defn recommend-book> [radar-id book-id uid]
+  (repository/update-radar>
+   radar-id
+   {(str "books." book-id ".recommendations") [:db/array-union [uid]]}))
+
+(defn un-recommend-book> [radar-id book-id uid]
+  (repository/update-radar>
+   radar-id
+   {(str "books." book-id ".recommendations") [:db/array-remove [uid]]}))
 
 (defn create-radar> [uid data]
   (repository/create-radar> (assoc data :uids [uid])))

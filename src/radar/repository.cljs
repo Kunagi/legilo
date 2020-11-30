@@ -19,6 +19,9 @@
 (defn create-radar> [fields]
   (firestore/create-doc> (radars-col-path) fields))
 
+(defn update-radar> [radar-id fields]
+  (firestore/update-fields> (radar-path radar-id) fields))
+
 ;;; Books
 
 (defn books-col-path [radar-id]

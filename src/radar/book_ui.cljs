@@ -5,8 +5,8 @@
    [commons.mui :as cui :refer [defnc $ <> div]]
 
    [amazon.service :as amazon-service]
-   [amazon.ui :as amazon]
 
+   [radar.radar :as radar]
    [radar.book :as book]
    [radar.service :as service]
    [radar.context :as context]
@@ -29,13 +29,15 @@
 
 
 (defnc Book [{:keys []}]
-  (let [book (context/use-book)
+  (let [radar (context/use-radar)
+        radar-id (-> radar :firestore/id)
+        book-id (context/use-book-id)
+        book (radar/book-by-id radar book-id)
         uid (context/use-uid)]
     ($ :div
        {:style {:display :grid
                 :grid-template-columns "auto minmax(100px,200px)"
                 :grid-gap "8px"}}
-
        ($ cui/DocFieldsCard
           {:doc book
            :fields [book/title book/author book/isbn book/asin book/tags]})
@@ -53,11 +55,11 @@
                 (if (service/book-recommended-by-user? book uid)
                   ($ cui/Button
                      {:command book/un-recommend
-                      :onClick #(service/un-recommend-book> uid book)
+                      :onClick #(service/un-recommend-book> radar-id book-id uid)
                       :color "default"})
                   ($ cui/Button
                      {:command book/recommend
-                      :onClick #(service/recommend-book> uid book)
+                      :onClick #(service/recommend-book> radar-id book-id uid)
                       :color "secondary"}))
 
                 ($ cui/Button

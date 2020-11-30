@@ -21,7 +21,7 @@
 
 (defnc Book[{:keys [book]}]
   (let [radar-id (context/use-radar-id)
-        book-id (-> book :firestore/id)]
+        book-id (-> book :id)]
     ($ mui/Card
        ($ mui/CardActionArea
           {:component ui/Link
@@ -38,14 +38,14 @@
       (-> section :name))
    (for [book (->> books (sort-by service/book-recommendation-count) reverse)]
      ($ Book
-        {:key (-> book :firestore/id)
+        {:key (-> book :id)
          :book book}))))
 
 
 (defnc Radar []
   (let [radar (context/use-radar)
         radar-id (-> radar :firestore/id)
-        books (context/use-books)]
+        books (radar/books radar)]
     ($ ui/Stack
        ($ mui/Typography
           {:variant "h4"
