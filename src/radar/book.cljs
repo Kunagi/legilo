@@ -24,8 +24,6 @@ picture of the book will be shown."})
    :helptext "Type in a tag and submit with RETURN."})
 
 
-
-
 (def-command recommend
   {:label "Recommend"
    :icon "thumb_up"})
