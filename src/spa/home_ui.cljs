@@ -10,6 +10,7 @@
    [base.ui :as ui]
 
    [radar.radar :as radar]
+   [radar.repository :as radar-repository]
    [radar.service :as radar-service]
    ))
 
@@ -27,21 +28,15 @@
            (-> radar :title)))))
 
 
-(defn use-radars []
-  (ui/use-col [{:id "radars"
-                :where ["uids" "array-contains" (context/use-uid)]}]))
-
-
-
 (defnc Radars []
-  (let [radars (use-radars)
-        uid (context/use-uid)]
+  (let [uid (context/use-uid)
+        radars (ui/use-col (radar-repository/visible-radars-col-path
+                            (context/use-uid)))]
     ($ cui/Stack
        ($ cui/Flexbox
           ($ cui/Button
              {:command (radar-service/create-radar-command uid)}))
-       (for [radar (->> radars (sort-by #(when-let [title (-> % :title)]
-                                           (-> title .toLowerCase))))]
+       (for [radar (->> radars (sort-by radar/title-in-lowercase))]
        ($ Radar
           {:key (-> radar :firestore/id)
            :radar radar})))))
@@ -67,6 +62,7 @@
       :color "secondary"}
      "Sign Out"))
 
+
 (defnc CurrentUserCard []
   (when-let [user (context/use-user)]
     ($ mui/Card
@@ -81,18 +77,9 @@
        ($ mui/CardActions
           ($ SignOutButton)))))
 
-(defnc MenuDevCard []
-  ($ cui/SimpleCard
-     {:title "Developer Tools"}
-     ($ cui/Button
-        {:text "Create Example Radar"
-         :onClick create-example-radar>})))
-
 
 (defnc MenuPageContent []
   ($ mui/Container
      {:maxWidth "sm"}
      ($ ui/Stack
-        ($ CurrentUserCard)
-        (when js/goog.DEBUG
-          ($ MenuDevCard)))))
+        ($ CurrentUserCard))))

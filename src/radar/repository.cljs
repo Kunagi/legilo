@@ -9,6 +9,10 @@
 (defn radars-col-path []
   ["radars"])
 
+(defn visible-radars-col-path [uid]
+  [{:id "radars"
+    :where ["uids" "array-contains" uid]}])
+
 (defn radar-path [radar-id]
   (conj (radars-col-path) radar-id))
 

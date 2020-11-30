@@ -49,3 +49,8 @@
                       (>= c 2) :should-read
                       (>= c 1) :trial
                       :else :to-read)))))
+
+
+(defn title-in-lowercase [radar]
+  (when-let [title (-> radar :title)]
+    (-> title .toLowerCase)))

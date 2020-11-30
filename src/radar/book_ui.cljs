@@ -70,6 +70,6 @@
              (when-let [asin (-> book :asin)]
                ($ :img
                   {:src (amazon/image-url asin)
-                   :referrerpolicy "no-referrer"
+                   :referrer-policy "no-referrer"
                    :class "MuiPaper-root MuiPaper-elevation1 MuiPaper-rounded"
                    :style {:margin "0 auto"}})))))))
