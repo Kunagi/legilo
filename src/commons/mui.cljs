@@ -48,15 +48,6 @@
    (fn [theme]
      (clj->js (styles-f theme)))))
 
-;;;
-;;; Router
-;;;
-
-(defn use-params []
-  (cljs-bean/->clj (router/useParams)))
-
-(defn use-param [param-key]
-  (-> (use-params) (get param-key)))
 
 ;;;
 ;;; styles
@@ -142,7 +133,10 @@
         onClick (or onClick
                     (-> command :onClick)
                     (when-let [form (-> command :form)]
-                      #(show-form-dialog form)))]
+                      #(show-form-dialog form)))
+        color (or color
+                  (when (-> command :inconspicuous?) "default")
+                  "primary")]
     (if to
       ($ mui/Button
          {:to to

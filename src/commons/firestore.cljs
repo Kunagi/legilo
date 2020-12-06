@@ -169,8 +169,6 @@
   "Saves the document `doc`."
   [doc]
   #_(s/assert ::doc doc)
-  (log ::save-doc
-       :doc doc)
   (-> doc
       doc-path
       ref
@@ -209,9 +207,10 @@
   (-> (doc> doc-path)
       (.then #(if (doc-exists? %)
                 (let [doc (update-f %)]
-                  (if doc
-                    (save-doc> doc)
-                    (delete-doc> %)))
+                  (cond
+                    (= doc :db/delete) (delete-doc> %)
+                    doc (save-doc> doc)
+                    :else (js/Promise.resolve :db/no-op)))
                 (let [data (update-f nil)]
                   (if (seq data)
                     (create-doc> doc-path data)
