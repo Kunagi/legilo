@@ -9,11 +9,13 @@
 (defn radars-col-path []
   ["radars"])
 
-;; FIXME filter by uid AND domain
-(defn visible-radars-col-path [uid]
-  ["radars"]
-  #_[{:id "radars"
+(defn radars-by-uid-col-path [uid]
+  [{:id "radars"
     :where ["uids" "array-contains" uid]}])
+
+(defn radars-by-domain-col-path [domain]
+  [{:id "radars"
+    :where ["allow-domain" "==" domain]}])
 
 (defn radar-path [radar-id]
   (conj (radars-col-path) radar-id))

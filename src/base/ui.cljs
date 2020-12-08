@@ -76,3 +76,9 @@
   (if (context/use-uid)
     children
     (d/div "Sign in required")))
+
+
+(defnc UserGuard [{:keys [children]}]
+  (if (context/use-user)
+    children
+    "loading..."))

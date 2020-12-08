@@ -3,6 +3,7 @@
    ["@material-ui/core" :as mui]
 
    [commons.logging :refer [log]]
+   [commons.context :as c.context]
    [commons.mui :as cui :refer [defnc $ <> div]]
 
    [base.context :as context]
@@ -30,8 +31,9 @@
 
 (defnc Radars []
   (let [uid (context/use-uid)
-        radars (ui/use-col (radar-repository/visible-radars-col-path
-                            (context/use-uid)))]
+        radars (c.context/use-cols-union
+                [(radar-repository/radars-by-uid-col-path (context/use-uid))
+                 (radar-repository/radars-by-domain-col-path "koczewski.de")])]
     ($ cui/Stack
        ($ cui/Flexbox
           ($ cui/Button
@@ -45,7 +47,8 @@
 (defnc HomePageContent []
   ($ mui/Container
      {:maxWidth "sm"}
-     ($ Radars)))
+     ($ ui/UserGuard
+        ($ Radars))))
 
 
 

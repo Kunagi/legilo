@@ -11,6 +11,7 @@
 
 
 (def use-col firestore/use-col)
+(def use-cols-union firestore/use-cols-union)
 (def use-doc firestore/use-doc)
 
 

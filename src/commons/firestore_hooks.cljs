@@ -85,6 +85,47 @@
 
     docs))
 
+
+#_(defn use-cols-union
+  "React hook for a union of collections."
+  [paths]
+  (log ::use-cols-union
+       :paths paths)
+  (let [DATAs (mapv #(col-sub %) paths)
+        create-union (fn []
+                       (reduce (fn [ret DATA]
+                                 (when ret
+                                   (when-let [data @DATA]
+                                     (into ret data))))
+                               #{} DATAs))
+        [docs set-docs] (hooks/use-state (create-union))
+        watch-ref (random-uuid)]
+
+    (hooks/use-effect
+     :always
+     (set-docs (create-union))
+     (doseq [DATA DATAs]
+       (add-watch DATA
+                  watch-ref
+                  (fn [_ _ _ nv]
+                    (set-docs (create-union)))))
+
+     #(doseq [DATA DATAs]
+        (remove-watch DATA watch-ref)))
+
+    docs))
+
+
+(defn use-cols-union
+  "React hook for a union of collections."
+  [paths]
+  (log ::use-cols-union
+       :paths paths)
+  (reduce (fn [ret path]
+            (into ret (use-col path)))
+          #{} paths))
+
+
 (defn use-doc
   "React hook for a document."
   [path]
