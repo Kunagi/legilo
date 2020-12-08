@@ -23,19 +23,3 @@
 
 (defn update-radar> [radar-id fields]
   (firestore/update-fields> (radar-path radar-id) fields))
-
-;;; Books
-
-(defn books-col-path [radar-id]
-  (conj (radar-path radar-id) "books"))
-
-(defn book-path [radar-id book-id]
-  (conj (books-col-path radar-id) book-id))
-
-
-(defn add-book> [radar-id fields]
-  (firestore/create-doc> (books-col-path radar-id) fields))
-
-
-(defn update-book> [book fields]
-  (firestore/update-fields> book fields))

@@ -77,7 +77,13 @@
      (d/div
       {:key i
        :style {:white-space "pre-wrap"
-               :font-family :monospace}}
+               :font-family :monospace
+               :overflow "auto"
+               :width "100%"
+               :background-color "#333"
+               :color "#6f6"
+               :padding "1rem"
+               }}
       (with-out-str (pprint data))))))
 
 

@@ -33,9 +33,6 @@
 (def Route router/Route)
 (def Link router/Link)
 
-(def use-params cmui/use-params)
-(def use-param cmui/use-param)
-
 ;;;
 ;;; styles
 ;;;

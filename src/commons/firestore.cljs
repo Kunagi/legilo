@@ -26,7 +26,7 @@
 (defn ^js FieldValue []
   (if (exists? js/firebase)
     (-> js/firebase.firestore.FieldValue)
-    (-> js/FireStore.FieldValue)))
+    (-> (js/require "firebase-admin") .-firestore .-FieldValue)))
 
 (defn ^js array-remove [elements]
   (-> ^js (FieldValue) .-arrayRemove (apply (clj->js elements))))
@@ -42,7 +42,7 @@
     (cond
       (= k :db/array-union)  (array-union (second v))
       (= k :db/array-remove) (array-remove (second v))
-      (= k :db/array-timestamp) (timestamp)
+      (= k :db/timestamp) (timestamp)
       :else nil)))
 
 (defn inject-FieldValues [data]
@@ -89,7 +89,7 @@
   (cond
     (string? thing) (-> thing ( .split "/"))
     (doc? thing)    (-> thing doc-path as-path)
-    :else           (do (s/assert ::path thing) thing)))
+    :else           (do #_(s/assert ::path thing) thing)))
 
 
 (defn- fs-collection [source path-elem]
@@ -189,11 +189,10 @@
 
 
 (defn delete-doc>
-  "Deletes the document `doc`."
-  [doc]
+  [doc-or-path]
   (log ::delete-doc
-       :doc doc)
-  (-> doc doc-path ref .delete))
+       :doc doc-or-path)
+  (-> doc-or-path ref .delete))
 
 
 (defn load-and-save>

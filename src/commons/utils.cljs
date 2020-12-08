@@ -53,6 +53,9 @@
 
 ;;; promises
 
+(defn no-op> []
+  (js/Promise.resolve nil))
+
 (defn transform>
   "Returns `js/Promise` which resolves the application of `transform` on the
   value of `promise`.
