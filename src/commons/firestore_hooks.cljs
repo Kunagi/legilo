@@ -1,5 +1,6 @@
 (ns commons.firestore-hooks
   (:require
+   [clojure.spec.alpha :as s]
    [helix.hooks :as hooks]
 
    [commons.logging :refer [log]]
@@ -8,6 +9,7 @@
 
 (defn doc-atom [path]
   (log ::doc-atom :path path)
+  (s/assert ::fs/path path)
   (let [DATA (atom nil)
         ref (fs/ref path)]
     (-> ref
@@ -25,6 +27,7 @@
 
 (defn col-atom [path]
   (log ::col-atom :path path)
+  (s/assert ::fs/path path)
   (let [DATA (atom nil)
         ref (fs/ref path)]
     (log ::subscribing
@@ -49,6 +52,7 @@
 (defonce SUBS (atom {}))
 
 (defn doc-sub [path]
+  (s/assert ::fs/path path)
   (if-let [DATA (get @SUBS path)]
     DATA
     (let [DATA (doc-atom path)]
@@ -57,6 +61,7 @@
 
 
 (defn col-sub [path]
+  (s/assert ::fs/path path)
   (if-let [DATA (get @SUBS path)]
     DATA
     (let [DATA (col-atom path)]
@@ -69,6 +74,7 @@
   [path]
   (log ::use-col
        :path path)
+  (s/assert ::fs/path path)
   (let [DATA (col-sub path)
         [docs set-docs] (hooks/use-state @DATA)
         watch-ref (random-uuid)]
@@ -129,6 +135,7 @@
 (defn use-doc
   "React hook for a document."
   [path]
+  (s/assert ::fs/path path)
   (let [DATA (doc-sub path)
         [doc set-doc] (hooks/use-state @DATA)
         watch-ref (random-uuid)]

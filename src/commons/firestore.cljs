@@ -89,7 +89,7 @@
   (cond
     (string? thing) (-> thing ( .split "/"))
     (doc? thing)    (-> thing doc-path as-path)
-    :else           (do #_(s/assert ::path thing) thing)))
+    :else           (do (s/assert ::path thing) thing)))
 
 
 (defn- fs-collection [source path-elem]
@@ -168,7 +168,7 @@
 (defn save-doc>
   "Saves the document `doc`."
   [doc]
-  #_(s/assert ::doc doc)
+  (s/assert ::doc doc)
   (-> doc
       doc-path
       ref
@@ -181,7 +181,7 @@
   (log ::update-fields>
        :doc-path doc-path
        :fields fields)
-  ;; (s/assert ::path doc-path)
+  (s/assert ::path doc-path)
   (s/assert map? fields)
   (-> doc-path
       ref
@@ -213,4 +213,8 @@
                 (let [data (update-f nil)]
                   (if (seq data)
                     (create-doc> doc-path data)
-                    (js/Promise.resolve nil)))))))
+                    (js/Promise.resolve nil))))
+             #(log ::load-and-save>-FAILED
+                   :doc-path doc-path
+                   :update-f update-f
+                   :exception %))))
