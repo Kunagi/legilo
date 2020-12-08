@@ -31,9 +31,11 @@
 
 (defnc Radars []
   (let [uid (context/use-uid)
+        user (context/use-user)
+        domain (-> user :auth-domain)
         radars (c.context/use-cols-union
                 [(radar-repository/radars-by-uid-col-path (context/use-uid))
-                 (radar-repository/radars-by-domain-col-path "koczewski.de")])]
+                 (radar-repository/radars-by-domain-col-path domain)])]
     ($ cui/Stack
        ($ cui/Flexbox
           ($ cui/Button

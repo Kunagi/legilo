@@ -17,12 +17,14 @@
    ["users" uid]
    #(merge % {:last-usage (firestore/timestamp)
               :auth-email email
+              :auth-domain (when email
+                             (-> email (.substring (-> email (.indexOf "@") inc))))
               :auth-display-name display-name
               :auth-photo photo-url
               :auth-phone phone-number})))
 
 
-(add-watch context/USER
+(add-watch context/AUTH_USER
            ::update
            (fn [_k _r _ov ^js user]
              (when user
