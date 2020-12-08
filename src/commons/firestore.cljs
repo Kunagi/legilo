@@ -6,12 +6,15 @@
    [commons.logging :refer [log]]
    [commons.utils :as u]))
 
+
 (declare doc?)
 (s/def ::doc doc?)
 
 (s/def ::path (s/or :string string?
                     :vector vector?
                     :doc doc?))
+(s/def ::opt-path (s/or :nil nil?
+                        :path ::path))
 
 
 (defonce FIRESTORE (atom nil))
@@ -106,27 +109,28 @@
 
 
 (defn ^js ref [path]
-  (loop [col nil
-         doc nil
-         path (as-path path)]
-    (if (empty? path)
-      (if doc doc col)
-      (cond
+  (when path
+    (loop [col nil
+           doc nil
+           path (as-path path)]
+      (if (empty? path)
+        (if doc doc col)
+        (cond
 
-        doc
-        (recur (-> ^js doc (fs-collection (first path)))
-               nil
-               (rest path))
+          doc
+          (recur (-> ^js doc (fs-collection (first path)))
+                 nil
+                 (rest path))
 
-        col
-        (recur nil
-               (-> ^js col (.doc (first path)))
-               (rest path))
+          col
+          (recur nil
+                 (-> ^js col (.doc (first path)))
+                 (rest path))
 
-        :else
-        (recur (-> (firestore) (fs-collection (first path)))
-               nil
-               (rest path))))))
+          :else
+          (recur (-> (firestore) (fs-collection (first path)))
+                 nil
+                 (rest path)))))))
 
 
 ;;;
@@ -168,7 +172,7 @@
 (defn save-doc>
   "Saves the document `doc`."
   [doc]
-  (s/assert ::doc doc)
+  (s/assert doc? doc)
   (-> doc
       doc-path
       ref

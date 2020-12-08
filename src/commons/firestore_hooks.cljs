@@ -9,50 +9,53 @@
 
 (defn doc-atom [path]
   (log ::doc-atom :path path)
-  (s/assert ::fs/path path)
+  (s/assert ::fs/opt-path path)
   (let [DATA (atom nil)
         ref (fs/ref path)]
-    (-> ref
-        (.onSnapshot (fn [doc-snapshot]
-                       (log ::doc-snapshot-received
-                            :collection path
-                            :snapshot doc-snapshot)
-                       (reset! DATA (fs/wrap-doc doc-snapshot)))
-                     (fn [^js error]
-                       (log ::doc-atom-error
-                            :path path
-                            :exception error))))
+    (when ref
+      (-> ref
+          (.onSnapshot (fn [doc-snapshot]
+                         (log ::doc-snapshot-received
+                              :collection path
+                              :snapshot doc-snapshot)
+                         (reset! DATA (fs/wrap-doc doc-snapshot)))
+                       (fn [^js error]
+                         (log ::doc-atom-error
+                              :path path
+                              :exception error)))))
     DATA))
 
 
 (defn col-atom [path]
-  (log ::col-atom :path path)
-  (s/assert ::fs/path path)
+  (log ::col-atom
+       :path path)
+  (s/assert ::fs/opt-path path)
   (let [DATA (atom nil)
         ref (fs/ref path)]
     (log ::subscribing
          :collection path)
-    (-> ref
-        (.onSnapshot (fn [^js query-col-snapshot]
-                       (log ::query-snapshot-received
-                            :collection path
-                            :count (-> query-col-snapshot .-docs count)
-                            :snapshot query-col-snapshot)
-                       (->> ^js query-col-snapshot
-                            .-docs
-                            (map fs/wrap-doc)
-                            (reset! DATA)))
-                     (fn [^js error]
-                       (log ::col-atom-error
-                            :path path
-                            :exception error))))
+    (when ref
+      (-> ref
+          (.onSnapshot (fn [^js query-col-snapshot]
+                         (log ::query-snapshot-received
+                              :collection path
+                              :count (-> query-col-snapshot .-docs count)
+                              :snapshot query-col-snapshot)
+                         (->> ^js query-col-snapshot
+                              .-docs
+                              (map fs/wrap-doc)
+                              (reset! DATA)))
+                       (fn [^js error]
+                         (log ::col-atom-error
+                              :path path
+                              :exception error)))))
     DATA))
 
 
 (defonce SUBS (atom {}))
 
 (defn doc-sub [path]
-  (s/assert ::fs/path path)
+  (s/assert ::fs/opt-path path)
   (if-let [DATA (get @SUBS path)]
     DATA
     (let [DATA (doc-atom path)]
@@ -61,7 +64,7 @@
 
 
 (defn col-sub [path]
-  (s/assert ::fs/path path)
+  (s/assert ::fs/opt-path path)
   (if-let [DATA (get @SUBS path)]
     DATA
     (let [DATA (col-atom path)]
@@ -74,7 +77,7 @@
   [path]
   (log ::use-col
        :path path)
-  (s/assert ::fs/path path)
+  (s/assert ::fs/opt-path path)
   (let [DATA (col-sub path)
         [docs set-docs] (hooks/use-state @DATA)
         watch-ref (random-uuid)]
@@ -135,7 +138,7 @@
 (defn use-doc
   "React hook for a document."
   [path]
-  (s/assert ::fs/path path)
+  (s/assert ::fs/opt-path path)
   (let [DATA (doc-sub path)
         [doc set-doc] (hooks/use-state @DATA)
         watch-ref (random-uuid)]
