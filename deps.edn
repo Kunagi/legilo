@@ -1,5 +1,8 @@
 {:paths ["src" "resources"]
  :deps  {
+         org.clojure/clojurescript {:mvn/version "1.10.758"}
+         org.clojure/spec.alpha {:mvn/version "0.2.187"}
+
          lilactown/helix {:mvn/version "0.0.13"}
          cljs-bean       {:mvn/version "1.6.0"}
          }
