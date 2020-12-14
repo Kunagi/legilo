@@ -50,6 +50,12 @@
    :form {:fields [radar/title radar/allow-domain]
     :submit #(create-radar> uid %)}})
 
+
+(defn update-review-text> [radar-id book-id uid changes]
+  (repository/update-radar>
+   radar-id
+   {(str "books." book-id ".reviews." uid) changes}))
+
 ;;;
 ;;; Example Data
 ;;;

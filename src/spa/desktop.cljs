@@ -40,6 +40,10 @@
 
           "& .b" {:font-weight "bold"}
 
+          "& .flex-grow-1" {:flex-grow 1}
+
+          "& .ml-1" {:margin-left (-> theme (.spacing 1))}
+
           "& .Color--Primary" {:color (-> theme .-palette .-primary .-main)}
 
           "& .MuiAppBar-root a" {:color "white"
@@ -56,7 +60,9 @@
                               :padding-bottom "150%"
                               ;:background-size "cover"
                               ;:background-position "center"
-                              }}})
+                              }
+          "& .Recommendation .MuiPaper-rounded" {:border-top-left-radius 0
+                                                 :border-radius (-> theme (.spacing 2))}}})
 
 
 (defnc PageSwitch []

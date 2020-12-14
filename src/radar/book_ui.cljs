@@ -12,6 +12,76 @@
    [radar.context :as context]
    ))
 
+(defnc Review [{:keys [review]}]
+  ($ :div
+     {:className "Recommendation"
+      :style {:display :flex
+              :place-content :stretch
+              :place-items :stretch}}
+     ($ mui/Avatar)
+     ($ mui/Card
+        {:className "flex-grow-1 ml-1"}
+        ($ mui/CardContent
+           (-> review :text)))))
+
+(defn start-review [radar-id book-id uid]
+  (cui/show-form-dialog
+   {:fields [{:id :text
+              :rows 5
+              :multiline? true}]
+    :submit #(service/update-review-text> radar-id book-id uid %)}))
+
+(defnc OwnReview []
+  (let [
+        radar (context/use-radar)
+        radar-id (-> radar :firestore/id)
+        book-id (context/use-book-id)
+        book (radar/book-by-id radar book-id)
+        uid (context/use-uid)
+        recommended? (service/book-recommended-by-user? book uid)]
+    ($ :div
+       {:className "Recommendation"
+        :style {:display :flex
+                :place-content :stretch
+                :place-items :stretch}}
+       (if recommended?
+         ($ cui/IconButton
+            {:command book/recommend
+             :onClick #(service/un-recommend-book> radar-id book-id uid)
+             :icon "thumb_up"
+             :color "secondary"})
+         ($ cui/IconButton
+            {:command book/recommend
+             :onClick #(service/recommend-book> radar-id book-id uid)
+             :icon "thumb_up"
+             :theme "outlined"}))
+       ($ mui/Card
+          {:className "flex-grow-1 ml-1"}
+          ($ mui/CardActionArea
+             {:onClick #(start-review radar-id book-id uid)}
+             ($ mui/CardContent
+                ($ :div {:style {:color "grey"
+                                 :font-style "italic"}}
+                   (if recommended?
+                     "Leave a review?"
+                     "Recommend this book?"))))))))
+
+(defnc Reviews []
+  (let [reviews [{:firestore/id 1
+                  :text "Aliquam erat volutpat.  Nunc eleifend leo vitae magna.  In id erat non orci commodo lobortis.  Proin neque massa, cursus ut, gravida ut, lobortis eget, lacus.  Sed diam.  Praesent fermentum tempor tellus.  Nullam tempus.  Mauris ac felis vel velit tristique imperdiet.  Donec at pede.  Etiam vel neque nec dui dignissim bibendum.  Vivamus id enim.  Phasellus neque orci, porta a, aliquet quis, semper a, massa.  Phasellus purus.  Pellentesque tristique imperdiet tortor.  Nam euismod tellus id erat.
+
+ "}
+                 {:firestore/id 2
+                  :text "Aliquam erat volutpat.  Nunc eleifend leo vitae magna.  In id erat non orci commodo lobortis.  Proin neque massa, cursus ut, gravida ut, lobortis eget, lacus.  Sed diam.  Praesent fermentum tempor tellus.  Nullam tempus.  Mauris ac felis vel velit tristique imperdiet.  Donec at pede.  Etiam vel neque nec dui dignissim bibendum.  Vivamus id enim.  Phasellus neque orci, porta a, aliquet quis, semper a, massa.  Phasellus purus.  Pellentesque tristique imperdiet tortor.  Nam euismod tellus id erat.
+
+ "}]]
+    ($ cui/Stack
+       ($ OwnReview {})
+       (for [review reviews]
+         ($ Review
+            {:key (-> review :firestore/id)
+             :review review})))))
+
 
 (defn counter [book]
   (let [c (service/book-recommendation-count book)]
@@ -38,9 +108,13 @@
        {:style {:display :grid
                 :grid-template-columns "auto minmax(100px,200px)"
                 :grid-gap "8px"}}
-       ($ cui/DocFieldsCard
-          {:doc book
-           :fields [book/title book/author book/isbn book/asin book/tags]})
+
+       ($ cui/Stack
+          ($ cui/DocFieldsCard
+             {:doc book
+              :fields [book/title book/author book/isbn book/asin book/tags]})
+
+          ($ Reviews))
 
        ($ :div
           ($ cui/Stack

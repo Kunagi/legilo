@@ -163,7 +163,7 @@
          text))))
 
 
-(defnc IconButton [{:keys [icon onClick color size command]}]
+(defnc IconButton [{:keys [icon onClick color size command theme]}]
   (let [command (u/trampoline-if command)
         onClick (or onClick
                     (-> command :onClick)
@@ -173,7 +173,8 @@
                                  (-> command :icon)
                                  "play_arrow")]
                (if (string? icon)
-                 (d/div {:class "i material-icons"} icon)
+                 (d/div {:class (str "material-icons" (when theme (str "-" theme)))}
+                        icon)
                  icon))]
     ($ mui/IconButton
        {:onClick onClick
