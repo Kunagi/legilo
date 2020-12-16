@@ -253,13 +253,12 @@
                (str value)))))))
 
 
-(defnc DocFieldsCardAreas [{:keys [doc fields update-wrapper]}]
+(defnc DocFieldsCardAreas [{:keys [doc fields]}]
   (<> (for [field fields]
         ($ DocFieldCardArea
            {:key (-> field :id)
             :doc doc
-            :field field
-            :update-wrapper update-wrapper}))))
+            :field field}))))
 
 
 (defnc DocFieldCard [{:keys [doc field]}]
@@ -269,9 +268,8 @@
          :field field})))
 
 
-(defnc DocFieldsCard [{:keys [doc fields update-wrapper]}]
+(defnc DocFieldsCard [{:keys [doc fields]}]
   ($ mui/Card
      ($ DocFieldsCardAreas
         {:doc doc
-         :fields fields
-         :update-wrapper update-wrapper})))
+         :fields fields})))
