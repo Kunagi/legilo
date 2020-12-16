@@ -1,5 +1,6 @@
 (ns radar.service
   (:require
+   [commons.logging :refer [log]]
    [commons.utils :as u]
 
    [radar.radar :as radar]
@@ -20,6 +21,19 @@
     (repository/update-radar>
      radar-id
      {(str  "books." book-id) book})))
+
+(defn update-book> [radar-id book-id changes]
+  (log ::update-book>
+       :radar-id radar-id
+       :book-id book-id
+       :changes changes)
+  (repository/update-radar>
+   radar-id
+   (reduce (fn [changes [k v]]
+             (assoc changes
+                    (str "books." book-id "." (name k))
+                    v))
+           {} changes)))
 
 (defn add-book-command [radar-id]
   (-> radar/add-book

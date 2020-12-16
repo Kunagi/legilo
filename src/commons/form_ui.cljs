@@ -235,6 +235,54 @@
           ($ mui/Chip
              {:label value})))))
 
+
+(defnc FieldCardArea [{:keys [entity update-f field]}]
+  (s/assert map? entity)
+  (s/assert fn? update-f)
+  (s/assert ::form/field field)
+  (let [id (get field :id)
+        label (get field :label)
+        value (get entity id)
+        submit #(let [changes {id (get % id)}]
+                  (update-f changes))
+        type (get field :type)]
+    ($ FormCardArea
+       {:form {:fields [(assoc field :value value)]
+               :submit submit}}
+       ($ mui/CardContent
+          ($ Field
+             {:label label}
+             (case type
+               "chips" ($ StringVectorChips {:values value})
+               (str value)))))))
+
+(defnc FieldsCardAreas [{:keys [entity update-f fields]}]
+  (s/assert map? entity)
+  (s/assert fn? update-f)
+  (s/assert ::form/fields fields)
+  (<> (for [field fields]
+        ($ FieldCardArea
+           {:key (-> field :id)
+            :entity entity
+            :update-f update-f
+            :field field}))))
+
+(defnc FieldsCard [{:keys [entity update-f fields]}]
+  (s/assert map? entity)
+  (s/assert fn? update-f)
+  (s/assert ::form/fields fields)
+  ($ mui/Card
+     ($ FieldsCardAreas
+        {:entity entity
+         :update-f update-f
+         :fields fields})))
+
+;;;
+;;; doc fields
+;;; TODO deprecated: get rid of binding to docs
+;;;
+
+
 (defnc DocFieldCardArea [{:keys [doc doc-path field]}]
   (let [id (get field :id)
         label (get field :label)

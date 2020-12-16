@@ -110,8 +110,9 @@
                 :grid-gap "8px"}}
 
        ($ cui/Stack
-          ($ cui/DocFieldsCard
-             {:doc book
+          ($ cui/FieldsCard
+             {:entity book
+              :update-f #(service/update-book> radar-id book-id %)
               :fields [book/title book/author book/isbn book/asin book/tags]})
 
           ($ Reviews))

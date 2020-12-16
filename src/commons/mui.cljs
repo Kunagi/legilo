@@ -26,6 +26,7 @@
 (def StringVectorChips form-ui/StringVectorChips)
 (def CommandCardArea form-ui/CommandCardArea)
 (def FormCardArea form-ui/FormCardArea)
+(def FieldsCard form-ui/FieldsCard)
 (def DocFieldCardArea form-ui/DocFieldCardArea)
 (def DocFieldCard form-ui/DocFieldCard)
 (def DocFieldsCard form-ui/DocFieldsCard)
