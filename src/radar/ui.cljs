@@ -91,9 +91,11 @@
 
 
 (defnc RadarConfigCard []
-  (let [radar (context/use-radar)]
-    ($ cui/DocFieldsCard
-       {:doc radar
+  (let [radar (context/use-radar)
+        radar-id (-> radar :firestore/id)]
+    ($ cui/FieldsCard
+       {:entity radar
+        :update-f #(service/update-radar> radar-id %)
         :fields [radar/title radar/allow-domain]})))
 
 

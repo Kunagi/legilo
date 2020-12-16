@@ -59,6 +59,9 @@
 (defn create-radar> [uid data]
   (repository/create-radar> (assoc data :uids [uid])))
 
+(defn update-radar> [radar-id changes]
+  (repository/update-radar> radar-id changes))
+
 (defn create-radar-command [uid]
   {:label "Create new Radar"
    :form {:fields [radar/title radar/allow-domain]
