@@ -11,13 +11,13 @@
   (-> doc :firestore/path boolean))
 
 (s/def ::doc doc?)
-(s/def ::path-element (s/or :map map?
-                            :string string?))
+(s/def ::path-element (s/or :map-path-element map?
+                            :string-path-element string?))
 (s/def ::path (s/or :string string?
                     :vector (s/coll-of ::path-element)
                     :doc ::doc))
-(s/def ::opt-path (s/or :nil nil?
-                        :path ::path))
+(s/def ::opt-path (s/or :nil-path nil?
+                        :non-nil-path ::path))
 
 
 (defonce FIRESTORE (atom nil))
