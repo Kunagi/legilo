@@ -49,42 +49,52 @@
 (defmulti create-input (fn [field] (-> field :type (or "text"))))
 
 (defmethod create-input "text" [field]
-  ($ mui/TextField
-     {
-      :id (-> field :id name)
-      :name (-> field :name)
-      :autoComplete (-> field :auto-complete)
-      :defaultValue (-> field :value)
-      :required (-> field :required?)
-      :error (boolean (-> field :error))
-      :helperText (-> field :error)
-      :onChange #((:on-change field)
-                  (-> % .-target .-value))
-      :onKeyPress (when-not (-> field :multiline?)
-                    #(when (= "Enter" (-> ^js % .-nativeEvent .-code))
-                       ((:on-submit field))))
-      :label (-> field :label)
-      :type (-> field :type)
-      :multiline (get field :multiline?)
-      :rows (get field :rows)
-      :autoFocus (-> field :auto-focus?)
-      :inputProps (if-let [props (-> field :input-props)]
-                    (clj->js props)
-                    (clj->js {}))
-      :margin "dense"
-      :fullWidth true}))
+  ($ :div
+     ;; ($ :pre (str field))
+     ($ mui/TextField
+        {
+         :id (-> field :id name)
+         :name (-> field :name)
+         :autoComplete (-> field :auto-complete)
+         :defaultValue (-> field :value)
+         :required (-> field :required?)
+         :error (boolean (-> field :error))
+         :helperText (-> field :error)
+         :onChange #((:on-change field)
+                     (-> % .-target .-value))
+         :onKeyPress (when-not (-> field :multiline?)
+                       #(when (= "Enter" (-> ^js % .-nativeEvent .-code))
+                          ((:on-submit field))))
+         :label (-> field :label)
+         :type (-> field :input-type)
+         :multiline (get field :multiline?)
+         :rows (get field :rows)
+         :autoFocus (-> field :auto-focus?)
+         :inputProps (if-let [props (-> field :input-props)]
+                       (clj->js props)
+                       (clj->js {}))
+         :margin "dense"
+         :fullWidth true})))
 
 (defmethod create-input "tel" [field]
-  (create-input (assoc field :type "text")))
+  (create-input (assoc field
+                       :type "text"
+                       :input-type "tel")))
 
 (defmethod create-input "time" [field]
-  (create-input (assoc field :type "text")))
+  (create-input (assoc field
+                       :type "text"
+                       :input-type "time")))
 
 (defmethod create-input "date" [field]
-  (create-input (assoc field :type "text")))
+  (create-input (assoc field
+                       :type "text"
+                       :input-type "date")))
 
 (defmethod create-input "number" [field]
-  (create-input (assoc field :type "text")))
+  (create-input (assoc field
+                       :type "text"
+                       :input-type "number")))
 
 (defmethod create-input "chips" [field]
   ($ ChipInput

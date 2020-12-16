@@ -7,12 +7,15 @@
    [commons.utils :as u]))
 
 
-(declare doc?)
-(s/def ::doc doc?)
+(defn doc? [doc]
+  (-> doc :firestore/path boolean))
 
+(s/def ::doc doc?)
+(s/def ::path-element (s/or :map map?
+                            :string string?))
 (s/def ::path (s/or :string string?
-                    :vector vector?
-                    :doc doc?))
+                    :vector (s/coll-of ::path-element)
+                    :doc ::doc))
 (s/def ::opt-path (s/or :nil nil?
                         :path ::path))
 
@@ -67,8 +70,6 @@
 (defn wrap-docs [^js query-snapshot]
   (mapv wrap-doc (-> query-snapshot .-docs)))
 
-(defn doc? [doc]
-  (-> doc :firestore/path boolean))
 
 (defn doc-id [doc]
   (-> doc :firestore/id))
@@ -109,6 +110,9 @@
 
 
 (defn ^js ref [path]
+  (log ::ref
+       :path path)
+  (s/assert ::opt-path path)
   (when path
     (loop [col nil
            doc nil

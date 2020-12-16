@@ -83,6 +83,8 @@
                :background-color "#333"
                :color "#6f6"
                :padding "1rem"
+               :border-radius "4px"
+               :margin "1px"
                }}
       (with-out-str (pprint data))))))
 
@@ -101,6 +103,29 @@
     (d/div
      {:style {:width (-> theme (.spacing (or width 1)))
               :height(-> theme (.spacing (or width 1)))}})))
+
+
+(defnc ValueLoadGuard [{:keys [children value padding]}]
+  (if value
+    children
+    (let [theme (mui-styles/useTheme)]
+      ($ :div
+         {:style {:display :flex
+                  :padding (when padding (-> theme (.spacing padding)))
+                  :justify-content "space-around"}}
+         ($ mui/CircularProgress)))))
+
+(defnc ValuesLoadGuard [{:keys [children values padding]}]
+  (if (reduce (fn [ret value]
+                (and ret value))
+              true values)
+    children
+    (let [theme (mui-styles/useTheme)]
+      ($ :div
+         {:style {:display :flex
+                  :padding (when padding (-> theme (.spacing padding)))
+                  :justify-content "space-around"}}
+         ($ mui/CircularProgress)))))
 
 
 (defnc Stack [{:keys [children spacing]}]
