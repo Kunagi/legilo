@@ -1,5 +1,7 @@
 (ns radar.service
   (:require
+   [clojure.spec.alpha :as s]
+
    [commons.logging :refer [log]]
    [commons.utils :as u]
 
@@ -15,52 +17,50 @@
   (-> book :recommendations (u/v-contains? uid)))
 
 
-(defn add-book> [radar-id data]
+(defn add-book> [radar data]
   (let [book-id (str (random-uuid))
         book (assoc data :id book-id)]
     (repository/update-radar>
-     radar-id
+     radar
      {(str  "books." book-id) book})))
 
-(defn update-book> [radar-id book-id changes]
+(defn update-book> [radar book changes]
+  (s/assert ::book/book book)
   (log ::update-book>
-       :radar-id radar-id
-       :book-id book-id
+       :radar radar
+       :book book
        :changes changes)
   (repository/update-radar>
-   radar-id
+   radar
    (reduce (fn [changes [k v]]
              (assoc changes
-                    (str "books." book-id "." (name k))
+                    (str "books." (-> book :id) "." (name k))
                     v))
            {} changes)))
 
-(defn add-book-command [radar-id]
+(defn add-book-command [radar]
   (-> radar/add-book
-      (assoc-in [:form :submit] #(add-book> radar-id %))))
-
-;; ;; TODO
-;; (defn update-book> [radar-id book-id fields]
-;;   (repository/update-radar>
-;;    radar-id
-;;    {(str "books." book-id) fields}))
+      (assoc-in [:form :submit] #(add-book> radar %))))
 
 
-(defn recommend-book> [radar-id book-id uid]
+(defn update-radar> [radar changes]
+  (repository/update-radar> radar changes))
+
+(defn recommend-book> [radar book uid]
+  (s/assert ::book/book book)
   (repository/update-radar>
-   radar-id
-   {(str "books." book-id ".recommendations") [:db/array-union [uid]]}))
+   radar
+   {(str "books." (-> book :id) ".recommendations") [:db/array-union [uid]]}))
 
-(defn un-recommend-book> [radar-id book-id uid]
+(defn un-recommend-book> [radar book uid]
+  (s/assert ::book/book book)
   (repository/update-radar>
-   radar-id
-   {(str "books." book-id ".recommendations") [:db/array-remove [uid]]}))
+   radar
+   {(str "books." (-> book :id) ".recommendations") [:db/array-remove [uid]]}))
 
 (defn create-radar> [uid data]
   (repository/create-radar> (assoc data :uids [uid])))
 
-(defn update-radar> [radar-id changes]
-  (repository/update-radar> radar-id changes))
 
 (defn create-radar-command [uid]
   {:label "Create new Radar"
@@ -68,18 +68,19 @@
     :submit #(create-radar> uid %)}})
 
 
-(defn update-review-text> [radar-id book-id uid changes]
+(defn update-review-text> [radar book uid changes]
+  (s/assert ::book/book book)
   (repository/update-radar>
-   radar-id
-   {(str "books." book-id ".reviews." uid) changes}))
+   radar
+   {(str "books." (-> book :id) ".reviews." uid) changes}))
 
 ;;;
 ;;; Example Data
 ;;;
 
-(defn add-example-books> [radar-id]
+(defn add-example-books> [radar]
   (js/Promise.all
-   (map #(add-book> radar-id %)
+   (map #(add-book> radar %)
         [
          {:title "Domain Driven Design" :asin "0321125215"}
          {:title "I Am a Strange Loop" :asin "0465030785"}
@@ -94,6 +95,6 @@
          {:title "Leitfaden für faule Eltern" :asin "3499626721"}
          ])))
 
-(defn add-example-books-command [radar-id]
+(defn add-example-books-command [radar]
   (-> radar/add-example-books
-      (assoc :onClick #(add-example-books> radar-id))))
+      (assoc :onClick #(add-example-books> radar))))

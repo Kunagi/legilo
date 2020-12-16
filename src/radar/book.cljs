@@ -1,5 +1,6 @@
 (ns radar.book
   (:require
+   [clojure.spec.alpha :as s]
    [commons.domain-api :refer [def-attr def-command]]))
 
 
@@ -22,6 +23,10 @@ picture of the book will be shown."})
   {:label "Tags"
    :type "chips"
    :helptext "Type in a tag and submit with RETURN."})
+
+
+(s/def ::id string?)
+(s/def ::book (s/keys :req-un [::id]))
 
 
 (def-command recommend

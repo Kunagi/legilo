@@ -8,7 +8,10 @@
 
 
 (defn doc? [doc]
-  (-> doc :firestore/path boolean))
+  (and
+   (-> doc :firestore/path string?)
+   (-> doc :firestore/id string?)))
+
 
 (s/def ::doc doc?)
 (s/def ::path-element (s/or :map-path-element map?

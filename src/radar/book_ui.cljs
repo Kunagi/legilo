@@ -24,17 +24,16 @@
         ($ mui/CardContent
            (-> review :text)))))
 
-(defn start-review [radar-id book-id uid]
+(defn start-review [radar book uid]
   (cui/show-form-dialog
    {:fields [{:id :text
               :rows 5
               :multiline? true}]
-    :submit #(service/update-review-text> radar-id book-id uid %)}))
+    :submit #(service/update-review-text> radar book uid %)}))
 
 (defnc OwnReview []
   (let [
         radar (context/use-radar)
-        radar-id (-> radar :firestore/id)
         book-id (context/use-book-id)
         book (radar/book-by-id radar book-id)
         uid (context/use-uid)
@@ -47,18 +46,18 @@
        (if recommended?
          ($ cui/IconButton
             {:command book/recommend
-             :onClick #(service/un-recommend-book> radar-id book-id uid)
+             :onClick #(service/un-recommend-book> radar book uid)
              :icon "thumb_up"
              :color "secondary"})
          ($ cui/IconButton
             {:command book/recommend
-             :onClick #(service/recommend-book> radar-id book-id uid)
+             :onClick #(service/recommend-book> radar book uid)
              :icon "thumb_up"
              :theme "outlined"}))
        ($ mui/Card
           {:className "flex-grow-1 ml-1"}
           ($ mui/CardActionArea
-             {:onClick #(start-review radar-id book-id uid)}
+             {:onClick #(start-review radar book uid)}
              ($ mui/CardContent
                 ($ :div {:style {:color "grey"
                                  :font-style "italic"}}
@@ -100,7 +99,6 @@
 
 (defnc Book [{:keys []}]
   (let [radar (context/use-radar)
-        radar-id (-> radar :firestore/id)
         book-id (context/use-book-id)
         book (radar/book-by-id radar book-id)
         uid (context/use-uid)]
@@ -112,7 +110,7 @@
        ($ cui/Stack
           ($ cui/FieldsCard
              {:entity book
-              :update-f #(service/update-book> radar-id book-id %)
+              :update-f #(service/update-book> radar book %)
               :fields [book/title book/author book/isbn book/asin book/tags]})
 
           ($ Reviews))
@@ -130,11 +128,11 @@
                 (if (service/book-recommended-by-user? book uid)
                   ($ cui/Button
                      {:command book/un-recommend
-                      :onClick #(service/un-recommend-book> radar-id book-id uid)
+                      :onClick #(service/un-recommend-book> radar book uid)
                       :color "default"})
                   ($ cui/Button
                      {:command book/recommend
-                      :onClick #(service/recommend-book> radar-id book-id uid)
+                      :onClick #(service/recommend-book> radar book uid)
                       :color "secondary"}))
 
                 ($ cui/Button

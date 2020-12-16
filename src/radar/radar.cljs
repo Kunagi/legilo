@@ -1,5 +1,6 @@
 (ns radar.radar
   (:require
+   [clojure.spec.alpha :as s]
    [commons.domain-api :refer [def-attr def-command]]
 
    [radar.book :as book]

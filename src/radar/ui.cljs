@@ -44,7 +44,6 @@
 
 (defnc Radar []
   (let [radar (context/use-radar)
-        radar-id (-> radar :firestore/id)
         books (radar/books radar)]
     ($ ui/Stack
        ($ mui/Typography
@@ -52,7 +51,7 @@
            :component "h2"}
           (-> radar :title))
        ($ cui/Button
-          {:command #(service/add-book-command radar-id)
+          {:command #(service/add-book-command radar)
            :color "secondary"})
        ($ ui/Stack
           (for [section radar/sections]
@@ -62,7 +61,7 @@
                 :books (get (radar/books-by-section-key books) (-> section :key))}))
           (when (empty? books)
             ($ cui/Button
-               {:command (service/add-example-books-command radar-id)}))))))
+               {:command (service/add-example-books-command radar)}))))))
 
 
 (defnc RadarPageContent []
@@ -91,11 +90,10 @@
 
 
 (defnc RadarConfigCard []
-  (let [radar (context/use-radar)
-        radar-id (-> radar :firestore/id)]
+  (let [radar (context/use-radar)]
     ($ cui/FieldsCard
        {:entity radar
-        :update-f #(service/update-radar> radar-id %)
+        :update-f #(service/update-radar> radar %)
         :fields [radar/title radar/allow-domain]})))
 
 

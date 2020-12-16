@@ -1,5 +1,6 @@
 (ns radar.repository
   (:require
+   [clojure.spec.alpha :as s]
 
    [commons.firestore :as firestore]))
 
@@ -23,5 +24,6 @@
 (defn create-radar> [fields]
   (firestore/create-doc> (radars-col-path) fields))
 
-(defn update-radar> [radar-id fields]
-  (firestore/update-fields> (radar-path radar-id) fields))
+(defn update-radar> [radar fields]
+  (s/assert ::firestore/doc radar)
+  (firestore/update-fields> radar fields))
