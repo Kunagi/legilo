@@ -6,7 +6,7 @@
 
  ;:dev-http {23012 ["target/spa" "resources/spa"]}
 
- :nrepl {:port 43453}
+ :nrepl {:port 55555}
 
  :builds
  {:spa {:target :browser

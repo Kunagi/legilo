@@ -4,4 +4,4 @@ cp -r resources/spa/* firebase/public/
 
 cd firebase
 #firebase serve
-firebase emulators:start
+npx firebase emulators:start
