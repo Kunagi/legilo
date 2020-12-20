@@ -23,7 +23,13 @@
      ($ mui/Card
         {:className "flex-grow-1 ml-1"}
         ($ mui/CardContent
-           (-> review :text)))))
+           ($ cui/Stack
+              ($ :div
+                 {:style {:color "#666"
+                          :font-style "italic"}}
+                 (-> review :uid))
+              ($ :div
+                 (-> review :text)))))))
 
 (defn start-review [radar book uid]
   (cui/show-form-dialog
