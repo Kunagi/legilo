@@ -1,5 +1,6 @@
 (ns radar.book-ui
   (:require
+   [clojure.string :as str]
    ["@material-ui/core" :as mui]
 
    [commons.context :as c.context]
@@ -13,7 +14,23 @@
    [radar.book :as book]
    [radar.service :as service]
    [radar.context :as context]
-   ))
+
+   [clojure.string :as str]))
+
+
+(defn format-text [s]
+  (-> s
+      (str/split #"\n\n")
+      (->> (map-indexed (fn [idx e]
+                          ($ :p
+                             {:key idx}
+                             (-> e
+                                 (str/split #"\n")
+                                 (->> (map-indexed (fn [idx e]
+                                                     (<>
+                                                        {:key idx}
+                                                        e
+                                                        ($ :br))))))))))))
 
 
 (defnc Review [{:keys [review]}]
@@ -35,7 +52,7 @@
                             :font-style "italic"}}
                    (user/best-display-name user))
                 ($ :div
-                   (-> review :text))))))))
+                   (format-text (-> review :text)))))))))
 
 (defn start-review [radar book uid text]
   (cui/show-form-dialog
@@ -73,7 +90,7 @@
              ($ mui/CardContent
                 (if review
                   ($ :div
-                     (-> review :text))
+                     (-> review :text format-text))
                   ($ :div {:style {:color "grey"
                                    :font-style "italic"}}
                      (if recommended?
