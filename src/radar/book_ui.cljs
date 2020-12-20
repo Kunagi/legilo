@@ -31,14 +31,15 @@
               ($ :div
                  (-> review :text)))))))
 
-(defn start-review [radar book uid]
+(defn start-review [radar book uid text]
   (cui/show-form-dialog
    {:fields [{:id :text
+              :value text
               :rows 5
               :multiline? true}]
     :submit #(service/update-review-text> radar book uid (assoc % :uid uid))}))
 
-(defnc OwnReview []
+(defnc OwnReview [{:keys [review]}]
   (let [
         radar (context/use-radar)
         book-id (context/use-book-id)
@@ -63,25 +64,30 @@
        ($ mui/Card
           {:className "flex-grow-1 ml-1"}
           ($ mui/CardActionArea
-             {:onClick #(start-review radar book uid)}
+             {:onClick #(start-review radar book uid (-> review :text))}
              ($ mui/CardContent
                 ($ :div {:style {:color "grey"
                                  :font-style "italic"}}
-                   (if recommended?
-                     "Leave a review?"
-                     "Recommend this book?"))))))))
+                   (if review
+                     (-> review :text)
+                     (if recommended?
+                       "Leave a review?"
+                       "Recommend this book?")))))))))
 
 (defnc Reviews []
-  (let [{:keys [radar book-id]} (c.context/use-context-data)
+  (let [{:keys [radar book-id uid]} (c.context/use-context-data)
         book (radar/book-by-id radar book-id)
-        reviews (-> book :reviews vals)]
+        reviews (-> book :reviews vals)
+        reviews-grouped (->> reviews (group-by #(= uid (-> % :uid))))
+        own-review (first (get reviews-grouped true))
+        other-reviews (get reviews-grouped false)]
     ($ cui/Stack
-       ($ OwnReview {})
-       (for [review reviews]
+       ($ OwnReview {:review own-review})
+       (for [review other-reviews]
          ($ Review
             {:key (-> review :uid)
              :review review}))
-       (cui/data (-> book :reviews)))))
+       (cui/data reviews-grouped))))
 
 
 (defn counter [book]

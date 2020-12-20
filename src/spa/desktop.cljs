@@ -65,6 +65,7 @@
           "& .Recommendation .MuiPaper-rounded" {:border-top-left-radius 0
                                                  :border-radius (-> theme (.spacing 2))}}})
 
+
 (defn pages []
   [
    {:path "/ui/menu"
