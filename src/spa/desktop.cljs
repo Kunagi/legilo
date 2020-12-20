@@ -17,6 +17,7 @@
 
    [spa.devtools :as devtools]
    [spa.home-ui :as home]
+   [radar.repository :as radar-repository]
    [radar.ui :as radar]))
 
 
@@ -72,16 +73,27 @@
            :user :user}}
 
    {:path "/ui/radars/:radarId/book/:bookId"
-    :content radar/BookPageContent}
+    :content radar/BookPageContent
+    :data {:uid :uid
+           :user :user
+           :radar [:param-doc :radar-id radar-repository/radar-path]}}
 
    {:path "/ui/radars/:radarId/config"
-    :content radar/RadarConfigPageContent}
+    :content radar/RadarConfigPageContent
+    :data {:uid :uid
+           :user :user
+           :radar [:param-doc :radar-id radar-repository/radar-path]}}
 
    {:path "/ui/radars/:radarId"
-    :content radar/RadarPageContent}
+    :content radar/RadarPageContent
+    :data {:uid :uid
+           :user :user
+           :radar [:param-doc :radar-id radar-repository/radar-path]}}
 
    {:path "/"
-    :content home/HomePageContent}
+    :content home/HomePageContent
+    :data {:uid :uid
+           :user :user}}
    ])
 
 

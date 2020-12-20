@@ -30,8 +30,7 @@
 
 
 (defnc Radars []
-  (let [uid (context/use-uid)
-        user (context/use-user)
+  (let [{:keys [user uid]} (c.context/use-context-data)
         domain (-> user :auth-domain)
         radars (c.context/use-cols-union
                 [(radar-repository/radars-by-uid-col-path (context/use-uid))
@@ -69,16 +68,16 @@
 
 
 (defnc CurrentUserCard []
-  (when-let [user (context/use-user)]
+  (when-let [{:keys [user]} (c.context/use-context-data)]
     ($ mui/Card
        ($ mui/CardContent
           (div
            "Signed in as "
            (cui/span
             {:style {:font-weight :bold}}
-            (-> user :email)
+            (-> user :auth-email)
             " / "
-            (-> user :display-name))))
+            (-> user :auth-display-name))))
        ($ mui/CardActions
           ($ SignOutButton)))))
 
