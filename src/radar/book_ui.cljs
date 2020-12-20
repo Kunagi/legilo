@@ -2,6 +2,7 @@
   (:require
    ["@material-ui/core" :as mui]
 
+   [commons.context :as c.context]
    [commons.mui :as cui :refer [defnc $ <> div]]
 
    [amazon.service :as amazon-service]
@@ -29,7 +30,7 @@
    {:fields [{:id :text
               :rows 5
               :multiline? true}]
-    :submit #(service/update-review-text> radar book uid %)}))
+    :submit #(service/update-review-text> radar book uid (assoc % :uid uid))}))
 
 (defnc OwnReview []
   (let [
@@ -65,20 +66,16 @@
                      "Recommend this book?"))))))))
 
 (defnc Reviews []
-  (let [reviews [{:firestore/id 1
-                  :text "Aliquam erat volutpat.  Nunc eleifend leo vitae magna.  In id erat non orci commodo lobortis.  Proin neque massa, cursus ut, gravida ut, lobortis eget, lacus.  Sed diam.  Praesent fermentum tempor tellus.  Nullam tempus.  Mauris ac felis vel velit tristique imperdiet.  Donec at pede.  Etiam vel neque nec dui dignissim bibendum.  Vivamus id enim.  Phasellus neque orci, porta a, aliquet quis, semper a, massa.  Phasellus purus.  Pellentesque tristique imperdiet tortor.  Nam euismod tellus id erat.
-
- "}
-                 {:firestore/id 2
-                  :text "Aliquam erat volutpat.  Nunc eleifend leo vitae magna.  In id erat non orci commodo lobortis.  Proin neque massa, cursus ut, gravida ut, lobortis eget, lacus.  Sed diam.  Praesent fermentum tempor tellus.  Nullam tempus.  Mauris ac felis vel velit tristique imperdiet.  Donec at pede.  Etiam vel neque nec dui dignissim bibendum.  Vivamus id enim.  Phasellus neque orci, porta a, aliquet quis, semper a, massa.  Phasellus purus.  Pellentesque tristique imperdiet tortor.  Nam euismod tellus id erat.
-
- "}]]
+  (let [{:keys [radar book-id]} (c.context/use-context-data)
+        book (radar/book-by-id radar book-id)
+        reviews (-> book :reviews vals)]
     ($ cui/Stack
        ($ OwnReview {})
        (for [review reviews]
          ($ Review
-            {:key (-> review :firestore/id)
-             :review review})))))
+            {:key (-> review :uid)
+             :review review}))
+       (cui/data (-> book :reviews)))))
 
 
 (defn counter [book]
