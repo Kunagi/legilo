@@ -5,6 +5,8 @@
    [commons.context :as c.context]
    [commons.mui :as cui :refer [defnc $ <> div]]
 
+   [base.user :as user]
+
    [amazon.service :as amazon-service]
 
    [radar.radar :as radar]
@@ -13,23 +15,27 @@
    [radar.context :as context]
    ))
 
+
 (defnc Review [{:keys [review]}]
-  ($ :div
-     {:className "Recommendation"
-      :style {:display :flex
-              :place-content :stretch
-              :place-items :stretch}}
-     ($ mui/Avatar)
-     ($ mui/Card
-        {:className "flex-grow-1 ml-1"}
-        ($ mui/CardContent
-           ($ cui/Stack
-              ($ :div
-                 {:style {:color "#666"
-                          :font-style "italic"}}
-                 (-> review :uid))
-              ($ :div
-                 (-> review :text)))))))
+  (let [user (c.context/use-doc ["users" (-> review :uid)])]
+    ($ :div
+       {:className "Recommendation"
+        :style {:display :flex
+                :place-content :stretch
+                :place-items :stretch}}
+       ($ mui/Avatar
+          {:src (user/best-photo-url user)
+           :alt (user/best-display-name user)})
+       ($ mui/Card
+          {:className "flex-grow-1 ml-1"}
+          ($ mui/CardContent
+             ($ cui/Stack
+                ($ :div
+                   {:style {:color "#666"
+                            :font-style "italic"}}
+                   (user/best-display-name user))
+                ($ :div
+                   (-> review :text))))))))
 
 (defn start-review [radar book uid text]
   (cui/show-form-dialog
@@ -40,8 +46,7 @@
     :submit #(service/update-review-text> radar book uid (assoc % :uid uid))}))
 
 (defnc OwnReview [{:keys [review]}]
-  (let [
-        radar (context/use-radar)
+  (let [radar (context/use-radar)
         book-id (context/use-book-id)
         book (radar/book-by-id radar book-id)
         uid (context/use-uid)
@@ -66,10 +71,11 @@
           ($ mui/CardActionArea
              {:onClick #(start-review radar book uid (-> review :text))}
              ($ mui/CardContent
-                ($ :div {:style {:color "grey"
-                                 :font-style "italic"}}
-                   (if review
-                     (-> review :text)
+                (if review
+                  ($ :div
+                     (-> review :text))
+                  ($ :div {:style {:color "grey"
+                                   :font-style "italic"}}
                      (if recommended?
                        "Leave a review?"
                        "Recommend this book?")))))))))

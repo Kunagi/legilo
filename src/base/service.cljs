@@ -32,9 +32,9 @@
                     :user user)
                (update-last-usage (-> user :uid)
                                   (-> user :email)
-                                  (-> user :displayName)
-                                  (-> user :photoURL)
-                                  (-> user :phoneNumber)))))
+                                  (-> user :display-name)
+                                  (-> user :photo-url)
+                                  (-> user :phone-number)))))
 
 ;;;
 ;;; firebase auth setup
@@ -47,13 +47,14 @@
 (-> firebase
     .auth
     (.onAuthStateChanged (fn [^js user_js]
+                           ;; (log ::js-user user_js)
                            (context/set-user
                             (when user_js
                               {:uid (-> ^js user_js .-uid)
                                :email (-> ^js user_js .-email)
                                :display-name (-> ^js user_js .-displayName)
-                               :photoURL (-> ^js user_js .-photoURL)
-                               :phoneNumber (-> ^js user_js .-phoneNumber)})))))
+                               :photo-url (-> ^js user_js .-photoURL)
+                               :phone-number (-> ^js user_js .-phoneNumber)})))))
 
 
 (defn sign-in-with-microsoft []
