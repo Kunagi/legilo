@@ -49,6 +49,6 @@ picture of the book will be shown."})
 
 
 (def-command view-on-amazon
-  {:label "View on Amazon"
+  {:label "Amazon"
    :icon "shopping_cart"})
 

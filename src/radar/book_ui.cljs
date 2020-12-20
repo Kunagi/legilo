@@ -40,9 +40,11 @@
         :style {:display :flex
                 :place-content :stretch
                 :place-items :stretch}}
-       ($ mui/Avatar
-          {:src (user/best-photo-url user)
-           :alt (user/best-display-name user)})
+       ($ :div
+          {:style {:padding "4px"}}
+          ($ mui/Avatar
+             {:src (user/best-photo-url user)
+              :alt (user/best-display-name user)}))
        ($ mui/Card
           {:className "flex-grow-1 ml-1"}
           ($ mui/CardContent
@@ -73,16 +75,17 @@
         :style {:display :flex
                 :place-content :stretch
                 :place-items :stretch}}
-       (if recommended?
-         ($ cui/IconButton
-            {:command book/recommend
-             :onClick #(service/un-recommend-book> radar book uid)
-             :icon "thumb_up"
-             :color "secondary"})
-         ($ cui/IconButton
-            {:command book/recommend
-             :onClick #(service/recommend-book> radar book uid)
-             :theme "outlined"}))
+       ($ :div
+          (if recommended?
+            ($ cui/IconButton
+               {:command book/recommend
+                :onClick #(service/un-recommend-book> radar book uid)
+                :icon "thumb_up"
+                :color "secondary"})
+            ($ cui/IconButton
+               {:command book/recommend
+                :onClick #(service/recommend-book> radar book uid)
+                :theme "outlined"})))
        ($ mui/Card
           {:className "flex-grow-1 ml-1"}
           ($ mui/CardActionArea
@@ -139,7 +142,19 @@
                 :grid-gap "8px"}}
 
        ($ cui/Stack
-          ($ cui/FieldsCard
+
+          ($ mui/Card
+             ($ cui/FormCardArea
+                {:form {:fields [book/title book/author book/isbn book/asin book/tags]
+                        :values book
+                        :submit #(service/update-book> radar book %)}}
+                ($ mui/CardContent
+                   ($ :div (-> book :author))
+                   ($ :h2 (-> book :title))
+                   ($ cui/StringVectorChips {:values (-> book :tags)})
+                   )))
+
+          #_($ cui/FieldsCard
              {:entity book
               :update-f #(service/update-book> radar book %)
               :fields [book/title book/author book/isbn book/asin book/tags]})
@@ -150,21 +165,16 @@
           ($ cui/Stack
              {:spacing 3}
 
-             ($ :div)
+             (when-let [asin (-> book :asin)]
+               ($ :img
+                  {:src (amazon-service/image-url asin)
+                   :referrer-policy "no-referrer"
+                   :class "MuiPaper-root MuiPaper-elevation1 MuiPaper-rounded"
+                   :style {:margin "0 auto"}}))
 
              (counter book)
 
              ($ cui/Stack
-
-                (if (service/book-recommended-by-user? book uid)
-                  ($ cui/Button
-                     {:command book/un-recommend
-                      :onClick #(service/un-recommend-book> radar book uid)
-                      :color "default"})
-                  ($ cui/Button
-                     {:command book/recommend
-                      :onClick #(service/recommend-book> radar book uid)
-                      :color "secondary"}))
 
                 ($ cui/Button
                    {:command book/view-on-amazon
@@ -174,9 +184,4 @@
                     :target :_blank
                     :color "secondary"}))
 
-             (when-let [asin (-> book :asin)]
-               ($ :img
-                  {:src (amazon-service/image-url asin)
-                   :referrer-policy "no-referrer"
-                   :class "MuiPaper-root MuiPaper-elevation1 MuiPaper-rounded"
-                   :style {:margin "0 auto"}})))))))
+             )))))

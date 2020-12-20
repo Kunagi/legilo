@@ -1,6 +1,7 @@
 (ns commons.form
   (:require
    [clojure.spec.alpha :as s]
+   [commons.logging :refer [log]]
    ))
 
 (s/def ::id keyword?)
@@ -11,8 +12,9 @@
 (s/def ::form (s/keys :req-un [::fields ::submit]))
 
 
-(defn- initialize-field [idx field]
+(defn- initialize-field [values idx field ]
   (assoc field
+         :value (get values (-> field :id))
          :auto-focus? (= 0 idx)
          :name (or (-> field :name)
                    (-> field :id name))
@@ -25,8 +27,12 @@
 
 (defn initialize [form]
   (s/assert ::form form)
+  (log ::initialize
+       :form form
+       :values (-> form :values))
   (-> form
-      (assoc :fields (map-indexed initialize-field (-> form :fields)))
+      (assoc :fields (map-indexed  (partial initialize-field (-> form :values))
+                                   (-> form :fields)))
       (assoc :values
              (reduce (fn [values field]
                        (let [field-id (-> field :id)]
