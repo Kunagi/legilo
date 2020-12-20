@@ -18,6 +18,7 @@
    [commons.utils :as u]
    [commons.firestore :as fs]
    [commons.firestore-hooks :as firestore-hooks]
+   [commons.command :as command]
    [commons.context :as context]
    [commons.form-ui :as form-ui]
    ))
@@ -26,6 +27,8 @@
 (def StringVectorChips form-ui/StringVectorChips)
 (def CommandCardArea form-ui/CommandCardArea)
 (def FormCardArea form-ui/FormCardArea)
+(def FieldCardArea form-ui/FieldCardArea)
+(def FieldsCardAreas form-ui/FieldsCardAreas)
 (def FieldsCard form-ui/FieldsCard)
 (def DocFieldCardArea form-ui/DocFieldCardArea)
 (def DocFieldCard form-ui/DocFieldCard)
@@ -155,8 +158,12 @@
 (defnc Button [{:keys [text icon
                        onClick to href target
                        variant color size
-                       command]}]
-  (let [command (u/trampoline-if command)
+                       command
+                       context
+                       then]}]
+  (let [context (merge (context/use-context-data)
+                       context)
+        command (u/trampoline-if command)
         text (or text (-> command :label) ":text missing")
         icon (when-let [icon (or icon (-> command :icon))]
                (if (string? icon)
@@ -165,7 +172,9 @@
         onClick (or onClick
                     (-> command :onClick)
                     (when-let [form (-> command :form)]
-                      #(show-form-dialog form)))
+                      #(show-form-dialog form))
+                    #(-> (command/execute> command context)
+                         (.then (or then identity))))
         color (or color
                   (when (-> command :inconspicuous?) "default")
                   "primary")]
@@ -209,15 +218,17 @@
        icon)))
 
 
+(defnc CardOverline [{:keys [text]}]
+  ($ mui/Typography
+     {:variant "overline"}
+     text))
+
 (defnc SimpleCard [{:keys [title children className]}]
   ($ mui/Card
      {:className className}
      ($ mui/CardContent
         ($ Stack
-           (when title
-             ($ mui/Typography
-                {:variant "overline"}
-                title))
+           (when title ($ CardOverline {:text title}))
            ($ Stack children)))))
 
 

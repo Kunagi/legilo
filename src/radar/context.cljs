@@ -15,11 +15,11 @@
 (def use-uid base/use-uid)
 
 (defn use-radar-id []
-  (commons-context/use-param :radarId))
+  (commons-context/use-param :radar-id))
 
 (defn use-radar []
   (fsh/use-doc (repository/radar-path (use-radar-id))))
 
 
 (defn use-book-id []
-  (commons-context/use-param :bookId))
+  (commons-context/use-param :book-id))

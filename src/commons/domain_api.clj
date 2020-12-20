@@ -7,9 +7,11 @@
     `(def ~sym ~config-map)))
 
 
-(defmacro def-attr [sym config-map]
+(defmacro def-type [sym config-map]
   (def-with-id sym config-map))
 
+(defmacro def-attr [sym config-map]
+  (def-with-id sym config-map))
 
 (defmacro def-command [sym config-map]
   (def-with-id sym config-map))

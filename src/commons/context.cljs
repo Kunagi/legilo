@@ -4,6 +4,7 @@
    [cljs-bean.core :as cljs-bean]
    ["react" :as react]
    [helix.hooks :as hooks]
+   [camel-snake-kebab.core :as csk]
 
    ["react-router-dom" :as router]
 
@@ -11,7 +12,7 @@
 
    ))
 
-
+(def use-state react/useState)
 (def create-context react/createContext)
 (def use-context react/useContext)
 
@@ -20,9 +21,12 @@
 (def use-doc firestore/use-doc)
 
 
-
 (defn use-params []
-  (cljs-bean/->clj (router/useParams)))
+  (->> (router/useParams)
+       cljs-bean/->clj
+       (reduce (fn [m [k v]]
+                 (assoc m (csk/->kebab-case k) v))
+               {})))
 
 
 (defn use-param [param-key]
@@ -47,3 +51,33 @@
         #(remove-watch ATOM watch-key))
 
        (transformator value)))))
+
+
+;;;
+;;; page and context data
+;;;
+
+(def DATA_RESOLVER (atom nil))
+
+
+(def page (create-context {:page nil
+                           :data nil}))
+
+(defn use-page []
+  (let [data-resolver @DATA_RESOLVER
+        _ (when-not data-resolver
+            (throw (ex-info "DATA_RESOLVER not initialized"
+                            {})))
+        page (use-context page)
+        data (reduce (fn [m [k identifier]]
+                       (assoc m k (data-resolver identifier)))
+                     {} (-> page :data))]
+    (assoc page :data data)))
+
+
+(defn use-context-data []
+   (let [page (use-page)
+         params (use-params)
+         data (merge params
+                     (-> page :data))]
+     data))
