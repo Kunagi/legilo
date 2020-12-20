@@ -11,7 +11,7 @@
    [commons.logging :refer [log]]
    [commons.mui :as cmui :refer [defnc $]]
 
-   [base.context :as context]
+   [base.context :as b.context]
    [base.service :as service]
    [base.ui :as ui]
 
@@ -64,15 +64,26 @@
           "& .Recommendation .MuiPaper-rounded" {:border-top-left-radius 0
                                                  :border-radius (-> theme (.spacing 2))}}})
 
+(defn pages []
+  [
+   {:path "/ui/menu"
+    :content home/MenuPageContent
+    :data {:uid :uid
+           :user :user}}
 
-(defnc PageSwitch []
-  ($ router/Switch
-     ($ router/Route {:path "/ui/menu"} ($ home/MenuPageContent))
-     ($ router/Route {:path "/ui/radars/:radarId/book/:bookId"} ($ radar/BookPageContent))
-     ($ router/Route {:path "/ui/radars/:radarId/config"} ($ radar/RadarConfigPageContent))
-     ($ router/Route {:path "/ui/radars/:radarId"} ($ radar/RadarPageContent))
-     ($ router/Route {:path "/"} ($ home/HomePageContent))
-     ))
+   {:path "/ui/radars/:radarId/book/:bookId"
+    :content radar/BookPageContent}
+
+   {:path "/ui/radars/:radarId/config"
+    :content radar/RadarConfigPageContent}
+
+   {:path "/ui/radars/:radarId"
+    :content radar/RadarPageContent}
+
+   {:path "/"
+    :content home/HomePageContent}
+   ])
+
 
 (defnc LoginIcon []
   ($ :div {:class "i material-icons"} "login"))
@@ -96,12 +107,12 @@
 
 
 (defnc SignInButtonOrMenu [{:keys [to]}]
-  (if (context/use-uid)
+  (if (b.context/use-uid)
     ($ MenuButton {:to to})
     ($ SignInButton)))
 
 
-(defn AppBar []
+(defnc AppBar []
   ($ mui/AppBar
      {:position "static"}
      ($ :div
@@ -126,27 +137,14 @@
         )))
 
 
-(defn VersionInfo []
+(defnc AppContent []
   ($ :div
-   {:style {:margin-top "4rem"
-            :text-align :right
-            :color "lightgrey"
-            :font-size "75%"}}
-   "v1."
-   (str (resource/inline "./version.txt"))
-   " · "
-   (str (resource/inline "./version-time.txt"))))
-
-
-(defn AppContent []
-  ($ :div
-   {:id "AppContent"}
-   ($ PageSwitch)
-   (VersionInfo)
-   (when ^boolean js/goog.DEBUG
-     ($ devtools/DevTools))
-   ))
-
+     {:id "AppContent"}
+     ($ cmui/PageSwitch
+        {:pages (pages)
+         :devtools-component (when ^boolean js/goog.DEBUG devtools/DevTools)})
+     ;; ($ AppNav)
+     ($ cmui/VersionInfo)))
 
 (def use-app-styles (ui/make-styles styles))
 
@@ -157,8 +155,8 @@
        {}
        ($ :div
         {:class (-> styles .-root)}
-        (AppBar)
-        (AppContent)
+        ($ AppBar)
+        ($ AppContent)
         ($ cmui/FormDialogsContainer)
         ))))
 

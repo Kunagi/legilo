@@ -6,7 +6,7 @@
    [commons.firestore :as firestore]
    [commons.firestore-hooks :as firestore-hooks]
 
-   [commons.mui :as ui :refer [defnc $ <> div]]
+   [commons.mui :as cui :refer [defnc $ <> div]]
    [commons.context :as c.context]
 
    [base.context :as context]))
@@ -15,12 +15,13 @@
 (defnc DevTools []
   (div
    {:style {:padding-top "2rem"}}
-   ($ ui/Stack
+   ($ cui/Stack
       ($ mui/Divider)
       (div {:style {:color "grey"}} "DevTools")
 
+      (cui/data (c.context/use-context-data))
 
-      (ui/data (->> (firestore-hooks/use-cols-union
+      (cui/data (->> (firestore-hooks/use-cols-union
                      [[{:id "radars"
                         :where ["allow-domain" "==" "koczewski.de"]}]
                       [{:id "radars"
@@ -35,5 +36,6 @@
       ;;                                    :where ["uids" "array-contains" "G4fCIVVCTpUxXMmht0s25jZMnoM2"]}])
       ;;               (map :title)))
 
-      (ui/data {:goog.DEBUG js/goog.DEBUG
-                :uid (context/use-uid)}))))
+      ;; (cui/data {:goog.DEBUG js/goog.DEBUG
+      ;;            :uid (context/use-uid)})
+      )))

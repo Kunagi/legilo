@@ -54,6 +54,14 @@
 
 
 ;;;
+;;; auth
+;;;
+
+(defonce AUTH_COMPLETED (atom false))
+
+(def use-auth-completed (atom-hook AUTH_COMPLETED))
+
+;;;
 ;;; page and context data
 ;;;
 

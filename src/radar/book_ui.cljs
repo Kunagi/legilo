@@ -52,7 +52,6 @@
          ($ cui/IconButton
             {:command book/recommend
              :onClick #(service/recommend-book> radar book uid)
-             :icon "thumb_up"
              :theme "outlined"}))
        ($ mui/Card
           {:className "flex-grow-1 ml-1"}

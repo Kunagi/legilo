@@ -2,6 +2,7 @@
   (:require-macros [commons.mui])
   (:require
    [cljs.pprint :refer [pprint]]
+   [shadow.resource :as resource]
    [cljs-bean.core :as cljs-bean]
 
    [helix.core :refer [defnc $]]
@@ -246,3 +247,52 @@
      ($ Field {:label label}
         children)))
 
+;;;
+;;; desktop
+;;;
+
+(defnc PageContentWrapper []
+  (let [page (context/use-page)]
+    ($ mui/Container
+        {:maxWidth (get page :max-width "sm")}
+        ($ ValuesLoadGuard {:values (-> page :data vals)
+                            :padding 2}
+           ($ (-> page :content))))
+     ))
+
+
+(defnc PageSwitch [{:keys [pages devtools-component]}]
+  ($ router/Switch
+     (for [page pages]
+       ($ router/Route
+          {:key (-> page :path)
+           :path (-> page :path)}
+          (context/provider
+           {:context context/page
+            :value page}
+           ($ :div
+              ($ PageContentWrapper)
+              (when (and  ^boolean js/goog.DEBUG devtools-component)
+                ($ devtools-component))))))))
+
+
+(defnc VersionInfo []
+  ($ :div
+   {:style {:margin-top "4rem"
+            :margin-right "1rem"
+            :text-align :right
+            :color "lightgrey"
+            :font-size "75%"}}
+   "v1."
+   (str (resource/inline "../spa/version.txt"))
+   " · "
+   (str (resource/inline "../spa/version-time.txt"))))
+
+;;;
+;;; auth
+;;;
+
+(defnc AuthCompletedGuard [{:keys [children padding]}]
+  (let [auth-completed (context/use-auth-completed)]
+    ($ ValueLoadGuard {:value auth-completed :padding padding}
+       children)))

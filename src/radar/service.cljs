@@ -65,7 +65,7 @@
 (defn create-radar-command [uid]
   {:label "Create new Radar"
    :form {:fields [radar/title radar/allow-domain]
-    :submit #(create-radar> uid %)}})
+   :submit #(create-radar> uid %)}})
 
 
 (defn update-review-text> [radar book uid changes]

@@ -14,11 +14,17 @@
 ;;; current user
 
 (defonce AUTH_USER (atom nil))
+(defonce AUTH_COMPLETED (atom false))
 
 (defn set-user [user]
+  (reset! AUTH_COMPLETED true)
   (when-not (= user @AUTH_USER)
      (log ::user-changed :user user)
      (reset! AUTH_USER user)))
+
+
+(def use-auth-completed (c.context/atom-hook AUTH_COMPLETED))
+
 
 (defn auth-user []
   @AUTH_USER)

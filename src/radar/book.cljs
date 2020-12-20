@@ -29,12 +29,24 @@ picture of the book will be shown."})
 (s/def ::book (s/keys :req-un [::id]))
 
 
+(def Book
+  [:map])
+
+
 (def-command recommend
   {:label "Recommend"
-   :icon "thumb_up"})
+   :icon "thumb_up"
+   ;; :args {:book Book
+   ;;        :uid string?}
+   ;; :f (fn [{:keys [gruppe uid]}]
+   ;;      [[:db/update gruppe
+   ;;        {:mitglieder [:db/array-remove [uid]]}]])
+   })
+
 
 (def-command un-recommend
   {:label "Retract Recommendation"})
+
 
 (def-command view-on-amazon
   {:label "View on Amazon"
