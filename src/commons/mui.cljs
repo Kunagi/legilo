@@ -48,6 +48,10 @@
 ;;; Styles / Theme
 ;;;
 
+
+(defn use-theme []
+  (cljs-bean/->clj (mui-styles/useTheme)))
+
 (defn make-styles [styles-f]
   (mui-styles/makeStyles
    (fn [theme]

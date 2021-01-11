@@ -14,14 +14,15 @@
 
 (defn- initialize-field [values idx field ]
   (assoc field
-         :value (get values (-> field :id))
+         :value (get values (-> field :id) (get field :value))
          :auto-focus? (= 0 idx)
          :name (or (-> field :name)
                    (-> field :id name))
          :label (or (-> field :label)
                     (-> field :name)
                     (-> field :id name))
-         :multiline? (-> field :rows boolean)
+         :multiline? (or (-> field :multiline?)
+                         (-> field :rows boolean))
          :auto-complete (get field :auto-complete "off")))
 
 

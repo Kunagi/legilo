@@ -68,7 +68,7 @@
          :label (-> field :label)
          :type (-> field :input-type)
          :multiline (get field :multiline?)
-         :rows (get field :rows)
+         :rows (get field :rows (when (get field :multiline?) 5))
          :autoFocus (-> field :auto-focus?)
          :inputProps (if-let [props (-> field :input-props)]
                        (clj->js props)
