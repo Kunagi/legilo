@@ -30,7 +30,8 @@
 
 
 (defnc Radars []
-  (let [{:keys [user uid]} (c.context/use-context-data)
+  (let [uid (context/use-uid)
+        user (context/use-user)
         domain (-> user :auth-domain)
         radars (c.context/use-cols-union
                 [(radar-repository/radars-by-uid-col-path (context/use-uid))
