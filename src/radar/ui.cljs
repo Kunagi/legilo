@@ -99,15 +99,11 @@
 
 
 (defnc RadarPageContent []
-  ($ mui/Container
-     {:maxWidth "sm"}
-     ($ Radar)))
+  ($ Radar))
 
 
 (defnc BookPageContent []
-  ($ mui/Container
-     {:maxWidth "sm"}
-     ($ book-ui/Book)))
+  ($ book-ui/Book))
 
 
 ;;;
@@ -132,6 +128,4 @@
 
 
 (defnc RadarConfigPageContent []
-  ($ mui/Container
-     {:maxWidth "sm"}
-     ($ RadarConfigCard)))
+  ($ RadarConfigCard))

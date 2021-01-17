@@ -82,7 +82,4 @@
 
 
 (defnc MenuPageContent []
-  ($ mui/Container
-     {:maxWidth "sm"}
-     ($ ui/Stack
-        ($ CurrentUserCard))))
+  ($ CurrentUserCard))
