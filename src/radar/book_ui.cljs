@@ -8,7 +8,6 @@
 
    [base.user :as user]
 
-   [openlibrary.service :as openlibrary-service]
    [amazon.service :as amazon-service]
 
    [radar.radar :as radar]
@@ -140,11 +139,7 @@
         book-id (context/use-book-id)
         book (radar/book-by-id radar book-id)
         isbn (-> book :isbn)
-        asin (-> book :asin)
-        image-url (cond
-                    isbn (openlibrary-service/cover-url-by-isbn isbn)
-                    asin (amazon-service/cover-url-by-asin asin)
-                    :else nil)]
+        image-url (service/book-cover-url book)]
     ($ :div
        {:style {:display :grid
                 :grid-template-columns "auto minmax(100px,200px)"

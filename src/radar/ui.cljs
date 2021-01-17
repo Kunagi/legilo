@@ -22,13 +22,27 @@
 
 (defnc Book[{:keys [book]}]
   (let [radar-id (context/use-radar-id)
-        book-id (-> book :id)]
+        book-id (-> book :id)
+        cover-url (service/book-cover-url book)]
     ($ mui/Card
        ($ mui/CardActionArea
           {:component ui/Link
            :to (str "/ui/radars/" radar-id "/book/" book-id)}
-          ($ mui/CardContent
-             (-> book :title))))))
+          ($ :div
+             {:style {:display "flex"}}
+             (when cover-url
+               ($ :img
+                  {:src cover-url
+                   :width "50px"
+                   :style {:overflow "hidden"}}))
+             ($ mui/CardContent
+                {:className "CardContent--even-padding"}
+                ($ :div
+                   {:style {:font-size "120%"
+                            :display "flex"
+                            :height "100%"
+                            :align-items "center"}}
+                 (-> book :title))))))))
 
 
 (defnc Section [{:keys [section books]}]

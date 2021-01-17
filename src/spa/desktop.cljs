@@ -37,6 +37,8 @@
           :display        "flex"
           :flex-direction "column"
 
+          "& .CardContent--even-padding" {:padding-bottom (-> theme (.spacing 2))}
+
           "& .MuiCard-root" {:overflow "unset"}
 
           "& .b" {:font-weight "bold"}
