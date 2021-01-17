@@ -36,25 +36,27 @@
 (defnc Review [{:keys [review]}]
   (let [user (c.context/use-doc ["users" (-> review :uid)])]
     ($ :div
-       {:className "Recommendation"
-        :style {:display :flex
-                :place-content :stretch
-                :place-items :stretch}}
        ($ :div
-          {:style {:padding "4px"}}
-          ($ mui/Avatar
-             {:src (user/best-photo-url user)
-              :alt (user/best-display-name user)}))
-       ($ mui/Card
-          {:className "flex-grow-1 ml-1"}
-          ($ mui/CardContent
-             ($ cui/Stack
-                ($ :div
-                   {:style {:color "#666"
-                            :font-style "italic"}}
-                   (user/best-display-name user))
-                ($ :div
-                   (format-text (-> review :text)))))))))
+          {:className "Recommendation"
+           :style {:display :flex
+                   :place-content :stretch
+                   :place-items :stretch}}
+          ($ :div
+             {:style {:padding "4px"}}
+             ($ mui/Avatar
+                {:src (user/best-photo-url user)
+                 :alt (user/best-display-name user)}))
+          ($ mui/Card
+             {:className "flex-grow-1 ml-1"}
+             ($ mui/CardContent
+                ($ cui/Stack
+                   ($ :div
+                      {:style {:color "#666"
+                               :font-style "italic"}}
+                      (user/best-display-name user))
+                   ($ :div
+                      (format-text (-> review :text))))))))))
+
 
 (defn start-review [radar book uid text]
   (cui/show-form-dialog
@@ -71,34 +73,35 @@
         uid (context/use-uid)
         recommended? (service/book-recommended-by-user? book uid)]
     ($ :div
-       {:className "Recommendation"
-        :style {:display :flex
-                :place-content :stretch
-                :place-items :stretch}}
        ($ :div
-          (if recommended?
-            ($ cui/IconButton
-               {:command book/recommend
-                :onClick #(service/un-recommend-book> radar book uid)
-                :icon "thumb_up"
-                :color "secondary"})
-            ($ cui/IconButton
-               {:command book/recommend
-                :onClick #(service/recommend-book> radar book uid)
-                :theme "outlined"})))
-       ($ mui/Card
-          {:className "flex-grow-1 ml-1"}
-          ($ mui/CardActionArea
-             {:onClick #(start-review radar book uid (-> review :text))}
-             ($ mui/CardContent
-                (if review
-                  ($ :div
-                     (-> review :text format-text))
-                  ($ :div {:style {:color "grey"
-                                   :font-style "italic"}}
-                     (if recommended?
-                       "Leave a review?"
-                       "Recommend this book?")))))))))
+          {:className "Recommendation"
+           :style {:display :flex
+                   :place-content :stretch
+                   :place-items :stretch}}
+          ($ :div
+             (if recommended?
+               ($ cui/IconButton
+                  {:command book/recommend
+                   :onClick #(service/un-recommend-book> radar book uid)
+                   :icon "thumb_up"
+                   :color "secondary"})
+               ($ cui/IconButton
+                  {:command book/recommend
+                   :onClick #(service/recommend-book> radar book uid)
+                   :theme "outlined"})))
+          ($ mui/Card
+             {:className "flex-grow-1 ml-1"}
+             ($ mui/CardActionArea
+                {:onClick #(start-review radar book uid (-> review :text))}
+                ($ mui/CardContent
+                   (if review
+                     ($ :div
+                        (-> review :text format-text))
+                     ($ :div {:style {:color "grey"
+                                      :font-style "italic"}}
+                        (if recommended?
+                          "Leave a review?"
+                          "Recommend this book?"))))))))))
 
 (defnc Reviews []
   (let [{:keys [radar book-id uid]} (c.context/use-context-data)
@@ -113,7 +116,7 @@
          ($ Review
             {:key (-> review :uid)
              :review review}))
-       (cui/data reviews-grouped))))
+       #_(cui/data reviews-grouped))))
 
 
 (defn counter [book]
@@ -143,16 +146,17 @@
 
        ($ cui/Stack
 
-          ($ mui/Card
-             ($ cui/FormCardArea
-                {:form {:fields [book/title book/author book/isbn book/asin book/tags]
-                        :values book
-                        :submit #(service/update-book> radar book %)}}
-                ($ mui/CardContent
-                   ($ :div (-> book :author))
-                   ($ :h2 (-> book :title))
-                   ($ cui/StringVectorChips {:values (-> book :tags)})
-                   )))
+          ($ :div
+             ($ mui/Card
+                ($ cui/FormCardArea
+                   {:form {:fields [book/title book/author book/isbn book/asin book/tags]
+                           :values book
+                           :submit #(service/update-book> radar book %)}}
+                   ($ mui/CardContent
+                      ($ :div (-> book :author))
+                      ($ :h2 (-> book :title))
+                      ($ cui/StringVectorChips {:values (-> book :tags)})
+                      ))))
 
           #_($ cui/FieldsCard
              {:entity book
