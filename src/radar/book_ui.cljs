@@ -95,10 +95,10 @@
              ($ mui/CardActionArea
                 {:onClick #(start-review radar book uid (-> review :text))}
                 ($ mui/CardContent
-                   (if review
+                   (if (-> review :text)
                      ($ :div
                         (-> review :text format-text))
-                     ($ :div {:style {:color "grey"
+                     ($ :p {:style {:color "grey"
                                       :font-style "italic"}}
                         (if recommended?
                           "Leave a review?"
