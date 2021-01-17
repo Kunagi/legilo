@@ -28,6 +28,10 @@ All users from this domain will have access to this Radar."})
   {:label "Add example Books"})
 
 
+(defn all-tags [radar]
+  (->> radar :books vals (mapcat :tags) set))
+
+
 (def sections
   [{:key :must-read
     :name "Must Read"

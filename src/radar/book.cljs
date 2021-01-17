@@ -25,6 +25,13 @@ picture of the book will be shown."})
    :helptext "Type in a tag and submit with RETURN."})
 
 
+(defn contains-tag? [book tag]
+  (-> book
+      :tags
+      set
+      (contains? tag)))
+
+
 (s/def ::id string?)
 (s/def ::book (s/keys :req-un [::id]))
 

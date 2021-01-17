@@ -3,6 +3,7 @@
    ["@material-ui/core" :as mui]
 
    [commons.logging :refer [log]]
+   [commons.context :as c.context]
    [commons.mui :as cui :refer [defnc $ <> div]]
 
    [base.ui :as ui]
@@ -42,9 +43,33 @@
          :book book}))))
 
 
+(defonce SELECTED_TAG (atom nil))
+
+(def use-selected-tag (c.context/atom-hook SELECTED_TAG))
+
+
+(defnc Filter [{:keys [radar]}]
+  (let [selected-tag (use-selected-tag)]
+    ($ cui/Stack
+       ($ cui/Flexbox
+          (for [tag (radar/all-tags radar)]
+            (let [selected? (= tag selected-tag)]
+              ($ mui/Chip
+                 {:key tag
+                  :onClick #(reset! SELECTED_TAG (if selected? nil tag))
+                  :color (if selected? "primary" "default")
+                  :label tag
+                  :size "small"})))))))
+
+
 (defnc Radar []
-  (let [radar (context/use-radar)
-        books (radar/books radar)]
+  (let [selected-tag (use-selected-tag)
+        radar (context/use-radar)
+        books (radar/books radar)
+        books (if selected-tag
+                (->> books
+                     (filter #(book/contains-tag? % selected-tag)))
+                books)]
     ($ ui/Stack
        ($ mui/Typography
           {:variant "h4"
@@ -53,6 +78,8 @@
        ($ cui/Button
           {:command #(service/add-book-command radar)
            :color "secondary"})
+       ($ Filter
+          {:radar radar})
        ($ ui/Stack
           (for [section radar/sections]
             ($ Section
