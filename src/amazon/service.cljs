@@ -12,7 +12,7 @@
        "?tag=" partner-id
        "&k=" text))
 
-(defn image-url [asin]
+(defn cover-url-by-asin [asin]
   (str "//ws-eu.amazon-adsystem.com/widgets/q?MarketPlace=DE&ASIN="
        asin
        "&ServiceVersion=20070822&ID=AsinImage&WS=1&Format=_SL160_&tag="

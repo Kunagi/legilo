@@ -8,6 +8,7 @@
 
    [base.user :as user]
 
+   [openlibrary.service :as openlibrary-service]
    [amazon.service :as amazon-service]
 
    [radar.radar :as radar]
@@ -138,7 +139,12 @@
   (let [radar (context/use-radar)
         book-id (context/use-book-id)
         book (radar/book-by-id radar book-id)
-        uid (context/use-uid)]
+        isbn (-> book :isbn)
+        asin (-> book :asin)
+        image-url (cond
+                    isbn (openlibrary-service/cover-url-by-isbn isbn)
+                    asin (amazon-service/cover-url-by-asin asin)
+                    :else nil)]
     ($ :div
        {:style {:display :grid
                 :grid-template-columns "auto minmax(100px,200px)"
@@ -169,9 +175,9 @@
           ($ cui/Stack
              {:spacing 3}
 
-             (when-let [asin (-> book :asin)]
+             (when image-url
                ($ :img
-                  {:src (amazon-service/image-url asin)
+                  {:src image-url
                    :referrer-policy "no-referrer"
                    :class "MuiPaper-root MuiPaper-elevation1 MuiPaper-rounded"
                    :style {:margin "0 auto"}}))
@@ -184,7 +190,7 @@
                    {:command book/view-on-amazon
                     :href (if-let [asin (-> book :asin)]
                             (amazon-service/href asin)
-                            (amazon-service/search-href (-> book :title)))
+                            (amazon-service/search-href (or isbn (-> book :title))))
                     :target :_blank
                     :color "secondary"}))
 
