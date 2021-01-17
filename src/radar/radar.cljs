@@ -38,8 +38,8 @@ All users from this domain will have access to this Radar."})
    {:key :trial
     :name "Trial"
     :idx 2}
-   {:key :to-read
-    :name "To Read"
+   {:key :assess
+    :name "Assess"
     :idx 3}
    ])
 
@@ -51,7 +51,7 @@ All users from this domain will have access to this Radar."})
                       (>= c 5) :must-read
                       (>= c 2) :should-read
                       (>= c 1) :trial
-                      :else :to-read)))))
+                      :else :assess)))))
 
 
 (defn title-in-lowercase [radar]
