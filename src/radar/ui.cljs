@@ -35,12 +35,17 @@
   ($ ui/Stack
    ($ mui/Typography
       {:component "h3"
-       :variant "h5"}
+       :variant "h6"}
       (-> section :name))
-   (for [book (->> books (sort-by service/book-recommendation-count) reverse)]
-     ($ Book
-        {:key (-> book :id)
-         :book book}))))
+   (if (empty? books)
+     ($ :div
+        {:style {:color "grey"
+                 :font-style "italic"}}
+        "no books here")
+     (for [book (->> books (sort-by service/book-recommendation-count) reverse)]
+       ($ Book
+          {:key (-> book :id)
+           :book book})))))
 
 
 (defonce SELECTED_TAG (atom nil))
@@ -71,13 +76,15 @@
                      (filter #(book/contains-tag? % selected-tag)))
                 books)]
     ($ ui/Stack
+       {:spacing 3}
        ($ mui/Typography
           {:variant "h4"
            :component "h2"}
           (-> radar :title))
-       ($ cui/Button
-          {:command #(service/add-book-command radar)
-           :color "secondary"})
+       ($ cui/Flexbox
+          ($ cui/Button
+             {:command #(service/add-book-command radar)
+              :color "secondary"}))
        ($ Filter
           {:radar radar})
        ($ ui/Stack
