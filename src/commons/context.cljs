@@ -9,6 +9,7 @@
    ["react-router-dom" :as router]
 
    [commons.firestore-hooks :as firestore]
+   [commons.firebase-storage :as storage]
 
    ))
 
@@ -53,6 +54,49 @@
 
        (transformator value)))))
 
+;;;
+;;; storage
+;;;
+
+
+(defn use-storage-files [path]
+  (let [[files set-files] (use-state [])
+        reload-f (fn []
+                   (-> (storage/list-files> path)
+                       (.then (fn [^js result]
+                                (set-files (-> result .-items js->clj))))))]
+
+    (hooks/use-effect
+     :once
+     (reload-f)
+     nil)
+
+    [files reload-f]))
+
+
+(defn use-storage-url [path]
+  (let [[url set-url] (use-state nil)]
+
+    (hooks/use-effect
+     :always
+     (-> (storage/url> path)
+         (.then set-url))
+     nil)
+
+    url))
+
+#_(defn use-storage-urls [path]
+  (let [[urls set-urls] (use-state [])
+        [files reload-files] (use-storage-files path)]
+
+    (hooks/use-effect
+     :always
+     (-> (js/Promise.all
+          (map storage/url> files))
+         (.then set-urls))
+     nil)
+
+    [urls reload-files]))
 
 ;;;
 ;;; auth

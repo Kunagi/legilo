@@ -46,7 +46,12 @@
 
 
 
-(defmulti create-input (fn [field] (-> field :type (or "text"))))
+(defmulti create-input (fn [field]
+                         (if-let [type (-> field :type)]
+                           (if (keyword? type)
+                             (name type)
+                             type)
+                           "text")))
 
 (defmethod create-input "text" [field]
   ($ :div
@@ -267,7 +272,7 @@
             :update-f update-f
             :field field}))))
 
-(defnc FieldsCard [{:keys [entity update-f fields]}]
+(defnc FieldsCard [{:keys [entity update-f fields children]}]
   (s/assert map? entity)
   (s/assert fn? update-f)
   (s/assert ::form/fields fields)
@@ -275,7 +280,8 @@
      ($ FieldsCardAreas
         {:entity entity
          :update-f update-f
-         :fields fields})))
+         :fields fields})
+     children))
 
 ;;;
 ;;; doc fields
@@ -316,8 +322,14 @@
          :field field})))
 
 
-(defnc DocFieldsCard [{:keys [doc fields]}]
+(defnc DocFieldsCard [{:keys [doc fields title children]}]
   ($ mui/Card
+     (when title
+       ($ mui/CardContent
+          ($ mui/Typography
+             {:variant "overline"}
+             title)))
      ($ DocFieldsCardAreas
         {:doc doc
-         :fields fields})))
+         :fields fields})
+     children))

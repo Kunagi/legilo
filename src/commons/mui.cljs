@@ -16,9 +16,11 @@
 
    ["material-ui-chip-input" :default ChipInput]
 
+
    [commons.utils :as u]
    [commons.firestore :as fs]
    [commons.firestore-hooks :as firestore-hooks]
+   [commons.firebase-storage :as storage]
    [commons.command :as command]
    [commons.context :as context]
    [commons.form-ui :as form-ui]
@@ -291,6 +293,85 @@
    (str (resource/inline "../spa/version.txt"))
    " · "
    (str (resource/inline "../spa/version-time.txt"))))
+
+;;;
+;;; storage
+;;;
+
+(defnc HiddenStorageUploadField
+  [{:keys [id accept capture
+           storage-path then]}]
+  ($ :input
+     {:id id
+      :type "file"
+      :accept accept
+      :capture capture
+      :onChange (fn [event]
+                  (when-let [file (-> event .-target .-files (aget 0))]
+                    (-> (storage/upload-file> file storage-path)
+                        (.then #(storage/url> storage-path))
+                        (.then then))))
+      :style {:display "none"}}))
+
+
+(defnc StorageImg [{:keys [path height style]}]
+  (let [url (context/use-storage-url path)]
+    ($ :img
+       {:src url
+        :height height
+        :style style})))
+
+
+(defnc StorageImageActionArea
+  [{:keys [id storage-path upload-text
+           img-style]}]
+  (let [[url set-url] (context/use-state :loading)]
+
+    (context/use-effect
+     :always
+     (-> (storage/url> storage-path)
+         (.then set-url))
+     nil)
+
+    ($ mui/CardActionArea
+       {:onClick #(-> (js/document.getElementById id)
+                      .click)}
+       ($ mui/CardContent
+          ($ HiddenStorageUploadField
+             {:id id
+              :accept "image/jpeg"
+              :storage-path storage-path
+              :then set-url})
+          (if (= :loading url)
+            ($ mui/CircularProgress)
+            (if url
+              (if img-style
+                ($ :img
+                   {:src url
+                    :style img-style})
+                ($ mui/Avatar
+                   {:src url}))
+              ($ :div (or  upload-text
+                           "Bild auswählen..."))))))))
+
+
+(defnc StorageImagesScroller [{:keys [storage-path reload-on-change]}]
+  (let [[bilder-files reload] (context/use-storage-files storage-path)
+        [reload-marker set-reload-marker] (context/use-state reload-on-change)]
+    (when (not= reload-marker reload-on-change)
+      (reload)
+      (set-reload-marker reload-on-change))
+    ($ :div
+       {:style {:overflow-x "auto"
+                :reload-on-change reload-on-change}}
+       ($ :div
+          {:style {:display :flex
+                   :gap "8px"}}
+          (for [picture-ref bilder-files]
+            ($ StorageImg
+               {:key (-> ^js picture-ref)
+                :path picture-ref
+                :height "200px"}))))))
 
 ;;;
 ;;; auth

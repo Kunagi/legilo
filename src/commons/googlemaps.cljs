@@ -1,5 +1,8 @@
 (ns commons.googlemaps
   (:require
+
+   ["@material-ui/core" :as mui]
+
    [commons.logging :refer [log]]
    [commons.context :as c.context]
    [commons.mui :as cui :refer [defnc $ <>]]
@@ -40,40 +43,114 @@
     (js/google.maps.Marker. (clj->js marker))))
 
 
-(defnc Map
+(defnc MapWithPosition
   [{:keys [id
            height
            zoom
-           markers]}]
-  (let [map-element-id (or id "map")]
+           markers
+           position]}]
+  (let [map-element-id (or id "map")
+        [gmap set-gmap] (c.context/use-state nil)
+        [old-markers set-old-markers] (c.context/use-state nil)]
 
     (c.context/use-effect
      :always
-     (log ::Map.init-map)
-     (init-map map-element-id
-               {:center location-rinteln
-                :zoom 10})
-     (js/setTimeout
-      #(js/navigator.geolocation.getCurrentPosition
-        (fn [^js position]
-          (log ::Map.position
-               :position position)
-          (let [map (init-map
-                     map-element-id
-                     {:center {:lat (-> position .-coords .-latitude)
-                               :lng (-> position .-coords .-longitude)}
-                      :zoom (or zoom 10)})]
-            (doseq [marker markers]
-              (create-marker map marker))))
-        (fn [error]
-          (log ::Map.Error
-               :error error))) 1000)
+     (when-not (= markers old-markers)
+       (set-old-markers markers)
+       (log ::Map.init-map)
+       (let [gmap (init-map
+                   map-element-id
+                   {:center position
+                    :zoom (or zoom 10)})]
+         (set-gmap gmap)
+         (doseq [marker markers]
+           (create-marker gmap marker))))
      nil)
 
     ($ :div
        {:id map-element-id
         :style {:height (or height "40vh")}})))
 
+
+(defn geocode-address> [address]
+  (log ::geocode-address
+       :address address)
+  (js/Promise.
+   (fn [resolve reject]
+     (let [geocoder (js/google.maps.Geocoder.)
+           options {:address address}]
+       (.geocode
+        ^js geocoder
+        (clj->js options)
+        (fn [^js results status]
+          (if (= status "OK")
+            (resolve results)
+            (reject results))))))))
+
+
+(defnc PositionInput [{:keys [set-position]}]
+  (let [[ort set-ort] (c.context/use-state (js/window.localStorage.getItem "standort"))]
+    ($ :div
+       ($ :form
+          {:onSubmit (fn [^js event]
+                       (-> event .preventDefault)
+                       (js/window.localStorage.setItem "standort" ort)
+                       (when ort
+                         (-> (geocode-address> ort)
+                             (.then #(set-position (-> %
+                                                       first
+                                                       .-geometry
+                                                       .-location
+                                                       js->clj)))))
+                       false)}
+          ($ mui/TextField
+             {:label "Bitte Standort eingeben"
+              :defaultValue ort
+              :onChange #(-> % .-target .-value set-ort)
+              :type "text"
+              :autoComplete "address-level2"
+              :autoFocus true})))))
+
+
+(defnc Map
+  [{:keys [id height zoom markers]}]
+  (let [[position set-position] (c.context/use-state :loading)]
+
+    (c.context/use-effect
+     :once
+     (js/setTimeout
+      #(js/navigator.geolocation.getCurrentPosition
+        (fn [^js position]
+          (log ::Map.position
+               :position position)
+          (set-position {:lat (-> position .-coords .-latitude)
+                         :lng (-> position .-coords .-longitude)}))
+        (fn [error]
+          (set-position nil)
+          (log ::Map.Error
+               :error error))) 1000)
+     nil)
+
+    (case position
+      :loading ($ :div
+                  {:style {:height height
+                           :display :flex
+                           :place-content "center"
+                           :place-items "center"}}
+                  ($ mui/CircularProgress))
+      nil ($ :div
+             {:style {:height height
+                      :display :flex
+                      :place-content "center"
+                      :place-items "center"}}
+             ($ PositionInput
+                {:set-position set-position}))
+      ($ MapWithPosition
+         {:id id
+          :height height
+          :zoom zoom
+          :markers markers
+          :position position}))))
 
 
 (defn compute-distance-text> [origin destination]

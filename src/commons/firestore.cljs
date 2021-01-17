@@ -58,7 +58,10 @@
   (reduce (fn [data [k v]]
             (if-let [converted-v (convert-FieldValue-or-nil v)]
               (assoc data k converted-v)
-              data))
+              data
+              #_(if (map? v)
+                (assoc data k (inject-FieldValues v))
+                data)))
           data data))
 
 ;;; wrap docs to have access to id and path
@@ -197,6 +200,15 @@
   (-> doc-path
       ref
       (.update (unwrap-doc fields))))
+
+
+(defn update-child-fields> [doc child-path child-id child-changes]
+  (let [changes (reduce (fn [m [k v]]
+                          (assoc m
+                                 (str child-path "." child-id "." (name k))
+                                 v))
+                        {} child-changes)]
+    (update-fields> doc changes)))
 
 
 (defn delete-doc>

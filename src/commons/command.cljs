@@ -43,6 +43,8 @@
 
 (defmulti reify-effect> (fn [effect] (first effect)))
 
+;;; effect implementations
+
 (defmethod reify-effect> :db/update
   [[_ doc changes]]
   (firestore/update-fields> doc changes))
@@ -52,6 +54,7 @@
   (log ::reify-effect>--log
        :data data))
 
+;;;
 
 (defn reify-effects> [effects]
   (log ::reify-effects>
