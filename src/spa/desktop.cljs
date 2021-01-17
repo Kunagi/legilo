@@ -93,8 +93,7 @@
 
    {:path "/"
     :content home/HomePageContent
-    :data {:uid :uid
-           :user :user}}
+    :data {}}
    ])
 
 

@@ -46,11 +46,9 @@
 
 
 (defnc HomePageContent []
-  ($ mui/Container
-     {:maxWidth "sm"}
-     ($ ui/UserGuard
-        ($ Radars))))
-
+  (let [uid (context/use-uid)]
+    (when uid
+      ($ Radars))))
 
 
 ;;;
