@@ -155,14 +155,23 @@
           ($ :div
              ($ mui/Card
                 ($ cui/FormCardArea
-                   {:form {:fields [book/title book/author book/isbn book/asin book/tags]
+                   {:form {:fields [book/title book/author book/isbn book/asin]
                            :values book
                            :submit #(service/update-book> radar book %)}}
                    ($ mui/CardContent
                       ($ :div (-> book :author))
                       ($ :h2 (-> book :title))
-                      ($ cui/StringVectorChips {:values (-> book :tags)})
-                      ))))
+                      ))
+                ($ mui/Divider)
+                ($ cui/FormCardArea
+                   {:form {:fields [book/tags]
+                           :values book
+                           :submit #(service/update-book> radar book %)}}
+                   ($ mui/CardContent
+                      ($ cui/Stack
+                         ($ cui/FieldLabel
+                            {:text "Tags"})
+                         ($ cui/StringVectorChips {:values (-> book :tags)}))))))
 
           #_($ cui/FieldsCard
              {:entity book
