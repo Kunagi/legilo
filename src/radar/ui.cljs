@@ -70,7 +70,10 @@
 (defnc Filter [{:keys [radar]}]
   (let [selected-tag (use-selected-tag)]
     ($ cui/Stack
-       ($ cui/Flexbox
+       ($ :div
+          {:style {:display :flex
+                   :flex-wrap :wrap
+                   :gap "8px"}}
           (for [tag (radar/all-tags radar)]
             (let [selected? (= tag selected-tag)]
               ($ mui/Chip

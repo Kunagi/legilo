@@ -17,7 +17,7 @@ date -Iminutes > src/spa/version-time.txt
 clojure -A:build-release --config-merge "{:release-version \"v"${VERSION}"\"}"
 
 cd firebase
-firebase deploy
+npx firebase deploy
 
 cd ..
 bin/bump-version

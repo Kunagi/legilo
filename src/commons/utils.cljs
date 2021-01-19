@@ -1,6 +1,7 @@
 (ns commons.utils
   (:require
-   [clojure.spec.alpha :as s]))
+   [clojure.spec.alpha :as s]
+   [cljs.pprint :refer [pprint]]))
 
 
 ;;; maps
@@ -50,6 +51,11 @@
     (trampoline fn-or-value)
     fn-or-value))
 
+
+;;; edn
+
+(defn ->edn [data]
+  (with-out-str (pprint data)))
 
 ;;; promises
 

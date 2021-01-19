@@ -232,11 +232,12 @@
 
 (defnc StringVectorChips [{:keys [values]}]
   ($ :div
-     {:style {:display :flex}}
+     {:style {:display :flex
+              :flex-wrap :wrap
+              :gap "8px"}}
      (for [value values]
        ($ :div
-          {:key value
-           :style {:margin-right "8px"}}
+          {:key value}
           ($ mui/Chip
              {:label value})))))
 
