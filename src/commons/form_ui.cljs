@@ -157,7 +157,8 @@
     (d/div
      ($ mui/Dialog
         {:open (-> form :open? boolean)
-         :onClose close}
+         ;; :onClose close
+         }
         ($ mui/DialogContent
            ($ :div
               {:style {:width "500px"
