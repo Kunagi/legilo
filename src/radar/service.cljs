@@ -83,7 +83,7 @@
         asin (-> book :asin)]
     (cond
       isbn (openlibrary-service/cover-url-by-isbn isbn)
-      asin (amazon-service/cover-url-by-asin asin)
+      ;; asin (amazon-service/cover-url-by-asin asin)
       :else nil)))
 
 
