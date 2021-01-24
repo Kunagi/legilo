@@ -37,6 +37,7 @@
                            :background-position "center"
                            :background-size "cover"
                            :width "50px"
+                           :min-width "50px"
                            :border-top-left-radius "4px"
                            :border-bottom-left-radius "4px"
                            :overflow "hidden"}})
@@ -45,15 +46,15 @@
                    :width "50px"
                    :style {:overflow "hidden"}}))
              ($ mui/CardContent
-                {:className "CardContent--even-padding"}
+                {:className "CardContent--book"}
                 ($ :div
                    {:style {:display "flex"
                             :height "100%"
                             :align-items "center"}}
                    ($ :div
-                      {:style {:font-weight "bold"}}
+                      #_{:style {:font-weight "bold"}}
                       (-> book :title))
-                   (when-let [author (-> book :author)]
+                   #_(when-let [author (-> book :author)]
                      ($ :span
                         {:style {:color "#666"
                                  :margin-left "8px"}}
