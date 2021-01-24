@@ -127,7 +127,7 @@
         reviews (-> book :reviews vals)
         reviews-grouped (->> reviews (group-by #(= uid (-> % :uid))))
         own-review (first (get reviews-grouped true))
-        other-reviews (get reviews-grouped true)] ;; TODO
+        other-reviews (get reviews-grouped false)]
     ($ cui/Stack
        ($ :h4
           "What I say")
