@@ -155,7 +155,8 @@
 
 (defnc AppContent []
   ($ :div
-     {:id "AppContent"}
+     {:id "AppContent"
+      :style {:overflow-y "scroll"}}
      ($ cmui/PageSwitch
         {:pages (pages)
          :devtools-component (when ^boolean js/goog.DEBUG devtools/DevTools)})
