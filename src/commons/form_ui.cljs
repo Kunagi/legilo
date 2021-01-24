@@ -159,24 +159,27 @@
         {:open (-> form :open? boolean)
          :onClose close}
         ($ mui/DialogContent
-           (for [field (get form :fields)]
-             (let [field-id (-> field :id)
-                   error (form/field-error form field-id)]
-               (d/div
-                {:key field-id}
-                (create-input
-                 (assoc field
-                        :form form
-                        :error error
-                        :on-submit on-submit
-                        :on-change #(update-form
-                                     form/on-field-value-change
-                                     field-id %)))
-                (when-let [helptext (-> field :helptext)]
+           ($ :div
+              {:style {:width "500px"
+                       :max-width "100%"}}
+              (for [field (get form :fields)]
+                (let [field-id (-> field :id)
+                      error (form/field-error form field-id)]
                   (d/div
-                   {:style {:color "#666"}}
-                   helptext)))))
-           (get form :content)
+                   {:key field-id}
+                   (create-input
+                    (assoc field
+                           :form form
+                           :error error
+                           :on-submit on-submit
+                           :on-change #(update-form
+                                        form/on-field-value-change
+                                        field-id %)))
+                   (when-let [helptext (-> field :helptext)]
+                     (d/div
+                      {:style {:color "#666"}}
+                      helptext)))))
+              (get form :content))
            ;; (ui/data form)
            )
         ($ mui/DialogActions
