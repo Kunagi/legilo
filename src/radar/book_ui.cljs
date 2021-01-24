@@ -111,11 +111,20 @@
         own-review (first (get reviews-grouped true))
         other-reviews (get reviews-grouped false)]
     ($ cui/Stack
+       ($ :h4
+          "What I say")
        ($ OwnReview {:review own-review})
-       (for [review other-reviews]
-         ($ Review
-            {:key (-> review :uid)
-             :review review}))
+       ($ :h4
+          "What others say")
+       (if (seq other-reviews)
+         (for [review other-reviews]
+           ($ Review
+              {:key (-> review :uid)
+               :review review}))
+         ($ :div
+            {:style {:color "grey"
+                     :font-style "italic"}}
+            "no reviews yet"))
        #_(cui/data reviews-grouped))))
 
 
