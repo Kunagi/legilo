@@ -31,18 +31,32 @@
           ($ :div
              {:style {:display "flex"}}
              (when cover-url
-               ($ :img
+               ($ :div
+                  {:style {:background-image (str "url(" cover-url ")")
+                           :background-position "center"
+                           :background-size "cover"
+                           :width "50px"
+                           :border-top-left-radius "4px"
+                           :border-bottom-left-radius "4px"
+                           :overflow "hidden"}})
+               #_($ :img
                   {:src cover-url
                    :width "50px"
                    :style {:overflow "hidden"}}))
              ($ mui/CardContent
                 {:className "CardContent--even-padding"}
                 ($ :div
-                   {:style {:font-size "120%"
-                            :display "flex"
+                   {:style {:display "flex"
                             :height "100%"
                             :align-items "center"}}
-                 (-> book :title))))))))
+                   ($ :div
+                      {:style {:font-weight "bold"}}
+                      (-> book :title))
+                   (when-let [author (-> book :author)]
+                     ($ :span
+                        {:style {:color "#666"
+                                 :margin-left "8px"}}
+                        author)))))))))
 
 
 (defnc Section [{:keys [section books]}]
