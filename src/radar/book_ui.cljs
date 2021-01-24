@@ -103,6 +103,22 @@
                           "Leave a review?"
                           "Recommend this book?"))))))))))
 
+
+(defn counter [book]
+  (let [c (service/book-recommendation-count book)]
+    ($ :span
+       {:style {}}
+       ($ :span
+          {:style {:font-weight 100}}
+          c)
+       ($ :span
+          {:style {:font-weight 100
+                   }}
+          (if (= c 1)
+            " recommendation"
+            " recommendations")))))
+
+
 (defnc Reviews []
   (let [{:keys [radar book-id uid]} (c.context/use-context-data)
         book (radar/book-by-id radar book-id)
@@ -115,7 +131,8 @@
           "What I say")
        ($ OwnReview {:review own-review})
        ($ :h4
-          "What others say")
+          "What others say | "
+          (counter book))
        (if (seq other-reviews)
          (for [review other-reviews]
            ($ Review
@@ -128,19 +145,8 @@
        #_(cui/data reviews-grouped))))
 
 
-(defn counter [book]
-  (let [c (service/book-recommendation-count book)]
-    ($ :div
-       {:style {:margin "0 auto"
-                :text-align "center"}}
-       ($ :div
-          {:style {:font-weight 900
-                   :font-size "300%"}}
-          c)
-       ($ :div
-          (if (= c 1)
-            " Recommendation"
-            " Recommendations")))))
+
+
 
 
 (defnc Book [{:keys []}]
@@ -148,63 +154,62 @@
         book-id (context/use-book-id)
         book (radar/book-by-id radar book-id)
         isbn (-> book :isbn)
-        image-url (service/book-cover-url book)]
-    ($ :div
-       {:style {:display :grid
-                :grid-template-columns "auto minmax(100px,200px)"
-                :grid-gap "8px"}}
+        image-url (service/book-cover-url book)
 
-       ($ cui/Stack
+        BookDataCard ($ mui/Card
+                        ($ cui/FormCardArea
+                           {:form {:fields [book/title book/author book/isbn book/asin]
+                                   :values book
+                                   :submit #(service/update-book> radar book %)}}
+                           ($ mui/CardContent
+                              ($ :div (-> book :author))
+                              ($ :h2 (-> book :title))
+                              ))
+                        ($ mui/Divider)
+                        ($ cui/FormCardArea
+                           {:form {:fields [book/tags]
+                                   :values book
+                                   :submit #(service/update-book> radar book %)}}
+                           ($ mui/CardContent
+                              ($ cui/Stack
+                                 ($ cui/FieldLabel
+                                    {:text "Tags"})
+                                 ($ cui/StringVectorChips {:values (-> book :tags)})))))
 
-          ($ :div
-             ($ mui/Card
-                ($ cui/FormCardArea
-                   {:form {:fields [book/title book/author book/isbn book/asin]
-                           :values book
-                           :submit #(service/update-book> radar book %)}}
-                   ($ mui/CardContent
-                      ($ :div (-> book :author))
-                      ($ :h2 (-> book :title))
-                      ))
-                ($ mui/Divider)
-                ($ cui/FormCardArea
-                   {:form {:fields [book/tags]
-                           :values book
-                           :submit #(service/update-book> radar book %)}}
-                   ($ mui/CardContent
-                      ($ cui/Stack
-                         ($ cui/FieldLabel
-                            {:text "Tags"})
-                         ($ cui/StringVectorChips {:values (-> book :tags)}))))))
+        Cover (when image-url
+                ($ :img
+                   {:src image-url
+                    :referrer-policy "no-referrer"
+                    :class "MuiPaper-root MuiPaper-elevation1 MuiPaper-rounded"
+                    :style {:margin "0 auto"
+                            :max-width "30vw"}}))
 
-          #_($ cui/FieldsCard
-             {:entity book
-              :update-f #(service/update-book> radar book %)
-              :fields [book/title book/author book/isbn book/asin book/tags]})
+        AmazonBuyButton ($ cui/Button
+                           {:command book/view-on-amazon
+                            :href (if-let [asin (-> book :asin)]
+                                    (amazon-service/href asin)
+                                    (amazon-service/search-href (or isbn (-> book :title))))
+                            :target :_blank
+                            :color "secondary"})]
 
-          ($ Reviews))
+    ($ cui/Stack
 
        ($ :div
-          ($ cui/Stack
-             {:spacing 3}
+          {:style {:display :flex}}
 
-             (when image-url
-               ($ :img
-                  {:src image-url
-                   :referrer-policy "no-referrer"
-                   :class "MuiPaper-root MuiPaper-elevation1 MuiPaper-rounded"
-                   :style {:margin "0 auto"}}))
+          ($ :div
+             {:style {:flex "2"
+                      :margin-right "8px"}}
+             BookDataCard)
 
-             (counter book)
-
+          ($ :div
+             {:style {:flex "1"}}
              ($ cui/Stack
+                Cover
+                AmazonBuyButton
 
-                ($ cui/Button
-                   {:command book/view-on-amazon
-                    :href (if-let [asin (-> book :asin)]
-                            (amazon-service/href asin)
-                            (amazon-service/search-href (or isbn (-> book :title))))
-                    :target :_blank
-                    :color "secondary"}))
+                )))
+       #_(counter book)
 
-             )))))
+       ($ Reviews)
+       )))
