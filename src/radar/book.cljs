@@ -13,11 +13,12 @@
 
 (def-attr asin
   {:label "ASIN"
-   :helptext "Amazon Standard Identification Number. If you provide this, a
-picture of the book will be shown."})
+   :helptext "Amazon Standard Identification Number."})
 
 (def-attr isbn
-  {:label "ISBN"})
+  {:label "ISBN"
+   :helptext "International Standard Book Number. If you provide this, a
+picture of the book will be shown."})
 
 (def-attr tags
   {:label "Tags"
