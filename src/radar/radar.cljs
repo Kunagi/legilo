@@ -53,7 +53,7 @@ All users from this domain will have access to this Radar."})
        (group-by #(let [c (-> % :recommendations count)]
                     (cond
                       (>= c 5) :must-read
-                      (>= c 2) :should-read
+                      (>= c 3) :should-read
                       (>= c 1) :trial
                       :else :assess)))))
 
