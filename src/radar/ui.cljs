@@ -72,7 +72,8 @@
         {:style {:color "grey"
                  :font-style "italic"}}
         "no books here")
-     (for [book (->> books (sort-by service/book-recommendation-count) reverse)]
+     (for [book (->> books (sort-by (fn [book] [(- (service/book-recommendation-count book))
+                                                (-> book :title)])))]
        ($ Book
           {:key (-> book :id)
            :book book})))))
