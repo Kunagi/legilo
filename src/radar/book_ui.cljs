@@ -96,6 +96,8 @@
                 ($ mui/CardContent
                    (if (-> review :text)
                      ($ :div
+                        {:style {:font-size "0.875rem"
+                                 :line-height "1.43"}}
                         (-> review :text format-text))
                      ($ :p {:style {:color "grey"
                                       :font-style "italic"}}
@@ -125,7 +127,7 @@
         reviews (-> book :reviews vals)
         reviews-grouped (->> reviews (group-by #(= uid (-> % :uid))))
         own-review (first (get reviews-grouped true))
-        other-reviews (get reviews-grouped false)]
+        other-reviews (get reviews-grouped true)] ;; TODO
     ($ cui/Stack
        ($ :h4
           "What I say")
