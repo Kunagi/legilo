@@ -1,5 +1,6 @@
 (ns radar.ui
   (:require
+   [cljs.pprint :refer [pprint]]
    ["@material-ui/core" :as mui]
 
    [commons.logging :refer [log]]
@@ -158,5 +159,24 @@
         :fields [radar/title radar/allow-domain]})))
 
 
+(defn write-to-clipboard [text]
+  (-> ( js/navigator.clipboard.writeText text)))
+
+
+(defnc RadarBackupCard []
+  (let [radar (context/use-radar)]
+    ($ cui/SimpleCard
+       {:title "Radar Data"}
+       ($ :div
+          {:style {:max-height "30vh"
+                   :overflow "auto"}}
+          (cui/data radar))
+       ($ cui/Button
+          {:text "Copy to Clipboard"
+           :onClick #(write-to-clipboard (with-out-str (pprint radar)))}))))
+
+
 (defnc RadarConfigPageContent []
-  ($ RadarConfigCard))
+  ($ cui/Stack
+     ($ RadarConfigCard)
+     ($ RadarBackupCard)))
