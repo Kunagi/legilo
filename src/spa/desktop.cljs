@@ -39,7 +39,8 @@
 
           "& .CardContent--book" {:padding-top (-> theme (.spacing 0.5))
                                   :padding-bottom (-> theme (.spacing 0.5))
-                                  :min-height (-> theme (.spacing 7))}
+                                  :min-height (-> theme (.spacing 7))
+                                  :flex "1"}
 
           "& .MuiCard-root" {:overflow "unset"}
 

@@ -22,7 +22,8 @@
 
 
 (defnc Book[{:keys [book]}]
-  (let [radar-id (context/use-radar-id)
+  (let [uid (context/use-uid)
+        radar-id (context/use-radar-id)
         book-id (-> book :id)
         cover-url (service/book-cover-url book)]
     ($ mui/Card
@@ -49,11 +50,17 @@
                 {:className "CardContent--book"}
                 ($ :div
                    {:style {:display "flex"
+                            :justify-content "space-between"
                             :height "100%"
                             :align-items "center"}}
                    ($ :div
                       #_{:style {:font-weight "bold"}}
                       (-> book :title))
+                   (when (service/book-recommended-by-user? book uid)
+                     ($ :div
+                        {:className "material-icons"
+                         :style {:color "#999"}}
+                        "thumb_up"))
                    #_(when-let [author (-> book :author)]
                      ($ :span
                         {:style {:color "#666"
