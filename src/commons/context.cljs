@@ -23,7 +23,9 @@
 (def use-cols-union firestore/use-cols-union)
 
 (defn use-col-subset [col-subset args]
-  (firestore/use-col (models/col-subset-path col-subset args)))
+  (if (models/col-subset-is-union? col-subset)
+    (firestore/use-cols-union (models/col-subset-union-paths col-subset args))
+    (firestore/use-col (models/col-subset-path col-subset args))))
 
 (defn use-doc
   ([path]

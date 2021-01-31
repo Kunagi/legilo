@@ -1,6 +1,19 @@
 (ns base.user
   (:require
-   ["md5" :as md5]))
+   ["md5" :as md5]
+   [commons.models :as m :refer [def-model]]))
+
+
+
+(def-model User
+  [m/Doc
+   {}])
+
+
+(def-model Users
+  [m/Doc
+   {:doc User}])
+
 
 (defn best-display-name [user]
   (or

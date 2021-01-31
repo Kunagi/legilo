@@ -16,6 +16,8 @@
   (firestore/load-and-save>
    ["users" uid]
    #(merge % {:last-usage (firestore/timestamp)
+              :id uid
+              :uid uid
               :auth-email email
               :auth-domain (when email
                              (-> email (.substring (-> email (.indexOf "@") inc))))

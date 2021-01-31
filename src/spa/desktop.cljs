@@ -17,7 +17,6 @@
 
    [spa.devtools :as devtools]
    [spa.home-ui :as home]
-   [radar.repository :as radar-repository]
    [radar.ui :as radar-ui]
    [radar.radar :as radar]))
 

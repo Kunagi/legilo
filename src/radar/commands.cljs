@@ -2,6 +2,7 @@
   (:require
    [commons.models :as m :refer [def-model]]
 
+   [base.user :as user]
    [radar.radar :as radar]
    [radar.book :as book]))
 
@@ -12,11 +13,11 @@
 
     :col radar/Radars
 
-    :context-args [[:uid string?]]
+    :context-args [[:user user/User]]
 
-    :form (fn [{:keys [uid]}]
+    :form (fn [{:keys [user]}]
             {:fields [radar/title radar/allow-domain]
-             :values {:uids [uid]}})
+             :values {:uids [(-> user :id)]}})
     }])
 
 

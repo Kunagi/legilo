@@ -29,7 +29,25 @@ All users from this domain will have access to this Radar."}])
   [m/Col
    {:doc Radar}])
 
+(def-model RadarsForUser
+  [m/ColSubset--union
+   {:col Radars
+    :wheres (fn [{:keys [user]}]
+              (let [by-uid [["uids" "array-contains" (-> user :id)]]
+                    by-domain [["allow-domain" "==" (-> user :auth-domain)]]]
+                [by-uid by-domain]))}])
 
+;; (def-model RadarsUserByUid
+;;   [m/ColSubset
+;;    {:col Radars
+;;     :wheres (fn [{:keys [user]}]
+;;               [["uids" "array-contains" (-> user :id)]])}])
+
+;; (def-model RadarsByDomain
+;;   [m/ColSubset
+;;    {:col Radars
+;;     :wheres (fn [{:keys [user]}]
+;;               [["allow-domain" "==" (-> user :auth-domain)]])}])
 
 (defn all-tags [radar]
   (->> radar :books vals (mapcat :tags) set))

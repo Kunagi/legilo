@@ -4,19 +4,21 @@
    ["@material-ui/core" :as mui]
 
    [commons.context :as c.context]
-   [commons.mui :as cui :refer [defnc $ <> div]]
+   [commons.mui :as cui :refer [defnc $ <>]]
 
    [base.user :as user]
+   [base.context :as b.context]
 
    [amazon.service :as amazon-service]
 
    [radar.radar :as radar]
    [radar.book :as book]
    [radar.commands :as commands]
-   [radar.context :as context]
+))
 
-   [clojure.string :as str]))
 
+(defn use-book-id []
+  (c.context/use-param :book-id))
 
 (defn format-text [s]
   (-> s
@@ -60,9 +62,9 @@
 
 (defnc OwnReview [{:keys [review]}]
   (let [{:keys [radar]}(c.context/use-context-data)
-        book-id (context/use-book-id)
+        book-id (use-book-id)
         book (radar/book-by-id radar book-id)
-        uid (context/use-uid)
+        uid (b.context/use-uid)
         recommended? (book/recommended-by-user? book uid)]
     ($ :div
        ($ :div
@@ -140,17 +142,12 @@
          ($ :div
             {:style {:color "grey"
                      :font-style "italic"}}
-            "no reviews yet"))
-       #_(cui/data reviews-grouped))))
-
-
-
-
+            "no reviews yet")))))
 
 
 (defnc Book [{:keys []}]
   (let [{:keys [radar]}(c.context/use-context-data)
-        book-id (context/use-book-id)
+        book-id (use-book-id)
         book (radar/book-by-id radar book-id)
         isbn (-> book :isbn)
         image-url (book/cover-url book)

@@ -55,7 +55,6 @@
        :form form)
   (let [form (assoc form :fields (map-indexed  (partial initialize-field form)
                                           (-> form :fields)))]
-    (spy-form-values form)
     (-> form
         (assoc :values
                (reduce (fn [values field]
@@ -68,7 +67,6 @@
                                  (assoc values field-id value)
                                  values)))))
                        (or (-> form :values) {}) (-> form :fields)))
-        spy-form-values
         )))
 
 

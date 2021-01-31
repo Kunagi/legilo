@@ -117,9 +117,29 @@
         wheres (if (fn? wheres)
                  (wheres args)
                  wheres)]
-    [{:id (col-path col)
-      :wheres wheres}]))
+    [{:id (col-path col) :wheres wheres}]))
 
+
+(defn ColSubset--union [model]
+  (validate-model-schema
+   model [:map
+          [:col $Col]
+          [:wheres any?]])
+  (ColSubset
+   (-> model
+       (assoc :union? true))))
+
+
+(defn col-subset-is-union? [col-subset]
+  (-> col-subset :union?))
+
+(defn col-subset-union-paths [col-subset args]
+  (let [col (-> col-subset :col)
+        wheres (-> col-subset :wheres)
+        wheres (if (fn? wheres)
+                 (wheres args)
+                 wheres)]
+    (mapv (fn [wheres] [{:id (col-path col) :wheres wheres}] ) wheres)))
 
 (defn DocEntity [model]
   (validate-model-schema
