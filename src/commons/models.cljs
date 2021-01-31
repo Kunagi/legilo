@@ -148,7 +148,9 @@
 (defn Command--create-doc [command]
   (validate-model-schema
    command [:map
-            [:col $Col]])
+            [:col $Col]
+            [:update-values {:optional true} any?]
+            #_[:values-from-context {:optional true} [:vector keyword?]]])
   (Command
    (assoc command
           :f (fn [context]

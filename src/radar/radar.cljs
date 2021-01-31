@@ -20,6 +20,15 @@
 All users from this domain will have access to this Radar."}])
 
 
+(def-model Radar
+  [m/Doc
+   {}])
+
+
+(def-model Radars
+  [m/Col
+   {:doc Radar}])
+
 
 (def-model add-book
   [m/Attr

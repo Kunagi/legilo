@@ -11,6 +11,7 @@
    [base.ui :as ui]
 
    [radar.radar :as radar]
+   [radar.commands :as radar-commands]
    [radar.repository :as radar-repository]
    [radar.service :as radar-service]
    ))
@@ -38,8 +39,9 @@
                  (radar-repository/radars-by-domain-col-path domain)])]
     ($ cui/Stack
        ($ cui/Flexbox
-          ($ cui/Button
-             {:command (radar-service/create-radar-command uid)}))
+          ($ cui/CommandButton
+             {:command radar-commands/CreateRadar
+              :context {:uid uid}}))
        (for [radar (->> radars (sort-by radar/title-in-lowercase))]
        ($ Radar
           {:key (-> radar :firestore/id)
