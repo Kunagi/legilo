@@ -234,7 +234,8 @@
         inner-path (get command :inner-path)
         child-param (get command :child-param :values)
         changes-param (get command :changes-param :values)
-        static-changes (get command :static-changes)]
+        static-changes (get command :static-changes)
+        conform-changes (get command :conform-changes)]
     (Command
      (assoc command
             :context-args [[doc-param [:map
@@ -246,5 +247,8 @@
                        child (get context child-param)
                        child-id (-> child :id)
                        changes (merge (get context changes-param)
-                                      (u/fn->value static-changes context))]
+                                      (u/fn->value static-changes context))
+                       changes (if conform-changes
+                                 (conform-changes changes)
+                                 changes)]
                    [[:db/update-child doc inner-path child-id changes]]))))))
