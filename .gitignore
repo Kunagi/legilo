@@ -1,3 +1,4 @@
+firebase/dev-data
 firebase/public/*
 firebase/functions/*.js
 src/spa/version-time.txt
