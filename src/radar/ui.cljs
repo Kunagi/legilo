@@ -161,7 +161,6 @@
   (let [radar (context/use-radar)]
     ($ cui/FieldsCard
        {:entity radar
-        :update-f #(service/update-radar> radar %)
         :fields [radar/title radar/allow-domain]})))
 
 
