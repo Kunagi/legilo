@@ -232,19 +232,5 @@
                        child (get context child-param)
                        child-id (-> child :id)
                        changes (merge (get context changes-param)
-                                      static-changes)
-                       inner-path-as-string (reduce (fn [s path-element]
-                                                      (if s
-                                                        (str s "." (name path-element))
-                                                        (name path-element)))
-                                                    nil inner-path)
-
-                       changes (reduce (fn [changes [k v]]
-                                         (assoc changes
-                                                (str inner-path-as-string
-                                                     "." child-id
-                                                     "." (name k))
-                                                v))
-                                       {} changes)
-                       ]
-                   [[:db/update doc changes]]))))))
+                                      static-changes)]
+                   [[:db/update-child doc inner-path child-id changes]]))))))

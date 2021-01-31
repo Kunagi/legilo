@@ -9,14 +9,17 @@
 
 (defmethod runtime/reify-effect> :db/create
   [[_ path values]]
-  (let [values (assoc values
-                      :ts-created [:db/timestamp])]
-    (repository/create-doc> path values)))
+  (repository/create-doc> path values))
 
 
 (defmethod runtime/reify-effect> :db/update
   [[_ doc changes]]
-  (repository/update-fields> doc changes))
+  (repository/update-doc> doc changes))
+
+
+(defmethod runtime/reify-effect> :db/update-child
+  [[_ doc inner-path child-id values]]
+  (repository/update-doc-child> doc inner-path child-id values))
 
 
 (defmethod runtime/reify-effect> :fn

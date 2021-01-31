@@ -17,7 +17,23 @@
     (firestore/create-doc> path values)))
 
 
-(defn update-fields> [doc values]
+(defn update-doc> [doc values]
   (let [values (assoc values
                       :ts-updated [:db/timestamp])]
     (firestore/update-fields> doc values)))
+
+
+(defn update-doc-child> [doc inner-path child-id child-values]
+  (let [inner-path-as-string (reduce (fn [s path-element]
+                                       (if s
+                                         (str s "." (name path-element))
+                                         (name path-element)))
+                                     nil inner-path)
+        values (reduce (fn [values [k v]]
+                         (assoc values
+                                (str inner-path-as-string
+                                     "." child-id
+                                     "." (name k))
+                                v))
+                       {} child-values )]
+    (update-doc> doc values)))
