@@ -30,16 +30,6 @@ All users from this domain will have access to this Radar."}])
    {:doc Radar}])
 
 
-(def-model add-book
-  [m/Attr
-   {:label "Add Book"
-    :icon "add"
-    :form {:fields [book/title book/author book/isbn book/asin book/tags]}}])
-
-(def-model add-example-books
-  [m/Attr
-   {:label "Add example Books"}])
-
 
 (defn all-tags [radar]
   (->> radar :books vals (mapcat :tags) set))

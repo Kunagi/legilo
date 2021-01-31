@@ -20,13 +20,6 @@
   (-> book :recommendations (u/v-contains? uid)))
 
 
-(defn add-book> [radar data]
-  (let [book-id (str (random-uuid))
-        book (assoc data :id book-id)]
-    (repository/update-radar>
-     radar
-     {(str  "books." book-id) book})))
-
 (defn update-book> [radar book changes]
   (s/assert ::book/book book)
   (log ::update-book>
@@ -41,9 +34,6 @@
                     v))
            {} changes)))
 
-(defn add-book-command [radar]
-  (-> radar/add-book
-      (assoc-in [:form :submit] #(add-book> radar %))))
 
 
 (defn update-radar> [radar changes]
@@ -78,28 +68,3 @@
       ;; asin (amazon-service/cover-url-by-asin asin)
       :else nil)))
 
-
-;;;
-;;; Example Data
-;;;
-
-(defn add-example-books> [radar]
-  (js/Promise.all
-   (map #(add-book> radar %)
-        [
-         {:title "Domain Driven Design" :asin "0321125215"}
-         {:title "I Am a Strange Loop" :asin "0465030785"}
-         {:title "Reinventing Organizations" :asin "3800652854"}
-         {:title "Waking Up" :asin "1451636016"}
-         {:title "Developer Hegemony" :asin "B0722H41SG"}
-         {:title "Business Model Generation" :asin "359339474X"}
-         {:title "An Open Heart" :asin "0316989797"}
-         {:title "Structure and Interpretation of Computer Programs" :asin "0262510871"}
-         {:title "Out of Your Mind" :asin "1591791650"}
-         {:title "Consider the Lobster" :asin "0316156116"}
-         {:title "Leitfaden für faule Eltern" :asin "3499626721"}
-         ])))
-
-(defn add-example-books-command [radar]
-  (-> radar/add-example-books
-      (assoc :onClick #(add-example-books> radar))))

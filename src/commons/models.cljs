@@ -181,7 +181,7 @@
                    [[:db/update doc changes]]))))))
 
 
-(defn Command--create-doc-child-entity [command]
+(defn Command--update-doc--add-child [command]
   (validate-model-schema
    command [:map
             [:doc-param keyword?]

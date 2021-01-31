@@ -2,7 +2,8 @@
   (:require
    [commons.models :as m :refer [def-model]]
 
-   [radar.radar :as radar]))
+   [radar.radar :as radar]
+   [radar.book :as book]))
 
 
 (def-model CreateRadar
@@ -17,3 +18,14 @@
             {:fields [radar/title radar/allow-domain]
              :values {:uids [uid]}})
     }])
+
+
+(def-model AddBook
+  [m/Command--update-doc--add-child
+   {:label "Add Book"
+    :icon "add"
+
+    :doc-param :radar
+    :inner-path [:books]
+
+    :form {:fields [book/title book/author book/isbn book/asin book/tags]}}])

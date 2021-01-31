@@ -11,7 +11,7 @@
 
    [radar.radar :as radar]
    [radar.book :as book]
-   [radar.repository :as repository]
+   [radar.commands :as commands]
    [radar.service :as service]
    [radar.context :as context]
    [radar.book-ui :as book-ui]
@@ -123,8 +123,8 @@
            :component "h2"}
           (-> radar :title))
        ($ cui/Flexbox
-          ($ cui/Button
-             {:command #(service/add-book-command radar)
+          ($ cui/CommandButton
+             {:command commands/AddBook
               :color "secondary"}))
        ($ Filter
           {:radar radar})
@@ -133,10 +133,7 @@
             ($ Section
                {:key (-> section :idx)
                 :section section
-                :books (get (radar/books-by-section-key books) (-> section :key))}))
-          (when (empty? books)
-            ($ cui/Button
-               {:command (service/add-example-books-command radar)}))))))
+                :books (get (radar/books-by-section-key books) (-> section :key))}))))))
 
 
 (defnc RadarPageContent []
