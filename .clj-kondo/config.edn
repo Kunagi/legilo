@@ -1,6 +1,7 @@
 {:lint-as {
            helix.core/defnc               clojure.core/defn
            commons.mui/defnc              clojure.core/defn
+           commons.models/def-model       clojure.core/def
            commons.domain-api/def-attr    clojure.core/def
            commons.domain-api/def-command clojure.core/def
            }}

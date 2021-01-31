@@ -1,31 +1,35 @@
 (ns radar.radar
   (:require
    [clojure.spec.alpha :as s]
-   [commons.domain-api :refer [def-attr def-command]]
+   [commons.models :as m :refer [def-model]]
 
    [radar.book :as book]
    ))
 
 
-(def-attr title
-  {:label "Name"
-   :required? true})
+(def-model title
+  [m/Attr
+   {:label "Name"
+    :required? true}])
 
 
-(def-attr allow-domain
-  {:label "Allow Domain"
-   :helptext "Here you can specify a domain, like example.com or your-org.com.
-All users from this domain will have access to this Radar."})
+(def-model allow-domain
+  [m/Attr
+   {:label "Allow Domain"
+    :helptext "Here you can specify a domain, like example.com or your-org.com.
+All users from this domain will have access to this Radar."}])
 
 
 
-(def-command add-book
-  {:label "Add Book"
-   :icon "add"
-   :form {:fields [book/title book/author book/isbn book/asin book/tags]}})
+(def-model add-book
+  [m/Attr
+   {:label "Add Book"
+    :icon "add"
+    :form {:fields [book/title book/author book/isbn book/asin book/tags]}}])
 
-(def-command add-example-books
-  {:label "Add example Books"})
+(def-model add-example-books
+  [m/Attr
+   {:label "Add example Books"}])
 
 
 (defn all-tags [radar]

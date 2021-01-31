@@ -8,6 +8,7 @@
 
    ["react-router-dom" :as router]
 
+   [commons.models :as models]
    [commons.firestore-hooks :as firestore]
    [commons.firebase-storage :as storage]
 
@@ -20,9 +21,17 @@
 
 (def use-col firestore/use-col)
 (def use-cols-union firestore/use-cols-union)
-(def use-doc firestore/use-doc)
 
+(defn use-col-subset [col-subset args]
+  (firestore/use-col (models/col-subset-path col-subset args)))
 
+(defn use-doc
+  ([path]
+   (firestore/use-doc path))
+  ([col-model  doc-id]
+   (firestore/use-doc [(models/col-path col-model) doc-id])))
+
+;; TODO deprecated
 (defn use-params []
   (->> (router/useParams)
        cljs-bean/->clj
@@ -30,9 +39,20 @@
                  (assoc m (csk/->kebab-case k) v))
                {})))
 
-
+;; TODO deprecated
 (defn use-param [param-key]
   (-> (use-params) (get param-key)))
+
+
+(defn use-params-2 []
+  (->> (router/useParams)
+       cljs-bean/->clj
+       (reduce (fn [m [k v]]
+                 (assoc m k v))
+               {})))
+
+(defn use-param-2 [param-key]
+  (-> (use-params-2) (get param-key)))
 
 
 (defn atom-hook

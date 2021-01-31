@@ -31,6 +31,14 @@
     m))
 
 
+(defn assoc-if-not-nil
+  "Assoc if the value `v` ist not nil."
+  [m k v]
+  (if (nil? v)
+    m
+    (assoc m k v)))
+
+
 ;;; vectors
 
 (defn v-contains?
@@ -51,6 +59,10 @@
     (trampoline fn-or-value)
     fn-or-value))
 
+(defn safe-apply [f args]
+  (if f
+    (apply f args)
+    (first args)))
 
 ;;; edn
 
@@ -87,10 +99,11 @@
 
 
 (defn chain-promise-fns> [input-value fns]
-  (if-let [fn> (first fns)]
-    (-> (fn> input-value)
-        (.then #(chain-promise-fns> % (rest fns))))
-    (js/Promise.resolve input-value)))
+  (let [fns (remove nil? fns)]
+    (if-let [fn> (first fns)]
+      (-> (fn> input-value)
+          (.then #(chain-promise-fns> % (rest fns))))
+      (js/Promise.resolve input-value))))
 
 
 (defn apply>

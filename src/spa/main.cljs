@@ -3,8 +3,10 @@
    ["react-dom" :as rdom]
    [helix.core :refer [$]]
 
-   [commons.logging :refer [log]]
    [commons.firestore-init-spa]
+   [commons.effects]
+
+   [commons.logging :refer [log]]
    [commons.context :as c.context]
 
    [base.service]

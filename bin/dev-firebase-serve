@@ -4,4 +4,4 @@ cp -r resources/spa/* firebase/public/
 
 cd firebase
 #firebase serve
-npx firebase emulators:start
+firebase emulators:start --import=./dev-data --export-on-exit

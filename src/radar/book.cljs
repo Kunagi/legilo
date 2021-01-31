@@ -1,29 +1,34 @@
 (ns radar.book
   (:require
    [clojure.spec.alpha :as s]
-   [commons.domain-api :refer [def-attr def-command]]))
+   [commons.models :as m :refer [def-model]]))
 
 
-(def-attr title
-  {:label "Title"
-   :required? true})
+(def-model title
+  [m/Attr
+   {:label "Title"
+    :required? true}])
 
-(def-attr author
-  {:label "Author"})
+(def-model author
+  [m/Attr
+   {:label "Author"}])
 
-(def-attr asin
-  {:label "ASIN"
-   :helptext "Amazon Standard Identification Number."})
+(def-model asin
+  [m/Attr
+   {:label "ASIN"
+    :helptext "Amazon Standard Identification Number."}])
 
-(def-attr isbn
-  {:label "ISBN"
-   :helptext "International Standard Book Number. If you provide this, a
-picture of the book will be shown."})
+(def-model isbn
+  [m/Attr
+   {:label "ISBN"
+    :helptext "International Standard Book Number. If you provide this, a
+picture of the book will be shown."}])
 
-(def-attr tags
-  {:label "Tags"
-   :type "chips"
-   :helptext "Type in a tag and submit with RETURN."})
+(def-model tags
+  [m/Attr
+   {:label "Tags"
+    :type "chips"
+    :helptext "Type in a tag and submit with RETURN."}])
 
 
 (defn contains-tag? [book tag]
@@ -41,22 +46,24 @@ picture of the book will be shown."})
   [:map])
 
 
-(def-command recommend
-  {:label "Recommend"
-   :icon "thumb_up"
-   ;; :args {:book Book
-   ;;        :uid string?}
-   ;; :f (fn [{:keys [gruppe uid]}]
-   ;;      [[:db/update gruppe
-   ;;        {:mitglieder [:db/array-remove [uid]]}]])
-   })
+(def-model recommend
+  [m/Command
+   {:label "Recommend"
+    :icon "thumb_up"
+    ;; :args {:book Book
+    ;;        :uid string?}
+    ;; :f (fn [{:keys [gruppe uid]}]
+    ;;      [[:db/update gruppe
+    ;;        {:mitglieder [:db/array-remove [uid]]}]])
+    }])
 
 
-(def-command un-recommend
-  {:label "Retract Recommendation"})
+(def-model un-recommend
+  [m/Command
+   {:label "Retract Recommendation"}])
 
 
-(def-command view-on-amazon
-  {:label "Amazon"
-   :icon "shopping_cart"})
-
+(def-model view-on-amazon
+  [m/Command
+   {:label "Amazon"
+    :icon "shopping_cart"}])

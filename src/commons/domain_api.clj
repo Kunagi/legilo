@@ -1,8 +1,10 @@
-(ns commons.domain-api)
+(ns commons.domain-api
+  (:require
+   [clojure.string :as str]))
 
 
 (defn- def-with-id [sym config-map init-f]
-  (let [id (keyword (name sym))
+  (let [id (-> sym name str/lower-case keyword)
         config-map (assoc config-map :id id)]
     (if init-f
       `(def ~sym (~init-f ~config-map))

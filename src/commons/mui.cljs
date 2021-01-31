@@ -1,6 +1,8 @@
 (ns commons.mui
-  (:require-macros [commons.mui])
+  (:require-macros [commons.mui]
+                   [clojure.string :as str])
   (:require
+   [clojure.string :as str]
    [cljs.pprint :refer [pprint]]
    [shadow.resource :as resource]
    [cljs-bean.core :as cljs-bean]
@@ -17,18 +19,19 @@
    ["material-ui-chip-input" :default ChipInput]
 
 
+   [commons.logging :refer [log]]
    [commons.utils :as u]
+   [commons.models :as models]
    [commons.firestore :as fs]
    [commons.firestore-hooks :as firestore-hooks]
    [commons.firebase-storage :as storage]
-   [commons.command :as command]
+   [commons.runtime :as runtime]
    [commons.context :as context]
    [commons.form-ui :as form-ui]
    ))
 
 
 (def StringVectorChips form-ui/StringVectorChips)
-(def CommandCardArea form-ui/CommandCardArea)
 (def FormCardArea form-ui/FormCardArea)
 (def FieldCardArea form-ui/FieldCardArea)
 (def FieldsCardAreas form-ui/FieldsCardAreas)
@@ -52,13 +55,22 @@
 
 
 (defn use-theme []
-  (cljs-bean/->clj (mui-styles/useTheme)))
+  (mui-styles/useTheme))
 
 (defn make-styles [styles-f]
   (mui-styles/makeStyles
    (fn [theme]
      (clj->js (styles-f theme)))))
 
+(defn use-styles-class [styles-f]
+  (let [theme (use-theme)
+        styles-f-wrapper (fn [theme]
+                           {:root (if (fn? styles-f)
+                                    (styles-f theme)
+                                    styles-f)})
+        use-styles (make-styles styles-f-wrapper)
+        ^js styles (use-styles theme)]
+    (-> styles .-root)))
 
 ;;;
 ;;; styles
@@ -162,29 +174,215 @@
         child)))))
 
 
+;;; errors
+
+(defonce ERROR (atom nil))
+
+(def use-error (commons.context/atom-hook ERROR))
+
+(defn show-error [error]
+  (runtime/report-error error)
+  (reset! ERROR error))
+
+
+(defn destructure-error [error]
+  (cond
+
+    (instance? js/Error error)
+    [(-> error .-message)
+     (ex-data error)
+     (-> error .-stack)
+     (ex-cause error)]
+
+    (string? error)
+    [error]
+
+    (-> error :message)
+    [(-> error :message)
+     (-> error :data)]
+
+    :else
+    [(str error)]))
+
+
+(defnc ErrorInfo [{:keys [error]}]
+  (let [[message dat stack cause] (destructure-error error)
+        theme (use-theme)]
+    ($ Stack
+       ($ :div
+          {:style {:font-size "120%"
+                   :font-weight 900
+                   :color (-> theme .-palette .-primary .-main)}}
+          message)
+       (when dat
+         ($ :div
+            {:style {:max-height "200px"
+                     :overflow "auto"}}
+            (data dat)))
+       (when stack
+         ($ :div
+            {:style {:max-height "200px"
+                     :overflow "auto"
+                     :font-family "monospace"
+                     :white-space "pre-wrap"
+                     :background-color "#333"
+                     :color "#6ff"
+                     :padding "1rem"
+                     :border-radius "4px"
+                     :margin "1px"
+                     }}
+            stack))
+       (when cause
+         ($ ErrorInfo {:error cause})))))
+
+
+(defnc ErrorDialog []
+  (let [error (use-error)]
+    ($ mui/Dialog
+       {:open (-> error boolean)
+        :onClose #(reset! ERROR nil)}
+       ($ mui/DialogTitle
+          "Error")
+       ($ mui/DialogContent
+          ($ ErrorInfo {:error error}))
+       ($ mui/DialogActions
+          ($ mui/Button
+             {:onClick #(reset! ERROR nil)}
+             "Close")))))
+
+
+(defn wrap-in-error-handler [f]
+  (when f
+    (fn [& args]
+      (try
+        (apply f args)
+        (catch :default error (show-error error))))))
+
+
+;;; commands
+
+
+(defn upgrade-legacy-command [command]
+  (if (-> command :type)
+    command
+    (if (-> command :onClick)
+      command
+      (if (-> command :form)
+        (do
+          (js/console.error "Missing :type in form command:" command)
+          (assoc command :type :form))
+        command))))
+
+(defn- complete-form [form context]
+  (let [form (if (fn? form)
+               (form context)
+               form)
+        form (update form
+                     :values
+                     #(merge (-> context :form-defaults)
+                             %))]
+    form))
+
+
+(defn- new-command-on-click [command context then]
+  (runtime/validate-command command)
+  (let [ui-context (context/use-context-data)
+        form (-> command :form)]
+    (if-not form
+      #(-> (runtime/execute-command> command (merge ui-context context))
+           (.then (or then identity))
+           (.catch show-error))
+      #(let [context (merge ui-context context)
+             _ (runtime/validate-command-context command context)
+             form (complete-form form context)
+             submit (fn [values]
+                      (-> (runtime/execute-command>
+                           command
+                           (assoc context :values values))
+                          (.then (or then identity))
+                          (.catch show-error)))
+             form (assoc form :submit submit)]
+         (show-form-dialog form)))))
+
+
+(defnc CommandButton [{:keys [command context then
+                              variant color size
+                              icon as-icon?]}]
+  (let [command (u/trampoline-if command)
+        onClick (wrap-in-error-handler (new-command-on-click command context then))
+        variant (or variant "contained")
+        color (or color
+                  (when (-> command :inconspicuous?) "default")
+                  "primary")
+        icon (when-let [icon (or icon
+                                 (-> command :icon))]
+               ($ :div {:class "material-icons"} icon))]
+    (if as-icon?
+      ($ mui/IconButton
+         {:onClick onClick
+          :color color
+          :size size}
+         icon)
+      ($ mui/Button
+         {:onClick onClick
+          :variant variant
+          :color color
+          :startIcon icon
+          :size size}
+         (models/command-label command))
+      )))
+
+(defnc CommandCardArea [{:keys [command children context then]}]
+  (let [command (u/trampoline-if command)
+        onClick (wrap-in-error-handler (new-command-on-click command context then))]
+    ($ mui/CardActionArea
+       {:onClick onClick}
+       children)))
+
+
+(defn- complete-command [command]
+  (case (-> command :type)
+
+    :form
+    (assoc command
+           :f
+           (fn [context]
+             [[:fn #(show-form-dialog
+                     (-> command :form (complete-form context)))]]))
+
+    command))
+
 (defnc Button [{:keys [text icon
                        onClick to href target
                        variant color size
                        command
                        context
-                       then]}]
+                       then
+                       class
+                       styles]}]
+  (when command
+    (log ::Button.DEPRECATED.with-command
+         {:command command}))
   (let [context (merge (context/use-context-data)
                        context)
         command (u/trampoline-if command)
+        command (when command (-> command upgrade-legacy-command complete-command ))
         text (or text (-> command :label) ":text missing")
         icon (when-let [icon (or icon (-> command :icon))]
                (if (string? icon)
                  (d/div {:class "i material-icons"} icon)
                  icon))
-        onClick (or onClick
-                    (-> command :onClick)
-                    (when-let [form (-> command :form)]
-                      #(show-form-dialog form))
-                    #(-> (command/execute> command context)
-                         (.then (or then identity))))
+        onClick (wrap-in-error-handler
+                 (or onClick
+                     (-> command :onClick)
+                     #(-> (runtime/execute-command> command context)
+                          (.then (or then identity))
+                          (.catch show-error))))
         color (or color
                   (when (-> command :inconspicuous?) "default")
-                  "primary")]
+                  "primary")
+        styles-class (when styles (use-styles-class styles))
+        classes (str/join " " [class styles-class])]
     (if to
       ($ mui/Button
          {:to to
@@ -192,7 +390,8 @@
           :variant (or variant "contained")
           :color (or color "primary")
           :startIcon icon
-          :size size}
+          :size size
+          :className classes}
          text)
       ($ mui/Button
          {:onClick onClick
@@ -201,16 +400,26 @@
           :variant (or variant "contained")
           :color (or color "primary")
           :startIcon icon
-          :size size}
+          :size size
+          :className classes}
          text))))
 
 
-(defnc IconButton [{:keys [icon onClick color size command theme]}]
-  (let [command (u/trampoline-if command)
-        onClick (or onClick
-                    (-> command :onClick)
-                    (when-let [form (-> command :form)]
-                      #(show-form-dialog form)))
+
+
+
+(defnc IconButton [{:keys [icon onClick color size command theme className
+                           then context]}]
+  (let [context (merge (context/use-context-data)
+                       context)
+        command (u/trampoline-if command)
+        command (when command (-> command upgrade-legacy-command complete-command ))
+        onClick (wrap-in-error-handler
+                 (or onClick
+                     (-> command :onClick)
+                     #(-> (runtime/execute-command> command context)
+                          (.then (or then identity))
+                          (.catch show-error))))
         icon (when-let [icon (or icon
                                  (-> command :icon)
                                  "play_arrow")]
@@ -219,10 +428,13 @@
                         icon)
                  icon))]
     ($ mui/IconButton
-       {:onClick onClick
+       {:className className
+        :onClick onClick
         :color color
         :size size}
        icon)))
+
+
 
 
 (defnc CardOverline [{:keys [text]}]
@@ -278,6 +490,8 @@
             :value page}
            ($ :div
               ($ PageContentWrapper)
+              ($ ErrorDialog)
+              ($ FormDialogsContainer)
               (when (and  ^boolean js/goog.DEBUG devtools-component)
                 ($ devtools-component))))))))
 

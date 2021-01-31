@@ -17,6 +17,7 @@
 
    [commons.utils :as u]
    [commons.logging :refer [log]]
+   [commons.context :as c.context]
    ;; [commons.mui :as ui]
    [commons.form :as form]
    [commons.context :as context]
@@ -32,6 +33,7 @@
 
 (defn show-form-dialog [form]
   (let [form-id (random-uuid)
+        form (form/initialize form)
         form (assoc form
                     :open? true
                     :id form-id)]
@@ -133,11 +135,9 @@
             :label "Nein"
             :control ($ mui/Radio)}))))
 
-
 (defnc FormDialog [{:keys [form]}]
-  (let [form-id (-> form :id)
-        form (form/initialize form)
-        [form set-form] (hooks/use-state form)
+  (let [[form set-form] (hooks/use-state form)
+        form-id (-> form :id)
         update-form (fn [f & args]
                       (set-form (apply f (into [form] args))))
         close (fn []
@@ -147,19 +147,26 @@
                     (let [form (form/on-submit form)]
                       (update-form (fn [_] form))
                       (when-not (form/contains-errors? form)
-                        (let [submit (get form :submit)
-                              values (form/values form)]
+                        (let [values (form/values form)]
                           (log ::submit
                                :form form
                                :values values )
-                          (submit values )
-                          (close)))))]
+                          #_(when-let [command (get form :command)]
+                            (-> (runtime/execute-command>
+                                 command
+                                 (assoc context
+                                        :values values))
+                                (.then close)))
+                          (when-let [submit (get form :submit)]
+                            (submit values )
+                            (close))))))]
     (d/div
      ($ mui/Dialog
         {:open (-> form :open? boolean)
          ;; :onClose close
          }
         ($ mui/DialogContent
+           #_($ :pre (-> context keys str))
            ($ :div
               {:style {:width "500px"
                        :max-width "100%"}}
@@ -209,14 +216,6 @@
      children))
 
 
-(defnc CommandCardArea [{:keys [command children]}]
-  ($ mui/CardActionArea
-     {:onClick #(let [command (u/trampoline-if command)]
-                  (cond
-                    (-> command :form) (show-form-dialog (-> command :form))
-                    :else (throw (ex-info "Unsupported Command"
-                                          {:command (-> command :form)}))))}
-     children))
 
 (defnc FieldLabel [{:keys [text]}]
   (d/div
@@ -248,13 +247,15 @@
 
 (defnc FieldCardArea [{:keys [entity update-f field]}]
   (s/assert map? entity)
-  (s/assert fn? update-f)
   (s/assert ::form/field field)
-  (let [id (get field :id)
+  (let [id (or (-> field :id)
+               (-> field :attr/key))
         label (get field :label)
         value (get entity id)
         submit #(let [changes {id (get % id)}]
-                  (update-f changes))
+                  (if update-f
+                    (update-f changes)
+                    (fs/update-fields> entity %)))
         type (get field :type)]
     ($ FormCardArea
        {:form {:fields [(assoc field :value value)]
@@ -268,18 +269,17 @@
 
 (defnc FieldsCardAreas [{:keys [entity update-f fields]}]
   (s/assert map? entity)
-  (s/assert fn? update-f)
   (s/assert ::form/fields fields)
   (<> (for [field fields]
         ($ FieldCardArea
-           {:key (-> field :id)
+           {:key (or (-> field :id)
+                     (-> field :attr/key))
             :entity entity
             :update-f update-f
             :field field}))))
 
 (defnc FieldsCard [{:keys [entity update-f fields children]}]
   (s/assert map? entity)
-  (s/assert fn? update-f)
   (s/assert ::form/fields fields)
   ($ mui/Card
      ($ FieldsCardAreas
@@ -294,8 +294,10 @@
 ;;;
 
 
-(defnc DocFieldCardArea [{:keys [doc doc-path field]}]
-  (let [id (get field :id)
+(defnc DocFieldCardArea [{:keys [doc doc-path field value-filter]}]
+  (let [value-filter (or value-filter str)
+        id (or (get field :id)
+               (get field :attr/key))
         label (get field :label)
         value (get doc id)
         submit #(let [changes {id (get % id)}]
@@ -309,22 +311,24 @@
              {:label label}
              (case type
                "chips" ($ StringVectorChips {:values value})
-               (str value)))))))
+               (value-filter value)))))))
 
 
 (defnc DocFieldsCardAreas [{:keys [doc fields]}]
   (<> (for [field fields]
         ($ DocFieldCardArea
-           {:key (-> field :id)
+           {:key (or (-> field :id)
+                     (-> field :model/id))
             :doc doc
             :field field}))))
 
 
-(defnc DocFieldCard [{:keys [doc field]}]
+(defnc DocFieldCard [{:keys [doc field value-filter]}]
   ($ mui/Card
      ($ DocFieldCardArea
         {:doc doc
-         :field field})))
+         :field field
+         :value-filter value-filter})))
 
 
 (defnc DocFieldsCard [{:keys [doc fields title children]}]
