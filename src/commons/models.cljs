@@ -200,14 +200,8 @@
                        child-id (id-generator context)
                        entity (merge template
                                      {:id child-id}
-                                     (get context changes-param))
-                       inner-path-as-string (reduce (fn [s path-element]
-                                                      (if s
-                                                        (str s "." (name path-element))
-                                                        (name path-element)))
-                                                    nil inner-path)
-                       changes {(str inner-path-as-string "." child-id) entity}]
-                   [[:db/update doc changes]]))))))
+                                     (get context changes-param))]
+                   [[:db/add-child doc inner-path entity]]))))))
 
 
 (defn Command--update-doc--update-child [command]
