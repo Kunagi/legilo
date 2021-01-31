@@ -53,21 +53,23 @@
   (s/assert ::form form)
   (log ::initialize
        :form form)
-  (-> form
-      (assoc :fields (map-indexed  (partial initialize-field form)
-                                   (-> form :fields)))
-      (assoc :values
-             (reduce (fn [values field]
-                       (let [field-id (-> field field-id)]
-                         (if (get values field-id)
-                           values
-                           (let [value (or (-> field :value)
-                                           (-> field :default-value))]
-                             (if value
-                               (assoc values field-id value)
-                               value)))))
-                     (or (-> form :values) {}) (-> form :fields)))
-))
+  (let [form (assoc form :fields (map-indexed  (partial initialize-field form)
+                                          (-> form :fields)))]
+    (spy-form-values form)
+    (-> form
+        (assoc :values
+               (reduce (fn [values field]
+                         (let [field-id (-> field field-id)]
+                           (if (get values field-id)
+                             values
+                             (let [value (or (-> field :value)
+                                             (-> field :default-value))]
+                               (if value
+                                 (assoc values field-id value)
+                                 values)))))
+                       (or (-> form :values) {}) (-> form :fields)))
+        spy-form-values
+        )))
 
 
 (defn load-values [form values-map]
