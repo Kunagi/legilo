@@ -70,7 +70,6 @@
              :fields-values (book/review-by-uid book uid)})
 
     :f (fn [{:keys [radar book uid values]}]
-         (js/console.log "YEY" uid values)
          (let [review (book/review-by-uid book uid)
                path [:books (-> book :id) :reviews]]
            (if review

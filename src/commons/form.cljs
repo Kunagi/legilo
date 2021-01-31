@@ -3,7 +3,8 @@
    [clojure.spec.alpha :as s]
    [commons.logging :refer [log]]
    [commons.models :as models]
-   ))
+
+   [clojure.string :as str]))
 
 (s/def ::id keyword?)
 (s/def ::submit fn?)
@@ -112,12 +113,13 @@
 
 
 (defn adopt-value [value form field-id]
-  (if (or (nil? value)
-          (= "" value))
-    nil
-    (case (field-type form field-id)
-      "number" (js/parseInt value)
-      value)))
+  (let [value (if (string? value) (str/trim value) value)]
+    (if (or (nil? value)
+            (= "" value))
+      nil
+      (case (field-type form field-id)
+        "number" (js/parseInt value)
+        value))))
 
 
 (defn on-field-value-change [form field-id new-value]
