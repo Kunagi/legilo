@@ -73,32 +73,11 @@
 
 (defn pages []
   [
-   {:path "/ui/menu"
-    :content home/MenuPageContent
-    :data {:uid :uid
-           :user :user}}
-
-   {:path "/ui/radars/:Radar/book/:bookId"
-    :content radar-ui/BookPageContent
-    :data {:uid :uid
-           :user :user
-           :radar [:param-doc radar/Radars]}}
-
-   {:path "/ui/radars/:Radar/config"
-    :content radar-ui/RadarConfigPageContent
-    :data {:uid :uid
-           :user :user
-           :radar [:param-doc radar/Radars]}}
-
-   {:path "/ui/radars/:Radar"
-    :content radar-ui/RadarPageContent
-    :data {:uid :uid
-           :user :user
-           :radar [:param-doc radar/Radars]}}
-
-   {:path "/"
-    :content home/HomePageContent
-    :data {}}
+   home/MenuPage
+   radar-ui/BookPage
+   radar-ui/RadarConfigPage
+   radar-ui/RadarPage
+   home/HomePage
    ])
 
 

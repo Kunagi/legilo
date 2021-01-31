@@ -252,3 +252,22 @@
                                  (conform-changes changes)
                                  changes)]
                    [[:db/update-child doc inner-path child-id changes]]))))))
+
+
+(defn Page [model]
+  (validate-model-schema
+   model [:map
+          [:path string?]
+          [:content any?]
+          [:data {:required false} map?]
+          ])
+  (-> model
+      ))
+
+
+(defn Spa [model]
+  (validate-model-schema
+   model [:map
+          ])
+  (-> model
+      ))

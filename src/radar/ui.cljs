@@ -5,8 +5,9 @@
 
    [commons.utils :as u]
    [commons.logging :refer [log]]
+   [commons.models :as models :refer [def-model]]
    [commons.context :as c.context]
-   [commons.mui :as cui :refer [defnc $ <> div]]
+   [commons.mui :as cui :refer [defnc $]]
 
    [base.context :as b.context]
    [base.ui :as ui]
@@ -144,9 +145,24 @@
   ($ Radar))
 
 
+(def-model RadarPage
+  [models/Page
+   {:path "/ui/radars/:Radar"
+    :content RadarPageContent
+    :data {:uid :uid
+           :user :user
+           :radar [:param-doc radar/Radars]}}])
+
 (defnc BookPageContent []
   ($ book-ui/Book))
 
+(def-model BookPage
+  [models/Page
+   {:path "/ui/radars/:Radar/book/:bookId"
+    :content BookPageContent
+    :data {:uid :uid
+           :user :user
+           :radar [:param-doc radar/Radars]}}])
 
 ;;;
 ;;; Radar Config
@@ -189,3 +205,12 @@
   ($ cui/Stack
      ($ RadarConfigCard)
      ($ RadarBackupCard)))
+
+
+(def-model RadarConfigPage
+  [models/Page
+   {:path "/ui/radars/:Radar/config"
+    :content RadarConfigPageContent
+    :data {:uid :uid
+           :user :user
+           :radar [:param-doc radar/Radars]}}])

@@ -3,6 +3,7 @@
    ["@material-ui/core" :as mui]
 
    [commons.logging :refer [log]]
+   [commons.models :as models :refer [def-model]]
    [commons.context :as c.context]
    [commons.mui :as cui :refer [defnc $]]
 
@@ -48,6 +49,12 @@
       ($ Radars))))
 
 
+(def-model HomePage
+  [models/Page
+   {:path "/"
+    :content HomePageContent
+    :data {}}])
+
 ;;;
 ;;; Sidebar Main Menu
 ;;;
@@ -79,3 +86,11 @@
 
 (defnc MenuPageContent []
   ($ CurrentUserCard))
+
+
+(def-model MenuPage
+  [models/Page
+   {:path "/ui/menu"
+    :content MenuPageContent
+    :data {:uid :uid
+           :user :user}}])
