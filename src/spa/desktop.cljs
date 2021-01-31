@@ -175,7 +175,6 @@
         {:class (-> styles .-root)}
         ($ AppBar)
         ($ AppContent)
-        ($ cmui/FormDialogsContainer)
         ))))
 
 
