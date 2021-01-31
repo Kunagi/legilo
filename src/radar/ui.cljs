@@ -12,7 +12,6 @@
    [radar.radar :as radar]
    [radar.book :as book]
    [radar.commands :as commands]
-   [radar.service :as service]
    [radar.context :as context]
    [radar.book-ui :as book-ui]
    ))
@@ -23,7 +22,8 @@
 
 (defnc Book[{:keys [book]}]
   (let [uid (context/use-uid)
-        radar-id (context/use-radar-id)
+        {:keys [radar]} (c.context/use-context-data)
+        radar-id (-> radar :id)
         book-id (-> book :id)
         cover-url (book/cover-url book)]
     ($ mui/Card
@@ -110,7 +110,7 @@
 
 (defnc Radar []
   (let [selected-tag (use-selected-tag)
-        radar (context/use-radar)
+        {:keys [radar]} (c.context/use-context-data)
         books (radar/books radar)
         books (if selected-tag
                 (->> books
@@ -150,7 +150,7 @@
 
 
 (defnc MenuIcon []
-  (let [radar-id (context/use-radar-id)]
+  (let [radar-id (c.context/use-param-2 :radarId)]
     ($ mui/IconButton
        {:component ui/Link
         :to (str "/ui/radars/" radar-id "/config")}
@@ -158,7 +158,7 @@
 
 
 (defnc RadarConfigCard []
-  (let [radar (context/use-radar)]
+  (let [{:keys [radar]} (c.context/use-context-data)]
     ($ cui/FieldsCard
        {:entity radar
         :fields [radar/title radar/allow-domain]})))
@@ -169,7 +169,7 @@
 
 
 (defnc RadarBackupCard []
-  (let [radar (context/use-radar)]
+  (let [{:keys [radar]} (c.context/use-context-data)]
     ($ cui/SimpleCard
        {:title "Radar Data"}
        ($ :div

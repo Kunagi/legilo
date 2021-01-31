@@ -58,6 +58,27 @@
              :fields-values book}) }])
 
 
+(def-model UpdateBookReview
+  [m/Command
+   {:label "Edit Book Review"
+
+    :form (fn [{:keys [book uid]}]
+            {:fields [{:id :text
+                       :rows 5
+                       :multiline? true}]
+             :fields-values (book/review-by-uid book uid)})
+
+    :f (fn [{:keys [radar book uid values]}]
+         (js/console.log "YEY" uid values)
+         (let [review (book/review-by-uid book uid)
+               path [:books (-> book :id) :reviews]]
+           (if review
+             [[:db/update-child radar path uid values]]
+             [[:db/add-child radar path (assoc values
+                                               :id uid
+                                               :uid uid)]])))}])
+
+
 (def-model RecommendBook
   [m/Command--update-doc--update-child
    {:label "Recommend Book"

@@ -13,7 +13,6 @@
    [radar.radar :as radar]
    [radar.commands :as radar-commands]
    [radar.repository :as radar-repository]
-   [radar.service :as radar-service]
    ))
 
 
@@ -43,9 +42,9 @@
              {:command radar-commands/CreateRadar
               :context {:uid uid}}))
        (for [radar (->> radars (sort-by radar/title-in-lowercase))]
-       ($ Radar
-          {:key (-> radar :firestore/id)
-           :radar radar})))))
+         ($ Radar
+            {:key (-> radar :firestore/id)
+             :radar radar})))))
 
 
 (defnc HomePageContent []

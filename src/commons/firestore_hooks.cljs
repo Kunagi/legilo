@@ -130,9 +130,14 @@
   [paths]
   (log ::use-cols-union
        :paths paths)
-  (reduce (fn [ret path]
-            (into ret (use-col path)))
-          #{} paths))
+  (->> paths
+       (reduce (fn [ret path]
+                 (let [docs (use-col path)]
+                   (reduce (fn [ret doc]
+                             (assoc ret (-> doc  :id) doc))
+                           ret docs)))
+               {})
+       vals))
 
 
 (defn use-doc

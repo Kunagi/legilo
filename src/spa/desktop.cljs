@@ -18,7 +18,8 @@
    [spa.devtools :as devtools]
    [spa.home-ui :as home]
    [radar.repository :as radar-repository]
-   [radar.ui :as radar]))
+   [radar.ui :as radar-ui]
+   [radar.radar :as radar]))
 
 
 ;;; MUI Theme
@@ -78,23 +79,23 @@
     :data {:uid :uid
            :user :user}}
 
-   {:path "/ui/radars/:radarId/book/:bookId"
-    :content radar/BookPageContent
+   {:path "/ui/radars/:Radar/book/:bookId"
+    :content radar-ui/BookPageContent
     :data {:uid :uid
            :user :user
-           :radar [:param-doc :radar-id radar-repository/radar-path]}}
+           :radar [:param-doc radar/Radars]}}
 
-   {:path "/ui/radars/:radarId/config"
-    :content radar/RadarConfigPageContent
+   {:path "/ui/radars/:Radar/config"
+    :content radar-ui/RadarConfigPageContent
     :data {:uid :uid
            :user :user
-           :radar [:param-doc :radar-id radar-repository/radar-path]}}
+           :radar [:param-doc radar/Radars]}}
 
-   {:path "/ui/radars/:radarId"
-    :content radar/RadarPageContent
+   {:path "/ui/radars/:Radar"
+    :content radar-ui/RadarPageContent
     :data {:uid :uid
            :user :user
-           :radar [:param-doc :radar-id radar-repository/radar-path]}}
+           :radar [:param-doc radar/Radars]}}
 
    {:path "/"
     :content home/HomePageContent
@@ -148,7 +149,7 @@
         ($ mui/Toolbar
            ($ router/Switch
               ($ router/Route {:path "/ui/radars/:radarId"}
-                 ($ radar/MenuIcon)))
+                 ($ radar-ui/MenuIcon)))
            ($ SignInButtonOrMenu
               {:to "/ui/menu"}))
         )))

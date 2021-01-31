@@ -13,7 +13,6 @@
    [radar.radar :as radar]
    [radar.book :as book]
    [radar.commands :as commands]
-   [radar.service :as service]
    [radar.context :as context]
 
    [clojure.string :as str]))
@@ -59,16 +58,8 @@
                       (format-text (-> review :text))))))))))
 
 
-(defn start-review [radar book uid text]
-  (cui/show-form-dialog
-   {:fields [{:id :text
-              :value text
-              :rows 5
-              :multiline? true}]
-    :submit #(service/update-review-text> radar book uid (assoc % :uid uid))}))
-
 (defnc OwnReview [{:keys [review]}]
-  (let [radar (context/use-radar)
+  (let [{:keys [radar]}(c.context/use-context-data)
         book-id (context/use-book-id)
         book (radar/book-by-id radar book-id)
         uid (context/use-uid)
@@ -95,8 +86,10 @@
                    :icon-theme "outlined"})))
           ($ mui/Card
              {:className "flex-grow-1 ml-1"}
-             ($ mui/CardActionArea
-                {:onClick #(start-review radar book uid (-> review :text))}
+             ($ cui/CommandCardArea
+                {:command commands/UpdateBookReview
+                 :context {:book book
+                           :uid uid}}
                 ($ mui/CardContent
                    (if (-> review :text)
                      ($ :div
@@ -156,7 +149,7 @@
 
 
 (defnc Book [{:keys []}]
-  (let [radar (context/use-radar)
+  (let [{:keys [radar]}(c.context/use-context-data)
         book-id (context/use-book-id)
         book (radar/book-by-id radar book-id)
         isbn (-> book :isbn)

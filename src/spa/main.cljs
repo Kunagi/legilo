@@ -8,6 +8,7 @@
 
    [commons.logging :refer [log]]
    [commons.context :as c.context]
+   [commons.models :as models]
 
    [base.service]
    [base.context :as b.context]
@@ -29,11 +30,16 @@
     (k)
 
     (= :param-doc (first k))
-    (let [param-key (second k)
-          param-value (c.context/use-param param-key)
-          path-fn (nth k 2)
-          path (path-fn param-value)]
-      (c.context/use-doc path))
+    (if (= 2 (count k))
+      (let [col (second k)
+            param-key (keyword (models/col-doc-name col))
+            param-value (c.context/use-param-2 param-key)]
+        (c.context/use-doc [(models/col-path col) param-value]))
+      (let [param-key (second k)
+            param-value (c.context/use-param param-key)
+            path-fn (nth k 2)
+            path (path-fn param-value)]
+        (c.context/use-doc path)))
 
     (vector? k)
     (c.context/use-doc k)

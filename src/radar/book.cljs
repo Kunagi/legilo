@@ -52,6 +52,8 @@ picture of the book will be shown."}])
    {:label "Amazon"
     :icon "shopping_cart"}])
 
+(defn review-by-uid [book uid]
+  (get-in book [:reviews (keyword uid)]))
 
 (defn recommendation-count [book]
   (-> book :recommendations count))
