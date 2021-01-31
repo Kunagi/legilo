@@ -87,8 +87,9 @@
 
 
 (defn field-value [form field-id]
-  (-> (values form)
-      (get field-id)))
+  (let [values (values form)]
+    (or (get values field-id)
+        (-> (field-by-id form field-id) :value))))
 
 
 (defn validate-field [form field-id]
@@ -130,5 +131,7 @@
 
 (defn on-submit [form]
   (s/assert ::form form)
+  (log ::on-submit
+       :form form)
   (reduce validate-field
           form (->> form :fields (map :id))))
