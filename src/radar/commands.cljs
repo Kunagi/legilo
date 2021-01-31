@@ -42,7 +42,7 @@
 
     :form (fn [{:keys [book]}]
             {:fields [book/title book/author book/isbn book/asin]
-             :values book})}])
+             :fields-values book})}])
 
 
 (def-model UpdateBookTags
@@ -55,4 +55,4 @@
 
     :form (fn [{:keys [book]}]
             {:fields [book/tags]
-             :values book}) }])
+             :fields-values book}) }])

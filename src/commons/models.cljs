@@ -211,7 +211,6 @@
 
 
 (defn Command--update-doc--update-child [command]
-  ;; TODO send return effect only with changed props of child
   (validate-model-schema
    command [:map
             [:doc-param keyword?]
@@ -232,13 +231,20 @@
                  (let [doc (get context doc-param)
                        child (get context child-param)
                        child-id (-> child :id)
-                       child (merge child
-                                    (get context changes-param)
-                                    static-changes)
+                       changes (merge (get context changes-param)
+                                      static-changes)
                        inner-path-as-string (reduce (fn [s path-element]
                                                       (if s
                                                         (str s "." (name path-element))
                                                         (name path-element)))
                                                     nil inner-path)
-                       changes {(str inner-path-as-string "." child-id) child}]
+
+                       changes (reduce (fn [changes [k v]]
+                                         (assoc changes
+                                                (str inner-path-as-string
+                                                     "." child-id
+                                                     "." (name k))
+                                                v))
+                                       {} changes)
+                       ]
                    [[:db/update doc changes]]))))))

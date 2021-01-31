@@ -25,12 +25,15 @@
         fields-values (-> form :fields-values)
         field (if (models/attr? field)
                 (models/attr->form-field field)
+                field)
+        value (or (get values id)
+                  (get field :value)
+                  (get fields-values id)
+                  (get field :default-value))
+        field (if value
+                (assoc field :value value)
                 field)]
     (assoc field
-           :value (or (get values id)
-                      (get field :value)
-                      (get fields-values id)
-                      (get field :default-value))
            :auto-focus? (= 0 idx)
            :name (or (-> field :name)
                      (-> field :id name))
@@ -41,6 +44,10 @@
                            (-> field :rows boolean))
            :auto-complete (get field :auto-complete "off"))))
 
+(defn- spy-form-values [form]
+  (log ::spy-form-values
+       :values (-> form :values))
+  form)
 
 (defn initialize [form]
   (s/assert ::form form)
@@ -54,11 +61,13 @@
                        (let [field-id (-> field field-id)]
                          (if (get values field-id)
                            values
-                           (assoc values
-                                  field-id
-                                  (or (-> field :value)
-                                      (-> field :default-value))))))
-                     (or (-> form :values) {}) (-> form :fields)))))
+                           (let [value (or (-> field :value)
+                                           (-> field :default-value))]
+                             (if value
+                               (assoc values field-id value)
+                               value)))))
+                     (or (-> form :values) {}) (-> form :fields)))
+))
 
 
 (defn load-values [form values-map]
@@ -113,6 +122,7 @@
 
 (defn on-field-value-change [form field-id new-value]
   ;; (log ::on-field-value-change
+  ;;      :values (-> form :values)
   ;;      :field field-id
   ;;      :value new-value)
   (-> form
@@ -131,7 +141,7 @@
 
 (defn on-submit [form]
   (s/assert ::form form)
-  (log ::on-submit
-       :form form)
+  ;; (log ::on-submit
+  ;;      :form form)
   (reduce validate-field
           form (->> form :fields (map :id))))
