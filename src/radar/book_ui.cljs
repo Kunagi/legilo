@@ -168,7 +168,7 @@
                               ($ cui/Stack
                                  ($ cui/FieldLabel
                                     {:text "Tags"})
-                                 ($ cui/StringVectorChips {:values (-> book :tags)})))))
+                                 ($ cui/StringVectorChips {:values (book/tags-in-order book)})))))
 
         Cover (when image-url
                 ($ :img

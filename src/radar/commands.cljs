@@ -4,7 +4,8 @@
 
    [base.user :as user]
    [radar.radar :as radar]
-   [radar.book :as book]))
+   [radar.book :as book]
+   [clojure.string :as str]))
 
 
 (def-model CreateRadar
@@ -56,7 +57,10 @@
 
     :form (fn [{:keys [book]}]
             {:fields [book/tags]
-             :fields-values book}) }])
+             :fields-values book})
+
+    :conform-changes (fn [changes]
+                       (update changes :tags #(mapv str/lower-case %)))}])
 
 
 (def-model UpdateBookReview

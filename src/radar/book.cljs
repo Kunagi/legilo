@@ -39,6 +39,10 @@ picture of the book will be shown."}])
       (contains? tag)))
 
 
+(defn tags-in-order [book]
+  (->> book :tags sort))
+
+
 (s/def ::id string?)
 (s/def ::book (s/keys :req-un [::id]))
 
