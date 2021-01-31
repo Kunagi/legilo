@@ -15,24 +15,6 @@
 
 
 
-
-(defn update-radar> [radar changes]
-  (repository/update-radar> radar changes))
-
-(defn recommend-book> [radar book uid]
-  (s/assert ::book/book book)
-  (repository/update-radar>
-   radar
-   {(str "books." (-> book :id) ".recommendations") [:db/array-union [uid]]}))
-
-(defn un-recommend-book> [radar book uid]
-  (s/assert ::book/book book)
-  (repository/update-radar>
-   radar
-   {(str "books." (-> book :id) ".recommendations") [:db/array-remove [uid]]}))
-
-
-
 (defn update-review-text> [radar book uid changes]
   (s/assert ::book/book book)
   (repository/update-radar>

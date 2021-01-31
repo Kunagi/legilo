@@ -177,7 +177,7 @@
             :f (fn [context]
                  (let [doc (get context doc-param)
                        changes (merge (get context changes-param)
-                                      static-changes)]
+                                      (u/fn->value static-changes context))]
                    [[:db/update doc changes]]))))))
 
 
@@ -226,5 +226,5 @@
                        child (get context child-param)
                        child-id (-> child :id)
                        changes (merge (get context changes-param)
-                                      static-changes)]
+                                      (u/fn->value static-changes context))]
                    [[:db/update-child doc inner-path child-id changes]]))))))

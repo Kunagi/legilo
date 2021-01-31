@@ -81,15 +81,18 @@
                    :place-items :stretch}}
           ($ :div
              (if recommended?
-               ($ cui/IconButton
-                  {:command book/recommend
-                   :onClick #(service/un-recommend-book> radar book uid)
-                   :icon "thumb_up"
+               ($ cui/CommandButton
+                  {:command commands/UnRecommendBook
+                   :context {:book book
+                             :uid uid}
+                   :as-icon? true
                    :color "secondary"})
-               ($ cui/IconButton
-                  {:command book/recommend
-                   :onClick #(service/recommend-book> radar book uid)
-                   :theme "outlined"})))
+               ($ cui/CommandButton
+                  {:command commands/RecommendBook
+                   :context {:book book
+                             :uid uid}
+                   :as-icon? true
+                   :icon-theme "outlined"})))
           ($ mui/Card
              {:className "flex-grow-1 ml-1"}
              ($ mui/CardActionArea

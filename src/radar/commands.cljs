@@ -56,3 +56,25 @@
     :form (fn [{:keys [book]}]
             {:fields [book/tags]
              :fields-values book}) }])
+
+
+(def-model RecommendBook
+  [m/Command--update-doc--update-child
+   {:label "Recommend Book"
+    :icon "thumb_up"
+    :inconspicuous? true
+    :doc-param :radar
+    :child-param :book
+    :inner-path [:books]
+    :static-changes (fn [{:keys [uid]}]
+                      {:recommendations [:db/array-union [uid]]})}])
+
+(def-model UnRecommendBook
+  [m/Command--update-doc--update-child
+   {:label "Recommend Book"
+    :icon "thumb_up"
+    :doc-param :radar
+    :child-param :book
+    :inner-path [:books]
+    :static-changes (fn [{:keys [uid]}]
+                      {:recommendations [:db/array-remove [uid]]})}])

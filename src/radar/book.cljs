@@ -47,18 +47,6 @@ picture of the book will be shown."}])
   [:map])
 
 
-(def-model recommend
-  [m/Command
-   {:label "Recommend"
-    :icon "thumb_up"
-    }])
-
-
-(def-model un-recommend
-  [m/Command
-   {:label "Retract Recommendation"}])
-
-
 (def-model view-on-amazon
   [m/Command
    {:label "Amazon"

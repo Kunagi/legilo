@@ -114,7 +114,7 @@
 
 (defn icon [icon-name]
   (d/div
-   {:class "i material-icons"}
+   {:class "material-icons"}
    icon-name))
 
 ;;;
@@ -126,6 +126,13 @@
     (d/div
      {:style {:width (-> theme (.spacing (or width 1)))
               :height(-> theme (.spacing (or width 1)))}})))
+
+
+(defnc Icon [{:keys [name theme]}]
+  ($ :div
+     {:class (str "material-icons"
+                  (when theme (str "-" theme)))}
+     name))
 
 
 (defnc ValueLoadGuard [{:keys [children value padding]}]
@@ -307,7 +314,7 @@
 
 (defnc CommandButton [{:keys [command context then
                               variant color size
-                              icon as-icon?]}]
+                              icon as-icon? icon-theme]}]
   (let [command (u/trampoline-if command)
         onClick (wrap-in-error-handler (new-command-on-click command context then))
         variant (or variant "contained")
@@ -316,7 +323,8 @@
                   "primary")
         icon (when-let [icon (or icon
                                  (-> command :icon))]
-               ($ :div {:class "material-icons"} icon))]
+               ($ Icon {:name icon
+                        :theme icon-theme}))]
     (if as-icon?
       ($ mui/IconButton
          {:onClick onClick
