@@ -3,6 +3,7 @@
    [cljs.pprint :refer [pprint]]
    ["@material-ui/core" :as mui]
 
+   [commons.utils :as u]
    [commons.logging :refer [log]]
    [commons.context :as c.context]
    [commons.mui :as cui :refer [defnc $ <> div]]
@@ -92,13 +93,14 @@
 
 
 (defnc Filter [{:keys [radar]}]
-  (let [selected-tag (use-selected-tag)]
+  (let [selected-tag (use-selected-tag)
+        all-tags (radar/all-tags radar)]
     ($ cui/Stack
        ($ :div
           {:style {:display :flex
                    :flex-wrap :wrap
                    :gap "8px"}}
-          (for [tag (sort (radar/all-tags radar))]
+          (for [tag (sort all-tags)]
             (let [selected? (= tag selected-tag)]
               ($ mui/Chip
                  {:key tag
@@ -109,8 +111,10 @@
 
 
 (defnc Radar []
-  (let [selected-tag (use-selected-tag)
-        {:keys [radar]} (c.context/use-context-data)
+  (let [{:keys [radar]} (c.context/use-context-data)
+        selected-tag (use-selected-tag)
+        selected-tag (when (u/v-contains? (radar/all-tags radar) selected-tag)
+                       selected-tag)
         books (radar/books radar)
         books (if selected-tag
                 (->> books
