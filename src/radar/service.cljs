@@ -13,11 +13,6 @@
    [radar.repository :as repository]))
 
 
-(defn book-recommendation-count [book]
-  (-> book :recommendations count))
-
-(defn book-recommended-by-user? [book uid]
-  (-> book :recommendations (u/v-contains? uid)))
 
 
 

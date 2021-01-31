@@ -1,6 +1,7 @@
 (ns radar.book
   (:require
    [clojure.spec.alpha :as s]
+   [commons.utils :as u]
    [commons.models :as m :refer [def-model]]))
 
 
@@ -50,11 +51,6 @@ picture of the book will be shown."}])
   [m/Command
    {:label "Recommend"
     :icon "thumb_up"
-    ;; :args {:book Book
-    ;;        :uid string?}
-    ;; :f (fn [{:keys [gruppe uid]}]
-    ;;      [[:db/update gruppe
-    ;;        {:mitglieder [:db/array-remove [uid]]}]])
     }])
 
 
@@ -67,3 +63,10 @@ picture of the book will be shown."}])
   [m/Command
    {:label "Amazon"
     :icon "shopping_cart"}])
+
+
+(defn recommendation-count [book]
+  (-> book :recommendations count))
+
+(defn recommended-by-user? [book uid]
+  (-> book :recommendations (u/v-contains? uid)))

@@ -56,7 +56,7 @@
                    ($ :div
                       #_{:style {:font-weight "bold"}}
                       (-> book :title))
-                   (when (service/book-recommended-by-user? book uid)
+                   (when (book/recommended-by-user? book uid)
                      ($ :div
                         {:className "material-icons"
                          :style {:color "#999"}}
@@ -79,7 +79,7 @@
         {:style {:color "grey"
                  :font-style "italic"}}
         "no books here")
-     (for [book (->> books (sort-by (fn [book] [(- (service/book-recommendation-count book))
+     (for [book (->> books (sort-by (fn [book] [(- (book/recommendation-count book))
                                                 (-> book :title)])))]
        ($ Book
           {:key (-> book :id)

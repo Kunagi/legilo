@@ -72,7 +72,7 @@
         book-id (context/use-book-id)
         book (radar/book-by-id radar book-id)
         uid (context/use-uid)
-        recommended? (service/book-recommended-by-user? book uid)]
+        recommended? (book/recommended-by-user? book uid)]
     ($ :div
        ($ :div
           {:className "Recommendation"
@@ -108,7 +108,7 @@
 
 
 (defn counter [book]
-  (let [c (service/book-recommendation-count book)]
+  (let [c (book/recommendation-count book)]
     ($ :span
        {:style {}}
        ($ :span
