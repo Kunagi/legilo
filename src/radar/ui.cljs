@@ -25,7 +25,7 @@
   (let [uid (context/use-uid)
         radar-id (context/use-radar-id)
         book-id (-> book :id)
-        cover-url (service/book-cover-url book)]
+        cover-url (book/cover-url book)]
     ($ mui/Card
        ($ mui/CardActionArea
           {:component ui/Link

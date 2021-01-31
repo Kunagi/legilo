@@ -160,7 +160,7 @@
         book-id (context/use-book-id)
         book (radar/book-by-id radar book-id)
         isbn (-> book :isbn)
-        image-url (service/book-cover-url book)
+        image-url (book/cover-url book)
 
         BookDataCard ($ mui/Card
                         ($ cui/CommandCardArea

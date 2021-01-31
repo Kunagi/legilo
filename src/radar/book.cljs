@@ -58,3 +58,11 @@ picture of the book will be shown."}])
 
 (defn recommended-by-user? [book uid]
   (-> book :recommendations (u/v-contains? uid)))
+
+(defn cover-url [book]
+  (let [isbn (-> book :isbn)
+        asin (-> book :asin)]
+    (cond
+      isbn (str "https://covers.openlibrary.org/b/isbn/" isbn "-M.jpg")
+      ;; asin (amazon-service/cover-url-by-asin asin)
+      :else nil)))
