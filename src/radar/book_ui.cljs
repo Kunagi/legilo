@@ -12,6 +12,7 @@
 
    [radar.radar :as radar]
    [radar.book :as book]
+   [radar.commands :as commands]
    [radar.service :as service]
    [radar.context :as context]
 
@@ -159,19 +160,17 @@
         image-url (service/book-cover-url book)
 
         BookDataCard ($ mui/Card
-                        ($ cui/FormCardArea
-                           {:form {:fields [book/title book/author book/isbn book/asin]
-                                   :values book
-                                   :submit #(service/update-book> radar book %)}}
+                        ($ cui/CommandCardArea
+                           {:command commands/UpdateBook
+                            :context {:book book}}
                            ($ mui/CardContent
                               ($ :div (-> book :author))
                               ($ :h2 (-> book :title))
                               ))
                         ($ mui/Divider)
-                        ($ cui/FormCardArea
-                           {:form {:fields [book/tags]
-                                   :values book
-                                   :submit #(service/update-book> radar book %)}}
+                        ($ cui/CommandCardArea
+                           {:command commands/UpdateBookTags
+                            :context {:book book}}
                            ($ mui/CardContent
                               ($ cui/Stack
                                  ($ cui/FieldLabel

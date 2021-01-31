@@ -210,10 +210,12 @@
                    [[:db/update doc changes]]))))))
 
 
-(defn Command--update-doc-child-entity [command]
+(defn Command--update-doc--update-child [command]
+  ;; TODO send return effect only with changed props of child
   (validate-model-schema
    command [:map
             [:doc-param keyword?]
+            [:child-param keyword?]
             [:inner-path $PropertyPath]])
   (let [doc-param (get command :doc-param)
         inner-path (get command :inner-path)
@@ -223,7 +225,9 @@
     (Command
      (assoc command
             :context-args [[doc-param [:map
-                                       [:id string?]]]]
+                                       [:id string?]]
+                            child-param [:map
+                                         [:id string?]]]]
             :f (fn [context]
                  (let [doc (get context doc-param)
                        child (get context child-param)

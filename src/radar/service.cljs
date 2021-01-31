@@ -20,21 +20,6 @@
   (-> book :recommendations (u/v-contains? uid)))
 
 
-(defn update-book> [radar book changes]
-  (s/assert ::book/book book)
-  (log ::update-book>
-       :radar radar
-       :book book
-       :changes changes)
-  (repository/update-radar>
-   radar
-   (reduce (fn [changes [k v]]
-             (assoc changes
-                    (str "books." (-> book :id) "." (name k))
-                    v))
-           {} changes)))
-
-
 
 (defn update-radar> [radar changes]
   (repository/update-radar> radar changes))

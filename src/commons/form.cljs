@@ -14,13 +14,22 @@
 (s/def ::form (s/keys :req-un [::fields ::submit]))
 
 
-(defn- initialize-field [values idx field ]
-  (let [field (if (models/attr? field)
+(defn field-id [field]
+  (or (-> field :id)
+      (-> field :attr/key)))
+
+
+(defn- initialize-field [form idx field ]
+  (let [id (-> field field-id)
+        values (-> form :values)
+        fields-values (-> form :fields-values)
+        field (if (models/attr? field)
                 (models/attr->form-field field)
                 field)]
     (assoc field
-           :value (or (get values (-> field :id))
+           :value (or (get values id)
                       (get field :value)
+                      (get fields-values id)
                       (get field :default-value))
            :auto-focus? (= 0 idx)
            :name (or (-> field :name)
@@ -38,12 +47,11 @@
   (log ::initialize
        :form form)
   (-> form
-      (assoc :fields (map-indexed  (partial initialize-field (-> form :values))
+      (assoc :fields (map-indexed  (partial initialize-field form)
                                    (-> form :fields)))
       (assoc :values
              (reduce (fn [values field]
-                       (let [field-id (or (-> field :id)
-                                          (-> field :attr/key))]
+                       (let [field-id (-> field field-id)]
                          (if (get values field-id)
                            values
                            (assoc values

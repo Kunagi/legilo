@@ -29,3 +29,30 @@
     :inner-path [:books]
 
     :form {:fields [book/title book/author book/isbn book/asin book/tags]}}])
+
+
+
+(def-model UpdateBook
+  [m/Command--update-doc--update-child
+   {:label "Edit Book"
+
+    :doc-param :radar
+    :child-param :book
+    :inner-path [:books]
+
+    :form (fn [{:keys [book]}]
+            {:fields [book/title book/author book/isbn book/asin]
+             :fields-values book})}])
+
+
+(def-model UpdateBookTags
+  [m/Command--update-doc--update-child
+   {:label "Edit Book Tags"
+
+    :doc-param :radar
+    :child-param :book
+    :inner-path [:books]
+
+    :form (fn [{:keys [book]}]
+            {:fields [book/tags]
+             :fields-values book}) }])
