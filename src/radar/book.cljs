@@ -2,6 +2,7 @@
   (:require
    [clojure.spec.alpha :as s]
    [commons.utils :as u]
+   [commons.form :as form]
    [commons.models :as m :refer [def-model]]))
 
 
@@ -23,7 +24,16 @@
   [m/Attr
    {:label "ISBN"
     :helptext "International Standard Book Number. If you provide this, a
-picture of the book will be shown."}])
+picture of the book will be shown."
+    ;; :action {:label "Load"
+    ;;          :f (fn [form]
+    ;;               (js/console.log "ACTION" form)
+    ;;               (assoc-in form [:values :isbn] "DUMMY")
+    ;;               #_(let [result (form/on-field-value-change form :isbn "abc")]
+    ;;                 (js/console.log "RESULT" form)
+    ;;                 result))}
+    }
+   ])
 
 (def-model tags
   [m/Attr

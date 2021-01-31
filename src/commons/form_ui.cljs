@@ -172,21 +172,33 @@
                        :max-width "100%"}}
               (for [field (get form :fields)]
                 (let [field-id (-> field :id)
-                      error (form/field-error form field-id)]
-                  (d/div
-                   {:key field-id}
-                   (create-input
-                    (assoc field
-                           :form form
-                           :error error
-                           :on-submit on-submit
-                           :on-change #(update-form
-                                        form/on-field-value-change
-                                        field-id %)))
-                   (when-let [helptext (-> field :helptext)]
-                     (d/div
-                      {:style {:color "#666"}}
-                      helptext)))))
+                      error (form/field-error form field-id)
+                      Input (d/div
+                             (create-input
+                              (assoc field
+                                     :form form
+                                     :error error
+                                     :on-submit on-submit
+                                     :on-change #(update-form
+                                                  form/on-field-value-change
+                                                  field-id %)))
+                             (when-let [helptext (-> field :helptext)]
+                               (d/div
+                                {:style {:color "#666"}}
+                                helptext)))]
+                  ($ :div
+                     {:key field-id}
+                     (if-let [action (-> field :action)]
+                       ($ :div
+                          {:style {:display "flex"}}
+                          Input
+                          ($ :div
+                             ($ mui/Button
+                                {:onClick (fn [_]
+                                            (update-form (-> action :f)))
+                                 :variant "contained"}
+                                (-> action :label))))
+                       Input))))
               (get form :content))
            ;; (ui/data form)
            )

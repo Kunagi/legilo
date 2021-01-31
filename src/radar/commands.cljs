@@ -30,8 +30,7 @@
     :doc-param :radar
     :inner-path [:books]
 
-    :form {:fields [book/title book/author book/isbn book/asin book/tags]}}])
-
+    :form {:fields [book/isbn book/title book/author book/asin book/tags]}}])
 
 
 (def-model UpdateBook
