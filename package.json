@@ -1,21 +1,19 @@
 {
-  "name": "legilo",
-  "version": "0.0.1",
-  "private": true,
-  "devDependencies": {
-    "shadow-cljs": "^2.11.9"
-  },
-  "dependencies": {
-    "@material-ui/core": "^4.11.2",
-    "@material-ui/icons": "^4.11.2",
-    "@material-ui/lab": "^4.0.0-alpha.57",
-    "MY_FIREBASE_FUNCTIONS": "file:firebase/functions",
-    "amazon-paapi": "^1.0.3",
-    "material-ui-chip-input": "^1.1.0",
-    "md5": "^2.3.0",
-    "react": "^16.14.0",
-    "react-dom": "^16.14.0",
-    "react-refresh": "^0.8.3",
-    "react-router-dom": "^5.2.0"
-  }
+    "name": "legilo",
+    "version": "0.0.1",
+    "private": true,
+    "devDependencies": {
+        "shadow-cljs": "^2.11.9"
+    },
+    "dependencies": {
+        "@material-ui/core": "^4.11.3",
+        "@material-ui/icons": "^4.11.2",
+        "@material-ui/lab": "^4.0.0-alpha.57",
+        "material-ui-chip-input": "^1.1.0",
+        "md5": "^2.3.0",
+        "react": "^16.14.0",
+        "react-dom": "^16.14.0",
+        "react-refresh": "^0.8.3",
+        "react-router-dom": "^5.2.0"
+    }
 }

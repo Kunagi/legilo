@@ -1,10 +1,11 @@
 (ns gcf.amazon
   (:require
-   ["amazon-paapi" :as paapi]))
+   #_["amazon-paapi" :as paapi]))
 
 
 (defn handle-debug> []
-  (let [common-parameters {
+  (js/Promise.resolve "dummy")
+  #_(let [common-parameters {
                            :AccessKey "AKIAJYUZKAPB7ZVQKSEQ"
                            :SecretKey "---censored---"
                            :PartnerTag "frankenburg-21"

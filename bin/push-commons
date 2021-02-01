@@ -1,3 +1,0 @@
-#!/bin/bash -e
-
-cp -ruv src/commons/* /p/happygast/src/commons/

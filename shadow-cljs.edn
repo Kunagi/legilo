@@ -27,7 +27,8 @@
 
   :gcf {:target :node-library
         :output-to "firebase/functions/index.js"
-        :exports-var gcf.index/exports}
+        :exports-var gcf.index/exports
+        :js-options {:js-package-dirs ["firebase/functions/node_modules"]}}
 
   :test {:target    :browser-test
          :test-dir  "firebase/public/js/test"

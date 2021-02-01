@@ -1,7 +1,0 @@
-#!/bin/bash -e
-
-cp -r resources/spa/* firebase/public/
-
-cd firebase
-#firebase serve
-firebase emulators:start --import=./dev-data --export-on-exit
