@@ -24,8 +24,6 @@
    ))
 
 
-(def make-styles cmui/make-styles)
-
 ;;;
 ;;; Router
 ;;;

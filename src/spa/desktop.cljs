@@ -1,11 +1,8 @@
 (ns spa.desktop
   (:require
-   [shadow.resource :as resource]
-
    ["react-router-dom" :as router]
 
    ["@material-ui/core" :as mui]
-   ["@material-ui/core/styles" :as styles]
    ["@material-ui/core/colors" :as colors]
 
    [commons.logging :refer [log]]
@@ -24,51 +21,50 @@
 ;;; MUI Theme
 ;; https://material.io/resources/color/#!/?view.left=0&view.right=0&primary.color=3E2723&secondary.color=FF9800
 (def theme
-  {:palette {:primary {
-                       :main (-> colors .-brown (aget 900))}
+  {:palette {:primary {:main (-> colors .-brown (aget 900))}
              :secondary {:main (-> colors .-orange (aget 500))}}})
   
 
 
 (defn styles [theme]
-  {:root {:position       "absolute"
-          :height         "100%"
-          :width          "100%"
-          :display        "flex"
-          :flex-direction "column"
+  {"& .CardContent--book" {:padding-top (-> theme (.spacing 0.5))
+                           :padding-bottom (-> theme (.spacing 0.5))
+                           :min-height (-> theme (.spacing 7))
+                           :flex "1"}
 
-          "& .CardContent--book" {:padding-top (-> theme (.spacing 0.5))
-                                  :padding-bottom (-> theme (.spacing 0.5))
-                                  :min-height (-> theme (.spacing 7))
-                                  :flex "1"}
+   "& .MuiCard-root" {:overflow "unset"}
 
-          "& .MuiCard-root" {:overflow "unset"}
+   "& .b" {:font-weight "bold"}
 
-          "& .b" {:font-weight "bold"}
+   "& .flex-grow-1" {:flex-grow 1}
 
-          "& .flex-grow-1" {:flex-grow 1}
+   "& .ml-1" {:margin-left (-> theme (.spacing 1))}
 
-          "& .ml-1" {:margin-left (-> theme (.spacing 1))}
+   "& .Color--Primary" {:color (-> theme .-palette .-primary .-main)}
 
-          "& .Color--Primary" {:color (-> theme .-palette .-primary .-main)}
+   "& .MuiAppBar-root a" {:color "white"
+                          :text-decoration "none"}
 
-          "& .MuiAppBar-root a" {:color "white"
-                                 :text-decoration "none"}
+   "& #App" {:position "absolute"
+             :height "100%"
+             :width "100%"
+             :display "flex"
+             :flex-direction "column"}
 
-          "& #AppTitle" {:font-weight    900
-                         :letter-spacing 1}
+   "& #AppTitle" {:font-weight    900
+                  :letter-spacing 1}
 
-          "& #AppContent" {:height   "100%"
-                           :overflow "auto"
-                           :padding ((-> theme .-spacing) 1)}
+   "& #AppContent" {:height   "100%"
+                    :overflow "auto"
+                    :padding ((-> theme .-spacing) 1)}
 
-          "& .BookCardMedia" {:width "140px"
-                              :padding-bottom "150%"
+   "& .BookCardMedia" {:width "140px"
+                       :padding-bottom "150%"
                               ;:background-size "cover"
                               ;:background-position "center"
-                              }
-          "& .Recommendation .MuiPaper-rounded" {:border-top-left-radius 0
-                                                 :border-radius (-> theme (.spacing 2))}}})
+                       }
+   "& .Recommendation .MuiPaper-rounded" {:border-top-left-radius 0
+                                          :border-radius (-> theme (.spacing 2))}})
 
 
 (defn pages []
@@ -137,33 +133,17 @@
   ($ :div
      {:id "AppContent"
       :style {:overflow-y "scroll"}}
-     ($ cmui/PageSwitch
-        {:pages (pages)
-         :devtools-component (when ^boolean js/goog.DEBUG devtools/DevTools)})
-     ;; ($ AppNav)
+     ($ cmui/PageContent)
+     (when ^boolean js/goog.DEBUG ($ devtools/DevTools))
      ($ cmui/VersionInfo)))
-
-(def use-app-styles (ui/make-styles styles))
-
-(defnc Root []
-  (let [theme (styles/useTheme)
-        styles (use-app-styles theme)]
-    ($ router/BrowserRouter
-       {}
-       ($ :div
-        {:class (-> styles .-root)}
-        ($ AppBar)
-        ($ AppContent)
-        ))))
 
 
 (defnc Desktop []
-  (let [theme (-> theme
-                  clj->js
-                  styles/createMuiTheme
-                  styles/responsiveFontSizes)]
-    (log ::theme :theme theme)
-    ($ mui/ThemeProvider
-       {:theme theme}
-       ($ mui/CssBaseline)
-       ($ Root))))
+  ($ cmui/AppFrame
+     {:pages (pages)
+      :theme theme
+      :styles styles}
+     ($ :div
+        {:id "App"}
+        ($ AppBar)
+        ($ AppContent))))
