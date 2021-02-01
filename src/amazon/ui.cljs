@@ -2,7 +2,7 @@
   (:require
    ["@material-ui/core" :as mui]
 
-   [commons.mui :as ui :refer [defnc $ <> div]]
+   [commons.mui :as ui :refer [defnc $]]
    [amazon.service :as service]))
 
 
@@ -18,7 +18,7 @@
 
 
 (defnc SearchWidget[{:keys [title]}]
-  (div
+  ($ :div
    {:id "AMAZSEARCH"}
    ($ :script (str "
 amzn_assoc_ad_type ='responsive_search_widget';

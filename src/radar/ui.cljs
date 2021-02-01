@@ -6,29 +6,27 @@
    [commons.utils :as u]
    [commons.logging :refer [log]]
    [commons.models :as models :refer [def-model]]
-    
-   [commons.mui :as cui :refer [defnc $]]
 
+   [commons.mui :as ui :refer [defnc $]]
 
    [radar.radar :as radar]
    [radar.book :as book]
    [radar.commands :as commands]
-   [radar.book-ui :as book-ui]
-   ))
+   [radar.book-ui :as book-ui]))
 
 
 ;;; UI Rendering
 
 
-(defnc Book[{:keys [book]}]
-  (let [uid (cui/use-uid)
-        {:keys [radar]} (cui/use-context-data)
+(defnc Book [{:keys [book]}]
+  (let [uid (ui/use-uid)
+        {:keys [radar]} (ui/use-context-data)
         radar-id (-> radar :id)
         book-id (-> book :id)
         cover-url (book/cover-url book)]
     ($ mui/Card
        ($ mui/CardActionArea
-          {:component cui/Link
+          {:component ui/Link
            :to (str "/ui/radars/" radar-id "/book/" book-id)}
           ($ :div
              {:style {:display "flex"}}
@@ -43,9 +41,9 @@
                            :border-bottom-left-radius "4px"
                            :overflow "hidden"}})
                #_($ :img
-                  {:src cover-url
-                   :width "50px"
-                   :style {:overflow "hidden"}}))
+                    {:src cover-url
+                     :width "50px"
+                     :style {:overflow "hidden"}}))
              ($ mui/CardContent
                 {:className "CardContent--book"}
                 ($ :div
@@ -62,39 +60,36 @@
                          :style {:color "#999"}}
                         "thumb_up"))
                    #_(when-let [author (-> book :author)]
-                     ($ :span
-                        {:style {:color "#666"
-                                 :margin-left "8px"}}
-                        author)))))))))
-
+                       ($ :span
+                          {:style {:color "#666"
+                                   :margin-left "8px"}}
+                          author)))))))))
 
 (defnc Section [{:keys [section books]}]
-  ($ cui/Stack
-   ($ mui/Typography
-      {:component "h3"
-       :variant "h6"}
-      (-> section :name))
-   (if (empty? books)
-     ($ :div
-        {:style {:color "grey"
-                 :font-style "italic"}}
-        "no books here")
-     (for [book (->> books (sort-by (fn [book] [(- (book/recommendation-count book))
-                                                (-> book :title)])))]
-       ($ Book
-          {:key (-> book :id)
-           :book book})))))
-
+  ($ ui/Stack
+     ($ mui/Typography
+        {:component "h3"
+         :variant "h6"}
+        (-> section :name))
+     (if (empty? books)
+       ($ :div
+          {:style {:color "grey"
+                   :font-style "italic"}}
+          "no books here")
+       (for [book (->> books (sort-by (fn [book] [(- (book/recommendation-count book))
+                                                  (-> book :title)])))]
+         ($ Book
+            {:key (-> book :id)
+             :book book})))))
 
 (defonce SELECTED_TAG (atom nil))
 
-(def use-selected-tag (cui/atom-hook SELECTED_TAG))
-
+(def use-selected-tag (ui/atom-hook SELECTED_TAG))
 
 (defnc Filter [{:keys [radar]}]
   (let [selected-tag (use-selected-tag)
         all-tags (radar/all-tags radar)]
-    ($ cui/Stack
+    ($ ui/Stack
        ($ :div
           {:style {:display :flex
                    :flex-wrap :wrap
@@ -108,9 +103,8 @@
                   :label tag
                   :size "small"})))))))
 
-
 (defnc Radar []
-  (let [{:keys [radar]} (cui/use-context-data)
+  (let [{:keys [radar]} (ui/use-context-data)
         selected-tag (use-selected-tag)
         selected-tag (when (u/v-contains? (radar/all-tags radar) selected-tag)
                        selected-tag)
@@ -119,29 +113,27 @@
                 (->> books
                      (filter #(book/contains-tag? % selected-tag)))
                 books)]
-    ($ cui/Stack
+    ($ ui/Stack
        {:spacing 3}
        ($ mui/Typography
           {:variant "h4"
            :component "h2"}
           (-> radar :title))
-       ($ cui/Flexbox
-          ($ cui/CommandButton
+       ($ ui/Flexbox
+          ($ ui/CommandButton
              {:command commands/AddBook
               :color "secondary"}))
        ($ Filter
           {:radar radar})
-       ($ cui/Stack
+       ($ ui/Stack
           (for [section radar/sections]
             ($ Section
                {:key (-> section :idx)
                 :section section
                 :books (get (radar/books-by-section-key books) (-> section :key))}))))))
 
-
 (defnc RadarPageContent []
   ($ Radar))
-
 
 (def-model RadarPage
   [models/Page
@@ -168,42 +160,37 @@
 
 
 (defnc MenuIcon []
-  (let [radar-id (cui/use-param-2 :radarId)]
+  (let [radar-id (ui/use-param-2 :radarId)]
     ($ mui/IconButton
-       {:component cui/Link
+       {:component ui/Link
         :to (str "/ui/radars/" radar-id "/config")}
        ($ :div {:class "i material-icons"} "settings"))))
 
-
 (defnc RadarConfigCard []
-  (let [{:keys [radar]} (cui/use-context-data)]
-    ($ cui/DocFieldsCard
+  (let [{:keys [radar]} (ui/use-context-data)]
+    ($ ui/DocFieldsCard
        {:doc radar
         :fields [radar/title radar/allow-domain]})))
 
-
 (defn write-to-clipboard [text]
-  (-> ( js/navigator.clipboard.writeText text)))
-
+  (-> (js/navigator.clipboard.writeText text)))
 
 (defnc RadarBackupCard []
-  (let [{:keys [radar]} (cui/use-context-data)]
-    ($ cui/SimpleCard
+  (let [{:keys [radar]} (ui/use-context-data)]
+    ($ ui/SimpleCard
        {:title "Radar Data"}
        ($ :div
           {:style {:max-height "30vh"
                    :overflow "auto"}}
-          (cui/data radar))
-       ($ cui/Button
+          (ui/data radar))
+       ($ ui/Button
           {:text "Copy to Clipboard"
            :onClick #(write-to-clipboard (with-out-str (pprint radar)))}))))
 
-
 (defnc RadarConfigPageContent []
-  ($ cui/Stack
+  ($ ui/Stack
      ($ RadarConfigCard)
      ($ RadarBackupCard)))
-
 
 (def-model RadarConfigPage
   [models/Page

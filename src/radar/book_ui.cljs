@@ -3,8 +3,7 @@
    [clojure.string :as str]
    ["@material-ui/core" :as mui]
 
-    
-   [commons.mui :as cui :refer [defnc $ <>]]
+   [commons.mui :as ui :refer [defnc $ <>]]
 
    [base.user :as user]
 
@@ -12,12 +11,10 @@
 
    [radar.radar :as radar]
    [radar.book :as book]
-   [radar.commands :as commands]
-))
-
+   [radar.commands :as commands]))
 
 (defn use-book-id []
-  (cui/use-param :book-id))
+  (ui/use-param :book-id))
 
 (defn format-text [s]
   (-> s
@@ -29,13 +26,12 @@
                                  (str/split #"\n")
                                  (->> (map-indexed (fn [idx e]
                                                      (<>
-                                                        {:key idx}
-                                                        e
-                                                        ($ :br))))))))))))
-
+                                                      {:key idx}
+                                                      e
+                                                      ($ :br))))))))))))
 
 (defnc Review [{:keys [review]}]
-  (let [user (cui/use-doc ["users" (-> review :uid)])]
+  (let [user (ui/use-doc ["users" (-> review :uid)])]
     ($ :div
        ($ :div
           {:className "Recommendation"
@@ -50,7 +46,7 @@
           ($ mui/Card
              {:className "flex-grow-1 ml-1"}
              ($ mui/CardContent
-                ($ cui/Stack
+                ($ ui/Stack
                    ($ :div
                       {:style {:color "#666"
                                :font-style "italic"}}
@@ -58,12 +54,11 @@
                    ($ :div
                       (format-text (-> review :text))))))))))
 
-
 (defnc OwnReview [{:keys [review]}]
-  (let [{:keys [radar]}(cui/use-context-data)
+  (let [{:keys [radar]} (ui/use-context-data)
         book-id (use-book-id)
         book (radar/book-by-id radar book-id)
-        uid (cui/use-uid)
+        uid (ui/use-uid)
         recommended? (book/recommended-by-user? book uid)]
     ($ :div
        ($ :div
@@ -73,13 +68,13 @@
                    :place-items :stretch}}
           ($ :div
              (if recommended?
-               ($ cui/CommandButton
+               ($ ui/CommandButton
                   {:command commands/UnRecommendBook
                    :context {:book book
                              :uid uid}
                    :as-icon? true
                    :color "secondary"})
-               ($ cui/CommandButton
+               ($ ui/CommandButton
                   {:command commands/RecommendBook
                    :context {:book book
                              :uid uid}
@@ -87,7 +82,7 @@
                    :icon-theme "outlined"})))
           ($ mui/Card
              {:className "flex-grow-1 ml-1"}
-             ($ cui/CommandCardArea
+             ($ ui/CommandCardArea
                 {:command commands/UpdateBookReview
                  :context {:book book
                            :uid uid}}
@@ -98,11 +93,10 @@
                                  :line-height "1.43"}}
                         (-> review :text format-text))
                      ($ :p {:style {:color "grey"
-                                      :font-style "italic"}}
+                                    :font-style "italic"}}
                         (if recommended?
                           "Leave a review?"
                           "Recommend this book?"))))))))))
-
 
 (defn counter [book]
   (let [c (book/recommendation-count book)]
@@ -112,21 +106,19 @@
           {:style {:font-weight 100}}
           c)
        ($ :span
-          {:style {:font-weight 100
-                   }}
+          {:style {:font-weight 100}}
           (if (= c 1)
             " recommendation"
             " recommendations")))))
 
-
 (defnc Reviews []
-  (let [{:keys [radar book-id uid]} (cui/use-context-data)
+  (let [{:keys [radar book-id uid]} (ui/use-context-data)
         book (radar/book-by-id radar book-id)
         reviews (-> book :reviews vals)
         reviews-grouped (->> reviews (group-by #(= uid (-> % :uid))))
         own-review (first (get reviews-grouped true))
         other-reviews (get reviews-grouped false)]
-    ($ cui/Stack
+    ($ ui/Stack
        ($ :h4
           "What I say")
        ($ OwnReview {:review own-review})
@@ -143,31 +135,29 @@
                      :font-style "italic"}}
             "no reviews yet")))))
 
-
 (defnc Book [{:keys []}]
-  (let [{:keys [radar]}(cui/use-context-data)
+  (let [{:keys [radar]} (ui/use-context-data)
         book-id (use-book-id)
         book (radar/book-by-id radar book-id)
         isbn (-> book :isbn)
         image-url (book/cover-url book)
 
         BookDataCard ($ mui/Card
-                        ($ cui/CommandCardArea
+                        ($ ui/CommandCardArea
                            {:command commands/UpdateBook
                             :context {:book book}}
                            ($ mui/CardContent
                               ($ :div (-> book :author))
-                              ($ :h2 (-> book :title))
-                              ))
+                              ($ :h2 (-> book :title))))
                         ($ mui/Divider)
-                        ($ cui/CommandCardArea
+                        ($ ui/CommandCardArea
                            {:command commands/UpdateBookTags
                             :context {:book book}}
                            ($ mui/CardContent
-                              ($ cui/Stack
-                                 ($ cui/FieldLabel
+                              ($ ui/Stack
+                                 ($ ui/FieldLabel
                                     {:text "Tags"})
-                                 ($ cui/StringVectorChips {:values (book/tags-in-order book)})))))
+                                 ($ ui/StringVectorChips {:values (book/tags-in-order book)})))))
 
         Cover (when image-url
                 ($ :img
@@ -177,7 +167,7 @@
                     :style {:margin "0 auto"
                             :max-width "30vw"}}))
 
-        AmazonBuyButton ($ cui/Button
+        AmazonBuyButton ($ ui/Button
                            {:command book/view-on-amazon
                             :href (if-let [asin (-> book :asin)]
                                     (amazon-service/href asin)
@@ -185,7 +175,7 @@
                             :target :_blank
                             :color "secondary"})]
 
-    ($ cui/Stack
+    ($ ui/Stack
 
        ($ :div
           {:style {:display :flex}}
@@ -197,12 +187,10 @@
 
           ($ :div
              {:style {:flex "1"}}
-             ($ cui/Stack
+             ($ ui/Stack
                 Cover
-                AmazonBuyButton
+                AmazonBuyButton)))
 
-                )))
        #_(counter book)
 
-       ($ Reviews)
-       )))
+       ($ Reviews))))

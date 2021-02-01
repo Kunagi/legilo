@@ -11,7 +11,7 @@
    [commons.models :as models]
    [commons.auth :as auth]
    [commons.repository :as repository]
-   [commons.mui :as cui]
+   [commons.mui :as ui]
 
    [base.user :as user]
 
@@ -23,10 +23,10 @@
   (cond
 
     (= :uid k)
-    (cui/use-uid)
+    (ui/use-uid)
 
     (= :user k)
-    (cui/use-doc user/Users (cui/use-uid))
+    (ui/use-doc user/Users (ui/use-uid))
 
     (fn? k)
     (k)
@@ -35,21 +35,21 @@
     (if (= 2 (count k))
       (let [col (second k)
             param-key (keyword (models/col-doc-name col))
-            param-value (cui/use-param-2 param-key)]
-        (cui/use-doc [(models/col-path col) param-value]))
+            param-value (ui/use-param-2 param-key)]
+        (ui/use-doc [(models/col-path col) param-value]))
       (let [param-key (second k)
-            param-value (cui/use-param param-key)
+            param-value (ui/use-param param-key)
             path-fn (nth k 2)
             path (path-fn param-value)]
-        (cui/use-doc path)))
+        (ui/use-doc path)))
 
     (vector? k)
-    (cui/use-doc k)
+    (ui/use-doc k)
 
     :else
     k))
 
-(reset! cui/DATA_RESOLVER resolve-page-data)
+(reset! ui/DATA_RESOLVER resolve-page-data)
 
 
 (defn main! []

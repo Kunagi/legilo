@@ -3,7 +3,7 @@
 
    ["@material-ui/core" :as mui]
 
-   [commons.mui :as cui :refer [defnc $ ]]
+   [commons.mui :as ui :refer [defnc $ ]]
     
 ))
 
@@ -11,27 +11,27 @@
 (defnc DevTools []
   ($ :div
    {:style {:padding-top "2rem"}}
-   ($ cui/Stack
+   ($ ui/Stack
       ($ mui/Divider)
       ($ :div {:style {:color "grey"}} "DevTools")
 
-      (cui/data (cui/use-context-data))
+      (ui/data (ui/use-context-data))
 
-      #_(cui/data (->> (firestore-hooks/use-cols-union
+      #_(ui/data (->> (firestore-hooks/use-cols-union
                      [[{:id "radars"
                         :where ["allow-domain" "==" "koczewski.de"]}]
                       [{:id "radars"
                         :where ["uids" "array-contains" "G4fCIVVCTpUxXMmht0s25jZMnoM2"]}]])
                     (map :title)))
 
-      ;; (ui/data (->> (cui/use-col [{:id "radars"
+      ;; (ui/data (->> (ui/use-col [{:id "radars"
       ;;                                    :where ["allow-domain" "==" "koczewski.de"]}])
       ;;               (map :title)))
 
-      ;; (ui/data (->> (cui/use-col [{:id "radars"
+      ;; (ui/data (->> (ui/use-col [{:id "radars"
       ;;                                    :where ["uids" "array-contains" "G4fCIVVCTpUxXMmht0s25jZMnoM2"]}])
       ;;               (map :title)))
 
-      ;; (cui/data {:goog.DEBUG js/goog.DEBUG
+      ;; (ui/data {:goog.DEBUG js/goog.DEBUG
       ;;            :uid (context/use-uid)})
       )))
