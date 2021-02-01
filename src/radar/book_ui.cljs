@@ -3,7 +3,7 @@
    [clojure.string :as str]
    ["@material-ui/core" :as mui]
 
-   [commons.context :as c.context]
+    
    [commons.mui :as cui :refer [defnc $ <>]]
 
    [base.user :as user]
@@ -17,7 +17,7 @@
 
 
 (defn use-book-id []
-  (c.context/use-param :book-id))
+  (cui/use-param :book-id))
 
 (defn format-text [s]
   (-> s
@@ -60,10 +60,10 @@
 
 
 (defnc OwnReview [{:keys [review]}]
-  (let [{:keys [radar]}(c.context/use-context-data)
+  (let [{:keys [radar]}(cui/use-context-data)
         book-id (use-book-id)
         book (radar/book-by-id radar book-id)
-        uid (c.context/use-uid)
+        uid (cui/use-uid)
         recommended? (book/recommended-by-user? book uid)]
     ($ :div
        ($ :div
@@ -120,7 +120,7 @@
 
 
 (defnc Reviews []
-  (let [{:keys [radar book-id uid]} (c.context/use-context-data)
+  (let [{:keys [radar book-id uid]} (cui/use-context-data)
         book (radar/book-by-id radar book-id)
         reviews (-> book :reviews vals)
         reviews-grouped (->> reviews (group-by #(= uid (-> % :uid))))
@@ -145,7 +145,7 @@
 
 
 (defnc Book [{:keys []}]
-  (let [{:keys [radar]}(c.context/use-context-data)
+  (let [{:keys [radar]}(cui/use-context-data)
         book-id (use-book-id)
         book (radar/book-by-id radar book-id)
         isbn (-> book :isbn)

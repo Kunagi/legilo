@@ -4,7 +4,7 @@
    ["@material-ui/core" :as mui]
 
    [commons.mui :as cui :refer [defnc $ ]]
-   [commons.context :as c.context]
+    
 ))
 
 
@@ -15,7 +15,7 @@
       ($ mui/Divider)
       ($ :div {:style {:color "grey"}} "DevTools")
 
-      (cui/data (c.context/use-context-data))
+      (cui/data (cui/use-context-data))
 
       #_(cui/data (->> (firestore-hooks/use-cols-union
                      [[{:id "radars"

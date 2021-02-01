@@ -7,7 +7,7 @@
    [commons.effects]
 
    [commons.logging :refer [log]]
-   [commons.context :as c.context]
+    
    [commons.models :as models]
    [commons.auth :as auth]
    [commons.repository :as repository]
@@ -23,10 +23,10 @@
   (cond
 
     (= :uid k)
-    (c.context/use-uid)
+    (cui/use-uid)
 
     (= :user k)
-    (cui/use-doc user/Users (c.context/use-uid))
+    (cui/use-doc user/Users (cui/use-uid))
 
     (fn? k)
     (k)
@@ -35,10 +35,10 @@
     (if (= 2 (count k))
       (let [col (second k)
             param-key (keyword (models/col-doc-name col))
-            param-value (c.context/use-param-2 param-key)]
+            param-value (cui/use-param-2 param-key)]
         (cui/use-doc [(models/col-path col) param-value]))
       (let [param-key (second k)
-            param-value (c.context/use-param param-key)
+            param-value (cui/use-param param-key)
             path-fn (nth k 2)
             path (path-fn param-value)]
         (cui/use-doc path)))
@@ -49,7 +49,7 @@
     :else
     k))
 
-(reset! c.context/DATA_RESOLVER resolve-page-data)
+(reset! cui/DATA_RESOLVER resolve-page-data)
 
 
 (defn main! []

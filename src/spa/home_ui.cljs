@@ -5,7 +5,7 @@
    [commons.logging :refer [log]]
    [commons.models :as models :refer [def-model]]
    [commons.auth :as auth]
-   [commons.context :as c.context]
+    
    [commons.mui :as cui :refer [defnc $]]
 
    [base.user :as user]
@@ -29,7 +29,7 @@
 
 
 (defnc Radars []
-  (let [uid (c.context/use-uid)
+  (let [uid (cui/use-uid)
         user (cui/use-doc user/Users uid)
         radars (cui/use-col-subset radar/RadarsForUser {:user user})
         ;; radars (cui/use-col [{:id "radars"
@@ -48,7 +48,7 @@
 
 
 (defnc HomePageContent []
-  (let [uid (c.context/use-uid)]
+  (let [uid (cui/use-uid)]
     (when uid
       ($ Radars))))
 
@@ -74,7 +74,7 @@
 
 
 (defnc CurrentUserCard []
-  (when-let [{:keys [user]} (c.context/use-context-data)]
+  (when-let [{:keys [user]} (cui/use-context-data)]
     ($ mui/Card
        ($ mui/CardContent
           ($ :div

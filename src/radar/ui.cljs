@@ -6,7 +6,7 @@
    [commons.utils :as u]
    [commons.logging :refer [log]]
    [commons.models :as models :refer [def-model]]
-   [commons.context :as c.context]
+    
    [commons.mui :as cui :refer [defnc $]]
 
 
@@ -21,8 +21,8 @@
 
 
 (defnc Book[{:keys [book]}]
-  (let [uid (c.context/use-uid)
-        {:keys [radar]} (c.context/use-context-data)
+  (let [uid (cui/use-uid)
+        {:keys [radar]} (cui/use-context-data)
         radar-id (-> radar :id)
         book-id (-> book :id)
         cover-url (book/cover-url book)]
@@ -88,7 +88,7 @@
 
 (defonce SELECTED_TAG (atom nil))
 
-(def use-selected-tag (c.context/atom-hook SELECTED_TAG))
+(def use-selected-tag (cui/atom-hook SELECTED_TAG))
 
 
 (defnc Filter [{:keys [radar]}]
@@ -110,7 +110,7 @@
 
 
 (defnc Radar []
-  (let [{:keys [radar]} (c.context/use-context-data)
+  (let [{:keys [radar]} (cui/use-context-data)
         selected-tag (use-selected-tag)
         selected-tag (when (u/v-contains? (radar/all-tags radar) selected-tag)
                        selected-tag)
@@ -168,7 +168,7 @@
 
 
 (defnc MenuIcon []
-  (let [radar-id (c.context/use-param-2 :radarId)]
+  (let [radar-id (cui/use-param-2 :radarId)]
     ($ mui/IconButton
        {:component cui/Link
         :to (str "/ui/radars/" radar-id "/config")}
@@ -176,7 +176,7 @@
 
 
 (defnc RadarConfigCard []
-  (let [{:keys [radar]} (c.context/use-context-data)]
+  (let [{:keys [radar]} (cui/use-context-data)]
     ($ cui/DocFieldsCard
        {:doc radar
         :fields [radar/title radar/allow-domain]})))
@@ -187,7 +187,7 @@
 
 
 (defnc RadarBackupCard []
-  (let [{:keys [radar]} (c.context/use-context-data)]
+  (let [{:keys [radar]} (cui/use-context-data)]
     ($ cui/SimpleCard
        {:title "Radar Data"}
        ($ :div

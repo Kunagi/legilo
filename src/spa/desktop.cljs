@@ -6,9 +6,9 @@
    ["@material-ui/core/colors" :as colors]
 
    [commons.logging :refer [log]]
-   [commons.mui :as cmui :refer [defnc $]]
+   [commons.mui :as cui :refer [defnc $]]
 
-   [commons.context :as c.context]
+    
    [commons.auth :as auth]
 
    [spa.devtools :as devtools]
@@ -92,13 +92,13 @@
 
 (defnc MenuButton [{:keys [to]}]
   ($ mui/IconButton
-     {:component cmui/Link
+     {:component cui/Link
       :to to}
      ($ :div {:class "i material-icons"} "menu")))
 
 
 (defnc SignInButtonOrMenu [{:keys [to]}]
-  (if (c.context/use-uid)
+  (if (cui/use-uid)
     ($ MenuButton {:to to})
     ($ SignInButton)))
 
@@ -110,7 +110,7 @@
         {:style {:display :flex
                  :justify-content "space-between"}}
         ($ mui/Toolbar
-           ($ cmui/Link
+           ($ cui/Link
               {:to "/"
                :stlye {:color "white"}}
               ($ mui/Typography
@@ -132,13 +132,13 @@
   ($ :div
      {:id "AppContent"
       :style {:overflow-y "scroll"}}
-     ($ cmui/PageContent)
+     ($ cui/PageContent)
      (when ^boolean js/goog.DEBUG ($ devtools/DevTools))
-     ($ cmui/VersionInfo)))
+     ($ cui/VersionInfo)))
 
 
 (defnc Desktop []
-  ($ cmui/AppFrame
+  ($ cui/AppFrame
      {:pages (pages)
       :theme theme
       :styles styles}
