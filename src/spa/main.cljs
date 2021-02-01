@@ -9,9 +9,10 @@
    [commons.logging :refer [log]]
    [commons.context :as c.context]
    [commons.models :as models]
+   [commons.auth :as auth]
+   [commons.repository :as repository]
 
    [base.user :as user]
-   [base.service]
 
    [spa.desktop :as desktop]
 ))
@@ -52,4 +53,7 @@
 
 (defn main! []
   (log ::main!)
+  (auth/initialize
+   {:user-Col user/Users
+    :sign-in auth/sign-in-with-microsoft})
   (rdom/render ($ desktop/Desktop) (js/document.getElementById "app")))
