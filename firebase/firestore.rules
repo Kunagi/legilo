@@ -10,7 +10,7 @@ service cloud.firestore {
           && resource != null
           && resource.data != null
           && (  (resource.data.uids != null && request.auth.uid in resource.data.uids)
-             || ("allow-domain" in resource.data && request.auth.token.email.matches(".*@" + resource.data["allow-domain"] + "$")));
+             || (resource.data["allow-domain"] != null && request.auth.token.email.matches(".*@" + resource.data["allow-domain"] + "$")));
     }
 
     match /users/{userId}/{document=**} {
@@ -21,11 +21,6 @@ service cloud.firestore {
       // TODO check if ok - only same radar?
       allow read:
           if request.auth != null;
-    }
-
-    match /{document=**} {
-      allow read, write:
-          if request.time < timestamp.date(2020, 10, 24);
     }
 
   }
