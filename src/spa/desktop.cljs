@@ -10,7 +10,6 @@
 
    [commons.context :as c.context]
    [commons.auth :as auth]
-   [base.ui :as ui]
 
    [spa.devtools :as devtools]
    [spa.home-ui :as home]

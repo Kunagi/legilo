@@ -9,7 +9,6 @@
    [commons.context :as c.context]
    [commons.mui :as cui :refer [defnc $]]
 
-   [base.ui :as ui]
 
    [radar.radar :as radar]
    [radar.book :as book]
