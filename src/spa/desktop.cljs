@@ -11,8 +11,8 @@
    [commons.logging :refer [log]]
    [commons.mui :as cmui :refer [defnc $]]
 
-   [base.context :as b.context]
-   [base.service :as service]
+   [commons.context :as c.context]
+   [commons.auth :as auth]
    [base.ui :as ui]
 
    [spa.devtools :as devtools]
@@ -87,7 +87,7 @@
 
 (defnc SignInButton []
   ($ mui/Button
-     {:onClick service/sign-in
+     {:onClick auth/sign-in
       :size "small"
       :variant "contained"
       :color "secondary"
@@ -103,7 +103,7 @@
 
 
 (defnc SignInButtonOrMenu [{:keys [to]}]
-  (if (b.context/use-uid)
+  (if (c.context/use-uid)
     ($ MenuButton {:to to})
     ($ SignInButton)))
 

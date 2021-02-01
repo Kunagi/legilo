@@ -46,9 +46,7 @@
                               (map fs/wrap-doc)
                               (reset! DATA)))
                        (fn [^js error]
-                         (log ::col-atom-error
-                              :path path
-                              :exception error)))))
+                         (js/console.error "Loading collection failed" path error)))))
     DATA))
 
 

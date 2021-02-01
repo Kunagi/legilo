@@ -33,9 +33,9 @@ All users from this domain will have access to this Radar."}])
   [m/ColSubset--union
    {:col Radars
     :wheres (fn [{:keys [user]}]
-              (let [by-uid [["uids" "array-contains" (-> user :id)]]
-                    by-domain [["allow-domain" "==" (-> user :auth-domain)]]]
-                [by-uid by-domain]))}])
+              (let [by-uid [["uids" "array-contains" (or (-> user :id) "_")]]
+                    by-domain [["allow-domain" "==" (or (-> user :auth-domain) "_")]]]
+                 [by-uid by-domain]))}])
 
 ;; (def-model RadarsUserByUid
 ;;   [m/ColSubset

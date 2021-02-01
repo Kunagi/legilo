@@ -20,7 +20,7 @@
    [commons.firestore :as fs]
    [commons.firestore-hooks :as firestore-hooks]
 
-   [base.context :as context]
+   [commons.context :as c.context]
    ))
 
 
@@ -73,12 +73,12 @@
 
 
 (defnc Guard [{:keys [children]}]
-  (if (context/use-uid)
+  (if (c.context/use-uid)
     children
     (d/div "Sign in required")))
 
 
 (defnc UserGuard [{:keys [children]}]
-  (if (context/use-user)
+  (if (c.context/use-uid)
     children
     "loading..."))

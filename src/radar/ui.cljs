@@ -9,7 +9,6 @@
    [commons.context :as c.context]
    [commons.mui :as cui :refer [defnc $]]
 
-   [base.context :as b.context]
    [base.ui :as ui]
 
    [radar.radar :as radar]
@@ -23,7 +22,7 @@
 
 
 (defnc Book[{:keys [book]}]
-  (let [uid (b.context/use-uid)
+  (let [uid (c.context/use-uid)
         {:keys [radar]} (c.context/use-context-data)
         radar-id (-> radar :id)
         book-id (-> book :id)

@@ -11,7 +11,7 @@
 
 
 (def-model Users
-  [m/Doc
+  [m/Col
    {:doc User}])
 
 

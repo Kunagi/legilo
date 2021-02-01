@@ -10,8 +10,8 @@
    [commons.context :as c.context]
    [commons.models :as models]
 
+   [base.user :as user]
    [base.service]
-   [base.context :as b.context]
 
    [spa.desktop :as desktop]
 ))
@@ -21,10 +21,10 @@
   (cond
 
     (= :uid k)
-    (b.context/use-uid)
+    (c.context/use-uid)
 
     (= :user k)
-    (b.context/use-user)
+    (c.context/use-doc user/Users (c.context/use-uid))
 
     (fn? k)
     (k)

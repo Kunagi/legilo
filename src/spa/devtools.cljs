@@ -8,8 +8,7 @@
 
    [commons.mui :as cui :refer [defnc $ <> div]]
    [commons.context :as c.context]
-
-   [base.context :as context]))
+))
 
 
 (defnc DevTools []
@@ -21,7 +20,7 @@
 
       (cui/data (c.context/use-context-data))
 
-      (cui/data (->> (firestore-hooks/use-cols-union
+      #_(cui/data (->> (firestore-hooks/use-cols-union
                      [[{:id "radars"
                         :where ["allow-domain" "==" "koczewski.de"]}]
                       [{:id "radars"

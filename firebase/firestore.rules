@@ -7,8 +7,10 @@ service cloud.firestore {
           if request.auth != null;
       allow read, write:
           if request.auth != null
-          && (  request.auth.uid in resource.data.uids
-             || request.auth.token.email.matches(".*@" + resource.data["allow-domain"] + "$"));
+          && resource != null
+          && resource.data != null
+          && (  (resource.data.uids != null && request.auth.uid in resource.data.uids)
+             || ("allow-domain" in resource.data && request.auth.token.email.matches(".*@" + resource.data["allow-domain"] + "$")));
     }
 
     match /users/{userId}/{document=**} {

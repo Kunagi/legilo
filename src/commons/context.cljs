@@ -8,6 +8,7 @@
 
    ["react-router-dom" :as router]
 
+   [commons.auth :as auth]
    [commons.models :as models]
    [commons.firestore-hooks :as firestore]
    [commons.firebase-storage :as storage]
@@ -15,12 +16,18 @@
    ))
 
 
+
 (def use-state react/useState)
 (def create-context react/createContext)
 (def use-context react/useContext)
 
-(def use-col firestore/use-col)
 (def use-cols-union firestore/use-cols-union)
+
+
+(defn use-col [Col]
+  (if (map? Col)
+    (firestore/use-col (models/col-path Col))
+    (firestore/use-col Col)))
 
 (defn use-col-subset [col-subset args]
   (if (models/col-subset-is-union? col-subset)
@@ -30,8 +37,10 @@
 (defn use-doc
   ([path]
    (firestore/use-doc path))
-  ([col-model  doc-id]
-   (firestore/use-doc [(models/col-path col-model) doc-id])))
+  ([col-model doc-id]
+   (firestore/use-doc (when doc-id [(models/col-path col-model) doc-id]))))
+
+
 
 ;; TODO deprecated
 (defn use-params []
@@ -75,6 +84,13 @@
         #(remove-watch ATOM watch-key))
 
        (transformator value)))))
+
+
+(def use-auth-user (atom-hook auth/USER))
+
+(defn use-uid []
+  (when-let [user (use-auth-user)]
+    (-> ^js user .-uid)))
 
 ;;;
 ;;; storage
@@ -124,9 +140,8 @@
 ;;; auth
 ;;;
 
-(defonce AUTH_COMPLETED (atom false))
 
-(def use-auth-completed (atom-hook AUTH_COMPLETED))
+(def use-auth-completed (atom-hook auth/AUTH_COMPLETED))
 
 ;;;
 ;;; page and context data

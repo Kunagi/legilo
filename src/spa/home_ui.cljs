@@ -4,11 +4,11 @@
 
    [commons.logging :refer [log]]
    [commons.models :as models :refer [def-model]]
+   [commons.auth :as auth]
    [commons.context :as c.context]
    [commons.mui :as cui :refer [defnc $]]
 
-   [base.context :as context]
-   [base.service :as service]
+   [base.user :as user]
 
    [radar.radar :as radar]
    [radar.commands :as radar-commands]
@@ -29,8 +29,12 @@
 
 
 (defnc Radars []
-  (let [user (context/use-user)
-        radars (c.context/use-col-subset radar/RadarsForUser {:user user})]
+  (let [uid (c.context/use-uid)
+        user (c.context/use-doc user/Users uid)
+        radars (c.context/use-col-subset radar/RadarsForUser {:user user})
+        ;; radars (c.context/use-col [{:id "radars"
+        ;;                             :where ["title" "==" "xxx"]}])
+        ]
     ($ cui/Stack
        (when user
          ($ cui/Flexbox
@@ -44,7 +48,7 @@
 
 
 (defnc HomePageContent []
-  (let [uid (context/use-uid)]
+  (let [uid (c.context/use-uid)]
     (when uid
       ($ Radars))))
 
@@ -63,7 +67,7 @@
 
 (defnc SignOutButton []
   ($ mui/Button
-     {:onClick service/sign-out
+     {:onClick auth/sign-out
       :variant "contained"
       :color "secondary"}
      "Sign Out"))

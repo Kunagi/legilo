@@ -7,7 +7,6 @@
    [commons.mui :as cui :refer [defnc $ <>]]
 
    [base.user :as user]
-   [base.context :as b.context]
 
    [amazon.service :as amazon-service]
 
@@ -64,7 +63,7 @@
   (let [{:keys [radar]}(c.context/use-context-data)
         book-id (use-book-id)
         book (radar/book-by-id radar book-id)
-        uid (b.context/use-uid)
+        uid (c.context/use-uid)
         recommended? (book/recommended-by-user? book uid)]
     ($ :div
        ($ :div
