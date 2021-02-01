@@ -3,20 +3,17 @@
 
    ["@material-ui/core" :as mui]
 
-   [commons.firestore :as firestore]
-   [commons.firestore-hooks :as firestore-hooks]
-
-   [commons.mui :as cui :refer [defnc $ <> div]]
+   [commons.mui :as cui :refer [defnc $ ]]
    [commons.context :as c.context]
 ))
 
 
 (defnc DevTools []
-  (div
+  ($ :div
    {:style {:padding-top "2rem"}}
    ($ cui/Stack
       ($ mui/Divider)
-      (div {:style {:color "grey"}} "DevTools")
+      ($ :div {:style {:color "grey"}} "DevTools")
 
       (cui/data (c.context/use-context-data))
 

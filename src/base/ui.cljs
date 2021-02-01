@@ -25,35 +25,4 @@
 
 
 
-;;;
-;;; common ui functions
-;;;
 
-(def data cmui/data)
-(def icon cmui/icon)
-
-;;;
-;;; common components
-;;;
-
-(def Spacer cmui/Spacer)
-(def Stack cmui/Stack)
-(def Flexbox cmui/Flexbox)
-
-(def CardRow cmui/CardRow)
-
-(def FieldLabel cmui/FieldLabel)
-(def Field cmui/Field)
-(def FieldCardContent cmui/FieldCardContent)
-
-
-(defnc Guard [{:keys [children]}]
-  (if (c.context/use-uid)
-    children
-    (d/div "Sign in required")))
-
-
-(defnc UserGuard [{:keys [children]}]
-  (if (c.context/use-uid)
-    children
-    "loading..."))

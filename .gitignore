@@ -3,7 +3,7 @@ firebase/public/*
 firebase/functions/*.js
 src/spa/version-time.txt
 .calva/output-window/
-
+.lsp
 *.~undo-tree*
 
 node_modules/

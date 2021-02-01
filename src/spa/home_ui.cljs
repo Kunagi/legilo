@@ -79,7 +79,7 @@
        ($ mui/CardContent
           ($ :div
              "Signed in as "
-             (cui/span
+             ($ :span
               {:style {:font-weight :bold}}
               (-> user :auth-email)
               " / "

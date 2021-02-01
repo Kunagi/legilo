@@ -70,7 +70,7 @@
 
 
 (defnc Section [{:keys [section books]}]
-  ($ ui/Stack
+  ($ cui/Stack
    ($ mui/Typography
       {:component "h3"
        :variant "h6"}
@@ -120,7 +120,7 @@
                 (->> books
                      (filter #(book/contains-tag? % selected-tag)))
                 books)]
-    ($ ui/Stack
+    ($ cui/Stack
        {:spacing 3}
        ($ mui/Typography
           {:variant "h4"
@@ -132,7 +132,7 @@
               :color "secondary"}))
        ($ Filter
           {:radar radar})
-       ($ ui/Stack
+       ($ cui/Stack
           (for [section radar/sections]
             ($ Section
                {:key (-> section :idx)
