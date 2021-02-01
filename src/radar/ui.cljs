@@ -29,7 +29,7 @@
         cover-url (book/cover-url book)]
     ($ mui/Card
        ($ mui/CardActionArea
-          {:component ui/Link
+          {:component cui/Link
            :to (str "/ui/radars/" radar-id "/book/" book-id)}
           ($ :div
              {:style {:display "flex"}}
@@ -171,15 +171,15 @@
 (defnc MenuIcon []
   (let [radar-id (c.context/use-param-2 :radarId)]
     ($ mui/IconButton
-       {:component ui/Link
+       {:component cui/Link
         :to (str "/ui/radars/" radar-id "/config")}
        ($ :div {:class "i material-icons"} "settings"))))
 
 
 (defnc RadarConfigCard []
   (let [{:keys [radar]} (c.context/use-context-data)]
-    ($ cui/FieldsCard
-       {:entity radar
+    ($ cui/DocFieldsCard
+       {:doc radar
         :fields [radar/title radar/allow-domain]})))
 
 

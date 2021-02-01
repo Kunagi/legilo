@@ -24,29 +24,6 @@
    ))
 
 
-;;;
-;;; Router
-;;;
-
-(def Route router/Route)
-(def Link router/Link)
-
-;;;
-;;; styles
-;;;
-
-(def style-bg-img cmui/style-bg-img)
-
-(def use-theme mui-styles/useTheme)
-
-;;;
-;;; Hooks
-;;;
-
-(def use-col firestore-hooks/use-col)
-(def use-doc firestore-hooks/use-doc)
-
-(def atom-hook cmui/atom-hook)
 
 ;;;
 ;;; common ui functions

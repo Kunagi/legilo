@@ -27,11 +27,11 @@
                         :where ["uids" "array-contains" "G4fCIVVCTpUxXMmht0s25jZMnoM2"]}]])
                     (map :title)))
 
-      ;; (ui/data (->> (c.context/use-col [{:id "radars"
+      ;; (ui/data (->> (cui/use-col [{:id "radars"
       ;;                                    :where ["allow-domain" "==" "koczewski.de"]}])
       ;;               (map :title)))
 
-      ;; (ui/data (->> (c.context/use-col [{:id "radars"
+      ;; (ui/data (->> (cui/use-col [{:id "radars"
       ;;                                    :where ["uids" "array-contains" "G4fCIVVCTpUxXMmht0s25jZMnoM2"]}])
       ;;               (map :title)))
 

@@ -30,9 +30,9 @@
 
 (defnc Radars []
   (let [uid (c.context/use-uid)
-        user (c.context/use-doc user/Users uid)
-        radars (c.context/use-col-subset radar/RadarsForUser {:user user})
-        ;; radars (c.context/use-col [{:id "radars"
+        user (cui/use-doc user/Users uid)
+        radars (cui/use-col-subset radar/RadarsForUser {:user user})
+        ;; radars (cui/use-col [{:id "radars"
         ;;                             :where ["title" "==" "xxx"]}])
         ]
     ($ cui/Stack

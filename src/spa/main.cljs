@@ -11,6 +11,7 @@
    [commons.models :as models]
    [commons.auth :as auth]
    [commons.repository :as repository]
+   [commons.mui :as cui]
 
    [base.user :as user]
 
@@ -25,7 +26,7 @@
     (c.context/use-uid)
 
     (= :user k)
-    (c.context/use-doc user/Users (c.context/use-uid))
+    (cui/use-doc user/Users (c.context/use-uid))
 
     (fn? k)
     (k)
@@ -35,15 +36,15 @@
       (let [col (second k)
             param-key (keyword (models/col-doc-name col))
             param-value (c.context/use-param-2 param-key)]
-        (c.context/use-doc [(models/col-path col) param-value]))
+        (cui/use-doc [(models/col-path col) param-value]))
       (let [param-key (second k)
             param-value (c.context/use-param param-key)
             path-fn (nth k 2)
             path (path-fn param-value)]
-        (c.context/use-doc path)))
+        (cui/use-doc path)))
 
     (vector? k)
-    (c.context/use-doc k)
+    (cui/use-doc k)
 
     :else
     k))

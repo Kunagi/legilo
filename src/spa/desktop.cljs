@@ -93,7 +93,7 @@
 
 (defnc MenuButton [{:keys [to]}]
   ($ mui/IconButton
-     {:component ui/Link
+     {:component cmui/Link
       :to to}
      ($ :div {:class "i material-icons"} "menu")))
 
@@ -111,7 +111,7 @@
         {:style {:display :flex
                  :justify-content "space-between"}}
         ($ mui/Toolbar
-           ($ ui/Link
+           ($ cmui/Link
               {:to "/"
                :stlye {:color "white"}}
               ($ mui/Typography

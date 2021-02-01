@@ -35,7 +35,7 @@
 
 
 (defnc Review [{:keys [review]}]
-  (let [user (c.context/use-doc ["users" (-> review :uid)])]
+  (let [user (cui/use-doc ["users" (-> review :uid)])]
     ($ :div
        ($ :div
           {:className "Recommendation"
