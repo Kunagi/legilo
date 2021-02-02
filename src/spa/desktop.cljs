@@ -85,7 +85,7 @@
   ($ mui/IconButton
      {:component ui/Link
       :to to}
-     ($ :div {:class "i material-icons"} "menu")))
+     ($ :div {:class "material-icons"} "menu")))
 
 
 (defnc SignInButtonOrMenu [{:keys [to]}]
@@ -111,6 +111,11 @@
                  ($ :span {:style {:font-weight 300}}
                     " | Book Radar"))))
         ($ mui/Toolbar
+           (when ^boolean goog.DEBUG
+             ($ mui/IconButton
+                {:component ui/Link
+                 :to "ui/devcards"}
+                ($ :div {:class "material-icons"} "developer_mode")))
            ($ radar-ui/MenuIcon)
            ($ SignInButtonOrMenu
               {:to "/ui/menu"}))
