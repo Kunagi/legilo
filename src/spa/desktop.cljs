@@ -8,13 +8,11 @@
    [spark.logging :refer [log]]
    [spark.ui :as ui :refer [defnc $]]
 
-    
    [spark.auth :as auth]
 
    [spa.devtools :as devtools]
-   [spa.home-ui :as home]
    [radar.ui :as radar-ui]
-   [radar.radar :as radar]))
+   ))
 
 
 ;;; MUI Theme
@@ -66,14 +64,7 @@
                                           :border-radius (-> theme (.spacing 2))}})
 
 
-(defn pages []
-  [
-   home/MenuPage
-   radar-ui/BookPage
-   radar-ui/RadarConfigPage
-   radar-ui/RadarPage
-   home/HomePage
-   ])
+
 
 
 (defnc LoginIcon []
@@ -137,9 +128,9 @@
      ($ ui/VersionInfo)))
 
 
-(defnc Desktop []
+(defnc Desktop [{:keys [spa]}]
   ($ ui/AppFrame
-     {:pages (pages)
+     {:spa spa
       :theme theme
       :styles styles}
      ($ :div
