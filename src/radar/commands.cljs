@@ -1,6 +1,6 @@
 (ns radar.commands
   (:require
-   [commons.models :as m :refer [def-model]]
+   [spark.models :as m :refer [def-model]]
 
    [base.user :as user]
    [radar.radar :as radar]

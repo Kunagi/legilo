@@ -1,7 +1,7 @@
 (ns radar.radar
   (:require
    [clojure.spec.alpha :as s]
-   [commons.models :as m :refer [def-model]]
+   [spark.models :as m :refer [def-model]]
 
    [radar.book :as book]
    ))

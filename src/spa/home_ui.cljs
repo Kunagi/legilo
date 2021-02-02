@@ -2,11 +2,11 @@
   (:require
    ["@material-ui/core" :as mui]
 
-   [commons.logging :refer [log]]
-   [commons.models :as models :refer [def-model]]
-   [commons.auth :as auth]
+   [spark.logging :refer [log]]
+   [spark.models :as models :refer [def-model]]
+   [spark.auth :as auth]
 
-   [commons.mui :as ui :refer [defnc $]]
+   [spark.ui :as ui :refer [defnc $]]
 
    [base.user :as user]
 

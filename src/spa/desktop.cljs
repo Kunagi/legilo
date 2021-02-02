@@ -5,11 +5,11 @@
    ["@material-ui/core" :as mui]
    ["@material-ui/core/colors" :as colors]
 
-   [commons.logging :refer [log]]
-   [commons.mui :as ui :refer [defnc $]]
+   [spark.logging :refer [log]]
+   [spark.ui :as ui :refer [defnc $]]
 
     
-   [commons.auth :as auth]
+   [spark.auth :as auth]
 
    [spa.devtools :as devtools]
    [spa.home-ui :as home]

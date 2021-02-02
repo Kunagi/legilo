@@ -3,7 +3,7 @@
    [clojure.spec.alpha :as s]
    [helix.experimental.refresh :as helix-refresh]
 
-   [commons.logging :refer [log]]))
+   [spark.logging :refer [log]]))
 
 
 (helix-refresh/inject-hook!)

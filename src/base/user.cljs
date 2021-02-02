@@ -1,7 +1,7 @@
 (ns base.user
   (:require
    ["md5" :as md5]
-   [commons.models :as m :refer [def-model]]))
+   [spark.models :as m :refer [def-model]]))
 
 
 

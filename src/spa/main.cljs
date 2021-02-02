@@ -3,15 +3,15 @@
    ["react-dom" :as rdom]
    [helix.core :refer [$]]
 
-   [commons.firestore-init-spa]
-   [commons.effects]
+   [spark.firestore-init-spa]
+   [spark.effects]
 
-   [commons.logging :refer [log]]
+   [spark.logging :refer [log]]
     
-   [commons.models :as models]
-   [commons.auth :as auth]
-   [commons.repository :as repository]
-   [commons.mui :as ui]
+   [spark.models :as models]
+   [spark.auth :as auth]
+   [spark.repository :as repository]
+   [spark.ui :as ui]
 
    [base.user :as user]
 
