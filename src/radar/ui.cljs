@@ -160,11 +160,12 @@
 
 
 (defnc MenuIcon []
-  (let [radar-id (ui/use-param-2 :radarId)]
-    ($ mui/IconButton
-       {:component ui/Link
-        :to (str "/ui/radars/" radar-id "/config")}
-       ($ :div {:class "i material-icons"} "settings"))))
+  (let [{:keys [radar]} (ui/use-context-data)]
+    (when radar
+      ($ mui/IconButton
+         {:component ui/Link
+          :to (str "/ui/radars/" (-> radar :id) "/config")}
+         ($ :div {:class "i material-icons"} "settings")))))
 
 (defnc RadarConfigCard []
   (let [{:keys [radar]} (ui/use-context-data)]

@@ -111,9 +111,7 @@
                  ($ :span {:style {:font-weight 300}}
                     " | Book Radar"))))
         ($ mui/Toolbar
-           ($ router/Switch
-              ($ router/Route {:path "/ui/radars/:radarId"}
-                 ($ radar-ui/MenuIcon)))
+           ($ radar-ui/MenuIcon)
            ($ SignInButtonOrMenu
               {:to "/ui/menu"}))
         )))
