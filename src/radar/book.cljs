@@ -1,9 +1,9 @@
 (ns radar.book
   (:require
-   [clojure.spec.alpha :as s]
    [spark.utils :as u]
-   [spark.form :as form]
    [spark.core :as spark :refer [def-field def-subdoc]]
+
+   [radar.review :as review]
     ))
 
 
@@ -57,17 +57,15 @@ picture of the book will be shown."
   (->> book :tags sort))
 
 
-(s/def ::id string?)
-(s/def ::book (s/keys :req-un [::id]))
 
-
-(def Book
-  [:map])
+(def-subdoc Book
+  [{}
+   [:reviews {:optional true} [:map-of :string review/Review]]])
 
 
 
 (defn review-by-uid [book uid]
-  (get-in book [:reviews (keyword uid)]))
+  (get-in book [:reviews uid]))
 
 (defn recommendation-count [book]
   (-> book :recommendations count))

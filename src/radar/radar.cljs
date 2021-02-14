@@ -23,7 +23,8 @@ All users from this domain will have access to this Radar."}])
 
 
 (def-doc Radar
-  [{:firestore/collection "radars"}])
+  [{:firestore/collection "radars"}
+   [:books [:map-of :string book/Book]]])
 
 
 (defn col-path--by-uid [user]
@@ -81,4 +82,4 @@ All users from this domain will have access to this Radar."}])
   (-> radar :books vals))
 
 (defn book-by-id [radar book-id]
-  (get-in radar [:books (keyword book-id)]))
+  (get-in radar [:books book-id]))

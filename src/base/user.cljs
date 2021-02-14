@@ -20,14 +20,21 @@
    (-> user :auth-display-name)
    (-> user :auth-email)))
 
+(defn auth-email [this]
+  (-> this :auth-email))
 
-(defn best-photo-url [user]
-  (when user
-    (or (-> user :auth-photo-url)
-        (str "https://www.gravatar.com/avatar/"
-             (md5 (-> user :auth-email))
-             "?d=retro"))))
+(defn auth-photo-url [this]
+  (-> this :auth-photo-url))
 
+(defn gravatar-photo-url [this]
+  (when-let [email (-> this auth-email)]
+    (str "https://www.gravatar.com/avatar/"
+         (md5 email)
+         "?d=retro")))
+
+(defn best-photo-url [this]
+  (or (-> this auth-photo-url)
+      (-> this gravatar-photo-url)))
 
 (comment
   (def user {:auth-email "wi@koczewski.de"})
