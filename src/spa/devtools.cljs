@@ -3,12 +3,12 @@
 
    ["@material-ui/core" :as mui]
 
-   [spark.ui :as ui :refer [defnc $ ]]
+   [spark.ui :as ui :refer [def-ui $ ]]
     
 ))
 
 
-(defnc DevTools []
+(def-ui DevTools []
   ($ :div
    {:style {:padding-top "2rem"}}
    ($ ui/Stack

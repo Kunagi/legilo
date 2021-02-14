@@ -6,7 +6,7 @@
    ["@material-ui/core/colors" :as colors]
 
    [spark.logging :refer [log]]
-   [spark.ui :as ui :refer [defnc $]]
+   [spark.ui :as ui :refer [def-ui $]]
 
    [spark.auth :as auth]
 
@@ -67,11 +67,11 @@
 
 
 
-(defnc LoginIcon []
+(def-ui LoginIcon []
   ($ :div {:class "i material-icons"} "login"))
 
 
-(defnc SignInButton []
+(def-ui SignInButton []
   ($ mui/Button
      {:onClick auth/sign-in
       :size "small"
@@ -81,20 +81,20 @@
      "Sign in"))
 
 
-(defnc MenuButton [{:keys [to]}]
+(def-ui MenuButton [{:keys [to]}]
   ($ mui/IconButton
      {:component ui/Link
       :to to}
      ($ :div {:class "material-icons"} "menu")))
 
 
-(defnc SignInButtonOrMenu [{:keys [to]}]
+(def-ui SignInButtonOrMenu [{:keys [to]}]
   (if (ui/use-uid)
     ($ MenuButton {:to to})
     ($ SignInButton)))
 
 
-(defnc AppBar []
+(def-ui AppBar []
   ($ mui/AppBar
      {:position "static"}
      ($ :div
@@ -122,7 +122,7 @@
         )))
 
 
-(defnc AppContent []
+(def-ui AppContent []
   ($ :div
      {:id "AppContent"
       :style {:overflow-y "scroll"}}
@@ -131,7 +131,7 @@
      ($ ui/VersionInfo)))
 
 
-(defnc Desktop [{:keys [spa]}]
+(def-ui Desktop [{:keys [spa]}]
   ($ ui/AppFrame
      {:spa spa
       :theme theme
