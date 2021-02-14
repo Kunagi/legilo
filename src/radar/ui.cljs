@@ -134,9 +134,14 @@
 (def-ui RadarPageContent []
   ($ Radar))
 
+(def-ui RadarAppbarTitle [radar]
+  {:from-context [radar]}
+  (-> radar :title))
+
 (def-page RadarPage
   {:path "/ui/radars/:radar"
    :content RadarPageContent
+   :appbar-title-component RadarAppbarTitle
    :use-docs {:radar radar/Radar}})
 
 (def-ui BookPageContent []
@@ -145,6 +150,7 @@
 (def-page BookPage
   {:path "/ui/radars/:radar/book/:book"
    :content BookPageContent
+   :appbar-title-component RadarAppbarTitle
    :use-docs {:radar radar/Radar}
    :update-context
    (fn [{:keys [radar book] :as context}]
@@ -195,4 +201,5 @@
 (def-page RadarConfigPage
   {:path "/ui/radars/:radar/config"
    :content RadarConfigPageContent
+   :appbar-title-component RadarAppbarTitle
    :use-docs {:radar radar/Radar}})
