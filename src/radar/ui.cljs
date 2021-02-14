@@ -1,5 +1,6 @@
 (ns radar.ui
   (:require
+   [clojure.string :as str]
    [cljs.pprint :refer [pprint]]
    ["@material-ui/core" :as mui]
 
@@ -12,7 +13,8 @@
    [radar.radar :as radar]
    [radar.book :as book]
    [radar.commands :as commands]
-   [radar.book-ui :as book-ui]))
+   [radar.book-ui :as book-ui]
+   [radar.openlib-ui :as openlib]))
 
 
 ;;; UI Rendering
@@ -122,7 +124,13 @@
        ($ ui/Flexbox
           ($ ui/CommandButton
              {:command commands/AddBook
-              :color "secondary"}))
+              :color "secondary"})
+          ($ ui/Button
+             {:text "Add Book"
+              :icon "add"
+              :color "secondary"
+              :onClick #(ui/show-dialog
+                         {:content ($ openlib/SearchWidget)})}))
        ($ Filter)
        ($ ui/Stack
           (for [section radar/sections]
@@ -203,3 +211,9 @@
    :content RadarConfigPageContent
    :appbar-title-component RadarAppbarTitle
    :use-docs {:radar radar/Radar}})
+
+
+;;
+;; searc
+;;
+

@@ -28,6 +28,13 @@
    :f (fn [{:keys [radar values]}]
         [[:db/add-child radar [:books] values]])})
 
+(def-cmd AddFoundBook
+  {:label "Add Book"
+   :icon "add"
+
+   :f (fn [{:keys [radar values]}]
+        [[:db/add-child radar [:books] values]])})
+
 (def-cmd UpdateBook
   {:label "Edit Book"
 
