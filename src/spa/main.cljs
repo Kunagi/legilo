@@ -1,5 +1,6 @@
 (ns spa.main
   (:require
+   [clojure.spec.alpha :as s]
    ["react-dom" :as rdom]
    [helix.core :refer [$]]
 
@@ -7,7 +8,8 @@
    [spark.effects]
 
    [spark.logging :refer [log]]
-   [spark.models :as m :refer [def-model]]
+
+   [spark.core :as spark :refer [def-spa]]
    [spark.auth :as auth]
    [spark.repository :as repository]
    [spark.ui :as ui]
@@ -19,54 +21,29 @@
    [radar.ui :as radar]
    ))
 
-
-(defn resolve-page-data [k]
-  (cond
-
-    (= :uid k)
-    (ui/use-uid)
-
-    (= :user k)
-    (ui/use-doc user/Users (ui/use-uid))
-
-    (fn? k)
-    (k)
-
-    (= :param-doc (first k))
-    (if (= 2 (count k))
-      (let [col (second k)
-            param-key (keyword (m/col-doc-name col))
-            param-value (ui/use-param-2 param-key)]
-        (ui/use-doc [(m/col-path col) param-value]))
-      (let [param-key (second k)
-            param-value (ui/use-param param-key)
-            path-fn (nth k 2)
-            path (path-fn param-value)]
-        (ui/use-doc path)))
-
-    (vector? k)
-    (ui/use-doc k)
-
-    :else
-    k))
-
-(reset! ui/DATA_RESOLVER resolve-page-data)
+(when js/goog.DEBUG
+  (s/check-asserts true))
 
 
-(def-model Legilo
-  [m/Spa
-   {:pages [
-            home/MenuPage
-            radar/BookPage
-            radar/RadarConfigPage
-            radar/RadarPage
-            home/HomePage
-            ]}])
+(defn update-app-context [context]
+  (let [uid (ui/use-uid)
+        user (ui/use-doc user/User uid)]
+    (assoc context
+           :user user)))
+
+
+(def-spa Legilo
+  {:pages [home/MenuPage
+           radar/BookPage
+           radar/RadarConfigPage
+           radar/RadarPage
+           home/HomePage]
+   :update-app-context update-app-context})
 
 (defn main! []
   (log ::main!)
   (auth/initialize
-   {:user-Col user/Users
+   {:user-doc-schema user/User
     :sign-in auth/sign-in-with-microsoft})
   (rdom/render ($ desktop/Desktop
                   {:spa Legilo})

@@ -1,19 +1,19 @@
 (ns base.user
   (:require
    ["md5" :as md5]
-   [spark.models :as m :refer [def-model]]))
+   [spark.core :as spark :refer [def-doc]]
+    ))
 
 
-
-(def-model User
-  [m/Doc
-   {}])
+(def-doc User
+  [{:firestore/collection "users"}])
 
 
-(def-model Users
-  [m/Col
-   {:doc User}])
+(defn id [this]
+  (-> this :id))
 
+(defn auth-domain [this]
+  (-> this :auth-domain))
 
 (defn best-display-name [user]
   (or

@@ -3,10 +3,10 @@
    ["@material-ui/core" :as mui]
 
    [spark.logging :refer [log]]
-   [spark.models :as models :refer [def-model]]
    [spark.auth :as auth]
 
-   [spark.ui :as ui :refer [defnc $]]
+   [spark.core :as spark :refer [def-page]]
+   [spark.ui :as ui :refer [def-ui $]]
 
    [base.user :as user]
 
@@ -19,7 +19,7 @@
 ;;;
 
 
-(defnc Radar [{:keys [radar]}]
+(def-ui Radar [radar]
   ($ mui/Card
      ($ mui/CardActionArea
         {:component ui/Link
@@ -27,13 +27,9 @@
         ($ mui/CardContent
            (-> radar :title)))))
 
-(defnc Radars []
-  (let [uid (ui/use-uid)
-        user (ui/use-doc user/Users uid)
-        radars (ui/use-col-subset radar/RadarsForUser {:user user})
-        ;; radars (ui/use-col [{:id "radars"
-        ;;                             :where ["title" "==" "xxx"]}])
-        ]
+(def-ui Radars [user]
+  {:from-context [user]}
+  (let [radars (ui/use-cols-union (radar/union-col-paths--for-user user))]
     ($ ui/Stack
        (when user
          ($ ui/Flexbox
@@ -45,16 +41,14 @@
             {:key (-> radar :firestore/id)
              :radar radar})))))
 
-(defnc HomePageContent []
+(def-ui HomePageContent []
   (let [uid (ui/use-uid)]
     (when uid
       ($ Radars))))
 
-(def-model HomePage
-  [models/Page
-   {:path "/"
-    :content HomePageContent
-    :data {}}])
+(def-page HomePage
+  {:path "/"
+   :content HomePageContent})
 
 ;;;
 ;;; Sidebar Main Menu
@@ -62,15 +56,16 @@
 
 (defn create-example-radar> [])
 
-(defnc SignOutButton []
+(def-ui SignOutButton []
   ($ mui/Button
      {:onClick auth/sign-out
       :variant "contained"
       :color "secondary"}
      "Sign Out"))
 
-(defnc CurrentUserCard []
-  (when-let [{:keys [user]} (ui/use-context-data)]
+(def-ui CurrentUserCard [user]
+  {:from-context [user]}
+  (when user
     ($ mui/Card
        ($ mui/CardContent
           ($ :div
@@ -83,12 +78,11 @@
        ($ mui/CardActions
           ($ SignOutButton)))))
 
-(defnc MenuPageContent []
+(def-ui MenuPageContent []
   ($ CurrentUserCard))
 
-(def-model MenuPage
-  [models/Page
-   {:path "/ui/menu"
-    :content MenuPageContent
-    :data {:uid :uid
-           :user :user}}])
+(def-page MenuPage
+  {:path "/ui/menu"
+   :content MenuPageContent
+   :data {:uid :uid
+          :user :user}})

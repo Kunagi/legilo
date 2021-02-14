@@ -5,9 +5,9 @@
 
    [spark.utils :as u]
    [spark.logging :refer [log]]
-   [spark.models :as models :refer [def-model]]
 
-   [spark.ui :as ui :refer [defnc $]]
+   [spark.core :as spark :refer [def-page]]
+   [spark.ui :as ui :refer [def-ui $]]
 
    [radar.radar :as radar]
    [radar.book :as book]
@@ -18,10 +18,9 @@
 ;;; UI Rendering
 
 
-(defnc Book [{:keys [book]}]
-  (let [uid (ui/use-uid)
-        {:keys [radar]} (ui/use-context-data)
-        radar-id (-> radar :id)
+(def-ui Book [radar book uid]
+  {:from-context [radar book uid]}
+  (let [radar-id (-> radar :id)
         book-id (-> book :id)
         cover-url (book/cover-url book)]
     ($ mui/Card
@@ -65,7 +64,7 @@
                                    :margin-left "8px"}}
                           author)))))))))
 
-(defnc Section [{:keys [section books]}]
+(def-ui Section [section books]
   ($ ui/Stack
      ($ mui/Typography
         {:component "h3"
@@ -86,7 +85,8 @@
 
 (def use-selected-tag (ui/atom-hook SELECTED_TAG))
 
-(defnc Filter [{:keys [radar]}]
+(def-ui Filter [radar]
+  {:from-context [radar]}
   (let [selected-tag (use-selected-tag)
         all-tags (radar/all-tags radar)]
     ($ ui/Stack
@@ -103,9 +103,9 @@
                   :label tag
                   :size "small"})))))))
 
-(defnc Radar []
-  (let [{:keys [radar]} (ui/use-context-data)
-        selected-tag (use-selected-tag)
+(def-ui Radar [radar]
+  {:from-context [radar]}
+  (let [selected-tag (use-selected-tag)
         selected-tag (when (u/v-contains? (radar/all-tags radar) selected-tag)
                        selected-tag)
         books (radar/books radar)
@@ -123,8 +123,7 @@
           ($ ui/CommandButton
              {:command commands/AddBook
               :color "secondary"}))
-       ($ Filter
-          {:radar radar})
+       ($ Filter)
        ($ ui/Stack
           (for [section radar/sections]
             ($ Section
@@ -132,71 +131,68 @@
                 :section section
                 :books (get (radar/books-by-section-key books) (-> section :key))}))))))
 
-(defnc RadarPageContent []
+(def-ui RadarPageContent []
   ($ Radar))
 
-(def-model RadarPage
-  [models/Page
-   {:path "/ui/radars/:Radar"
-    :content RadarPageContent
-    :data {:uid :uid
-           :user :user
-           :radar [:param-doc radar/Radars]}}])
+(def-page RadarPage
+  {:path "/ui/radars/:radar"
+   :content RadarPageContent
+   :use-docs {:radar radar/Radar}})
 
-(defnc BookPageContent []
+(def-ui BookPageContent []
   ($ book-ui/Book))
 
-(def-model BookPage
-  [models/Page
-   {:path "/ui/radars/:Radar/book/:bookId"
-    :content BookPageContent
-    :data {:uid :uid
-           :user :user
-           :radar [:param-doc radar/Radars]}}])
+(def-page BookPage
+  {:path "/ui/radars/:radar/book/:book"
+   :content BookPageContent
+   :use-docs {:radar radar/Radar}
+   :update-context
+   (fn [{:keys [radar book] :as context}]
+     (let [book (if (string? book)
+                  (-> radar (radar/book-by-id book))
+                  nil)]
+       (assoc context :book book)))})
 
 ;;;
 ;;; Radar Config
 ;;;
 
 
-(defnc MenuIcon []
-  (let [{:keys [radar]} (ui/use-context-data)]
-    (when radar
-      ($ mui/IconButton
-         {:component ui/Link
-          :to (str "/ui/radars/" (-> radar :id) "/config")}
-         ($ :div {:class "i material-icons"} "settings")))))
+(def-ui MenuIcon [radar]
+  {:from-context [radar]}
+  (when radar
+    ($ mui/IconButton
+       {:component ui/Link
+        :to (str "/ui/radars/" (-> radar :id) "/config")}
+       ($ :div {:class "i material-icons"} "settings"))))
 
-(defnc RadarConfigCard []
-  (let [{:keys [radar]} (ui/use-context-data)]
-    ($ ui/DocFieldsCard
-       {:doc radar
-        :fields [radar/title radar/allow-domain]})))
+(def-ui RadarConfigCard [radar]
+  {:from-context [radar]}
+  ($ ui/DocFieldsCard
+     {:doc radar
+      :fields [radar/title radar/allow-domain]}))
 
 (defn write-to-clipboard [text]
   (-> (js/navigator.clipboard.writeText text)))
 
-(defnc RadarBackupCard []
-  (let [{:keys [radar]} (ui/use-context-data)]
-    ($ ui/SimpleCard
-       {:title "Radar Data"}
-       ($ :div
-          {:style {:max-height "30vh"
-                   :overflow "auto"}}
-          (ui/data radar))
-       ($ ui/Button
-          {:text "Copy to Clipboard"
-           :onClick #(write-to-clipboard (with-out-str (pprint radar)))}))))
+(def-ui RadarBackupCard [radar]
+  {:from-context [radar]}
+  ($ ui/SimpleCard
+     {:title "Radar Data"}
+     ($ :div
+        {:style {:max-height "30vh"
+                 :overflow "auto"}}
+        (ui/data radar))
+     ($ ui/Button
+        {:text "Copy to Clipboard"
+         :onClick #(write-to-clipboard (with-out-str (pprint radar)))})))
 
-(defnc RadarConfigPageContent []
+(def-ui RadarConfigPageContent []
   ($ ui/Stack
      ($ RadarConfigCard)
      ($ RadarBackupCard)))
 
-(def-model RadarConfigPage
-  [models/Page
-   {:path "/ui/radars/:Radar/config"
-    :content RadarConfigPageContent
-    :data {:uid :uid
-           :user :user
-           :radar [:param-doc radar/Radars]}}])
+(def-page RadarConfigPage
+  {:path "/ui/radars/:radar/config"
+   :content RadarConfigPageContent
+   :use-docs {:radar radar/Radar}})

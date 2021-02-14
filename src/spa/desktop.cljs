@@ -114,7 +114,7 @@
            (when ^boolean goog.DEBUG
              ($ mui/IconButton
                 {:component ui/Link
-                 :to "ui/devcards"}
+                 :to "/ui/devcards"}
                 ($ :div {:class "material-icons"} "developer_mode")))
            ($ radar-ui/MenuIcon)
            ($ SignInButtonOrMenu

@@ -15,7 +15,6 @@
       ($ mui/Divider)
       ($ :div {:style {:color "grey"}} "DevTools")
 
-      (ui/data (ui/use-context-data))
 
       #_(ui/data (->> (firestore-hooks/use-cols-union
                      [[{:id "radars"

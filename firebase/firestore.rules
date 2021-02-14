@@ -3,21 +3,20 @@ service cloud.firestore {
   match /databases/{database}/documents {
 
     match /radars/{radarId}/{document=**} {
-      allow create:
-          if request.auth != null;
-      allow read, write:
-          if request.auth != null
-          && resource != null
-          && resource.data != null
-          && (  (resource.data.uids != null && request.auth.uid in resource.data.uids)
-             || (resource.data["allow-domain"] != null && request.auth.token.email.matches(".*@" + resource.data["allow-domain"] + "$")));
+      allow create: if
+          request.auth != null;
+      allow read, write: if
+          request.auth != null
+          &&
+          (request.auth.uid in resource.data.uids
+            || (resource.data["allow-domain"] != null && request.auth.token.email.matches(".*@" + resource.data["allow-domain"] + "$")));
     }
 
     match /users/{userId}/{document=**} {
-      allow read, write:
-          if request.auth != null
-          && request.auth.uid == userId;
-
+      allow read, write: if
+          request.auth != null
+          &&
+          request.auth.uid == userId;
       // TODO check if ok - only same radar?
       allow read:
           if request.auth != null;

@@ -3,25 +3,26 @@
    [clojure.spec.alpha :as s]
    [spark.utils :as u]
    [spark.form :as form]
-   [spark.models :as m :refer [def-model]]))
+   [spark.core :as spark :refer [def-field def-subdoc]]
+    ))
 
 
-(def-model title
-  [m/Attr
+(def-field title
+  [:string  
    {:label "Title"
     :required? true}])
 
-(def-model author
-  [m/Attr
+(def-field author
+  [:string 
    {:label "Author"}])
 
-(def-model asin
-  [m/Attr
+(def-field asin
+  [:string 
    {:label "ASIN"
     :helptext "Amazon Standard Identification Number."}])
 
-(def-model isbn
-  [m/Attr
+(def-field isbn
+  [:string  
    {:label "ISBN"
     :helptext "International Standard Book Number. If you provide this, a
 picture of the book will be shown."
@@ -35,12 +36,15 @@ picture of the book will be shown."
     }
    ])
 
-(def-model tags
-  [m/Attr
+(def-field tags
+  [:vector
    {:label "Tags"
     :type "chips"
-    :helptext "Type in a tag and submit with RETURN."}])
+    :helptext "Type in a tag and submit with RETURN."}
+   :string])
 
+(defn id [this]
+  (-> this :id))
 
 (defn contains-tag? [book tag]
   (-> book
@@ -61,10 +65,6 @@ picture of the book will be shown."
   [:map])
 
 
-(def-model view-on-amazon
-  [m/Command
-   {:label "Amazon"
-    :icon "shopping_cart"}])
 
 (defn review-by-uid [book uid]
   (get-in book [:reviews (keyword uid)]))

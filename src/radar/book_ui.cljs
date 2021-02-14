@@ -3,7 +3,7 @@
    [clojure.string :as str]
    ["@material-ui/core" :as mui]
 
-   [spark.ui :as ui :refer [defnc $ <>]]
+   [spark.ui :as ui :refer [def-ui $ <>]]
 
    [base.user :as user]
 
@@ -13,8 +13,6 @@
    [radar.book :as book]
    [radar.commands :as commands]))
 
-(defn use-book-id []
-  (ui/use-param :book-id))
 
 (defn format-text [s]
   (-> s
@@ -30,8 +28,8 @@
                                                       e
                                                       ($ :br))))))))))))
 
-(defnc Review [{:keys [review]}]
-  (let [user (ui/use-doc ["users" (-> review :uid)])]
+(def-ui Review [review]
+  (let [user (ui/use-doc user/User (-> review :uid))]
     ($ :div
        ($ :div
           {:className "Recommendation"
@@ -54,12 +52,9 @@
                    ($ :div
                       (format-text (-> review :text))))))))))
 
-(defnc OwnReview [{:keys [review]}]
-  (let [{:keys [radar]} (ui/use-context-data)
-        book-id (use-book-id)
-        book (radar/book-by-id radar book-id)
-        uid (ui/use-uid)
-        recommended? (book/recommended-by-user? book uid)]
+(def-ui OwnReview [uid radar book review]
+  {:from-context [uid radar book]}
+  (let [recommended? (book/recommended-by-user? book uid)]
     ($ :div
        ($ :div
           {:className "Recommendation"
@@ -111,10 +106,9 @@
             " recommendation"
             " recommendations")))))
 
-(defnc Reviews []
-  (let [{:keys [radar book-id uid]} (ui/use-context-data)
-        book (radar/book-by-id radar book-id)
-        reviews (-> book :reviews vals)
+(def-ui Reviews [radar book uid]
+  {:from-context [radar book uid]}
+  (let [reviews (-> book :reviews vals)
         reviews-grouped (->> reviews (group-by #(= uid (-> % :uid))))
         own-review (first (get reviews-grouped true))
         other-reviews (get reviews-grouped false)]
@@ -135,11 +129,9 @@
                      :font-style "italic"}}
             "no reviews yet")))))
 
-(defnc Book [{:keys []}]
-  (let [{:keys [radar]} (ui/use-context-data)
-        book-id (use-book-id)
-        book (radar/book-by-id radar book-id)
-        isbn (-> book :isbn)
+(def-ui Book [radar book]
+  {:from-context [radar book]}
+  (let [isbn (-> book :isbn)
         image-url (book/cover-url book)
 
         BookDataCard ($ mui/Card
@@ -168,7 +160,8 @@
                             :max-width "30vw"}}))
 
         AmazonBuyButton ($ ui/Button
-                           {:command book/view-on-amazon
+                           {:text "Amazon"
+                            :icon "shopping_cart"
                             :href (if-let [asin (-> book :asin)]
                                     (amazon-service/href asin)
                                     (amazon-service/search-href (or isbn (-> book :title))))

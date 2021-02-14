@@ -1,104 +1,92 @@
 (ns radar.commands
   (:require
-   [spark.models :as m :refer [def-model]]
 
+   [spark.core :as spark :refer [def-cmd]]
    [base.user :as user]
    [radar.radar :as radar]
    [radar.book :as book]
    [clojure.string :as str]))
 
+(def-cmd CreateRadar
+  {:label "Create new Radar"
 
-(def-model CreateRadar
-  [m/Command--create-doc
-   {:label "Create new Radar"
+   :context-args [[:user user/User]]
 
-    :col radar/Radars
+   :form (fn [{:keys [user]}]
+           {:fields [radar/title radar/allow-domain]
+            :values {:uids [(-> user :id)]}})
 
-    :context-args [[:user user/User]]
+   :f (fn [{:keys [user values]}]
+        [[:db/create radar/Radar values]])})
 
-    :form (fn [{:keys [user]}]
-            {:fields [radar/title radar/allow-domain]
-             :values {:uids [(-> user :id)]}})
-    }])
+(def-cmd AddBook
+  {:label "Add Book"
+   :icon "add"
 
+   :form {:fields [book/isbn book/title book/author book/asin book/tags]}
 
-(def-model AddBook
-  [m/Command--update-doc--add-child
-   {:label "Add Book"
-    :icon "add"
+   :f (fn [{:keys [radar values]}]
+        [[:db/add-child radar [:books] values]])})
 
-    :doc-param :radar
-    :inner-path [:books]
+(def-cmd UpdateBook
+  {:label "Edit Book"
 
-    :form {:fields [book/isbn book/title book/author book/asin book/tags]}}])
+   :form (fn [{:keys [book]}]
+           {:fields [book/title book/author book/isbn book/asin]
+            :fields-values book})
 
+   :f (fn [{:keys [radar book values]}]
+        [[:db/update-child radar [:books] (-> book book/id) values]])})
 
-(def-model UpdateBook
-  [m/Command--update-doc--update-child
-   {:label "Edit Book"
+(def-cmd UpdateBookTags
+  {:label "Edit Book Tags"
 
-    :doc-param :radar
-    :child-param :book
-    :inner-path [:books]
+   :doc-param :radar
+   :child-param :book
+   :inner-path [:books]
 
-    :form (fn [{:keys [book]}]
-            {:fields [book/title book/author book/isbn book/asin]
-             :fields-values book})}])
+   :form (fn [{:keys [book]}]
+           {:fields [book/tags]
+            :fields-values book})
 
+   :f (fn [{:keys [radar book values]}]
+        (let [values (update values :tags #(mapv str/lower-case %))]
+          [[:db/update-child radar [:books] (-> book book/id) values]]))})
 
-(def-model UpdateBookTags
-  [m/Command--update-doc--update-child
-   {:label "Edit Book Tags"
+(def-cmd UpdateBookReview
+  {:label "Edit Book Review"
 
-    :doc-param :radar
-    :child-param :book
-    :inner-path [:books]
+   :context-args [[:radar radar/Radar]
+                  [:book book/Book]]
 
-    :form (fn [{:keys [book]}]
-            {:fields [book/tags]
-             :fields-values book})
+   :form (fn [{:keys [book uid]}]
+           {:fields [{:id :text
+                      :rows 5
+                      :multiline? true}]
+            :fields-values (book/review-by-uid book uid)})
 
-    :conform-changes (fn [changes]
-                       (update changes :tags #(mapv str/lower-case %)))}])
+   :f (fn [{:keys [radar book uid values]}]
+        (let [review (book/review-by-uid book uid)
+              path [:books (-> book :id) :reviews]]
+          (if review
+            [[:db/update-child radar path uid values]]
+            [[:db/add-child radar path (assoc values
+                                              :id uid
+                                              :uid uid)]])))})
 
+(def-cmd RecommendBook
+  {:label "Recommend Book"
+   :icon "thumb_up"
+   :inconspicuous? true
 
-(def-model UpdateBookReview
-  [m/Command
-   {:label "Edit Book Review"
+   :f (fn [{:keys [radar book uid]}]
+        [[:db/update-child radar [:books] (-> book book/id)
+          {:recommendations [:db/array-union [uid]]}]])})
 
-    :form (fn [{:keys [book uid]}]
-            {:fields [{:id :text
-                       :rows 5
-                       :multiline? true}]
-             :fields-values (book/review-by-uid book uid)})
+(def-cmd UnRecommendBook
+  {:label "Recommend Book"
+   :icon "thumb_up"
 
-    :f (fn [{:keys [radar book uid values]}]
-         (let [review (book/review-by-uid book uid)
-               path [:books (-> book :id) :reviews]]
-           (if review
-             [[:db/update-child radar path uid values]]
-             [[:db/add-child radar path (assoc values
-                                               :id uid
-                                               :uid uid)]])))}])
-
-
-(def-model RecommendBook
-  [m/Command--update-doc--update-child
-   {:label "Recommend Book"
-    :icon "thumb_up"
-    :inconspicuous? true
-    :doc-param :radar
-    :child-param :book
-    :inner-path [:books]
-    :static-changes (fn [{:keys [uid]}]
-                      {:recommendations [:db/array-union [uid]]})}])
-
-(def-model UnRecommendBook
-  [m/Command--update-doc--update-child
-   {:label "Recommend Book"
-    :icon "thumb_up"
-    :doc-param :radar
-    :child-param :book
-    :inner-path [:books]
-    :static-changes (fn [{:keys [uid]}]
-                      {:recommendations [:db/array-remove [uid]]})}])
+   :f (fn [{:keys [radar book uid]}]
+        [[:db/update-child radar [:books] (-> book book/id)
+          {:recommendations [:db/array-remove [uid]]}]])})

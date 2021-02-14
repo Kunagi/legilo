@@ -1,41 +1,54 @@
 (ns radar.radar
   (:require
    [clojure.spec.alpha :as s]
-   [spark.models :as m :refer [def-model]]
+   [spark.core :as spark :refer [def-field def-doc]]
+    
 
+   [base.user :as user]
    [radar.book :as book]
    ))
 
 
-(def-model title
-  [m/Attr
+(def-field title
+  [:string 
    {:label "Name"
     :required? true}])
 
 
-(def-model allow-domain
-  [m/Attr
+(def-field allow-domain
+  [:string
    {:label "Allow Domain"
     :helptext "Here you can specify a domain, like example.com or your-org.com.
 All users from this domain will have access to this Radar."}])
 
 
-(def-model Radar
-  [m/Doc
-   {}])
+(def-doc Radar
+  [{:firestore/collection "radars"}])
 
 
-(def-model Radars
-  [m/Col
-   {:doc Radar}])
+(defn col-path--by-uid [user]
+  [{:id "radars"
+    :wheres [["uids" "!=" nil]
+             ["uids" "array-contains" (or (-> user user/id) "_")]]}])
 
-(def-model RadarsForUser
-  [m/ColSubset--union
-   {:col Radars
-    :wheres (fn [{:keys [user]}]
-              (let [by-uid [["uids" "array-contains" (or (-> user :id) "_")]]
-                    by-domain [["allow-domain" "==" (or (-> user :auth-domain) "_")]]]
-                 [by-uid by-domain]))}])
+(defn col-path--by-domain [user]
+  [{:id "radars"
+    :wheres [["allow-domain" "!=" nil]
+             ["allow-domain" "==" (or (-> user user/auth-domain) "_")]]}])
+
+(defn union-col-paths--for-user [user]
+  [(col-path--by-uid user)
+   (col-path--by-domain user)])
+
+;; (def-model RadarsForUser
+;;   [m/ColSubset--union
+;;    {:col Radars
+;;     :wheres (fn [{:keys [user]}]
+;;               (let [by-uid [["uids" "!=" nil]
+;;                             ["uids" "array-contains" (or (-> user :id) "_")]]
+;;                     by-domain [["allow-domain" "!=" nil]
+;;                                ["allow-domain" "==" (or (-> user :auth-domain) "_")]]]
+;;                  [by-uid by-domain]))}])
 
 ;; (def-model RadarsUserByUid
 ;;   [m/ColSubset
