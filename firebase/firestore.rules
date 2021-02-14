@@ -8,8 +8,15 @@ service cloud.firestore {
       allow read, write: if
           request.auth != null
           &&
-          (request.auth.uid in resource.data.uids
-            || (resource.data["allow-domain"] != null && request.auth.token.email.matches(".*@" + resource.data["allow-domain"] + "$")));
+          (
+            request.auth.uid in resource.data.uids
+            ||
+            ( resource.data["allow-domain"] != null
+              &&
+              request.auth.token.email.matches(".*@" + resource.data["allow-domain"] + "$")
+            )
+          )
+          ;
     }
 
     match /users/{userId}/{document=**} {

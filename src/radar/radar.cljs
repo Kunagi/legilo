@@ -27,40 +27,21 @@ All users from this domain will have access to this Radar."}])
 
 
 (defn col-path--by-uid [user]
-  [{:id "radars"
-    :wheres [["uids" "!=" nil]
-             ["uids" "array-contains" (or (-> user user/id) "_")]]}])
+  (when user
+    [{:id "radars"
+      :wheres [["uids" "!=" nil]
+               ["uids" "array-contains" (or (-> user user/id) "_")]]}]))
 
 (defn col-path--by-domain [user]
-  [{:id "radars"
-    :wheres [["allow-domain" "!=" nil]
-             ["allow-domain" "==" (or (-> user user/auth-domain) "_")]]}])
+  (when user
+    (when-let [domain (-> user user/auth-domain)]
+      [{:id "radars"
+        :wheres [["allow-domain" "==" domain]]}])))
 
 (defn union-col-paths--for-user [user]
   [(col-path--by-uid user)
    (col-path--by-domain user)])
 
-;; (def-model RadarsForUser
-;;   [m/ColSubset--union
-;;    {:col Radars
-;;     :wheres (fn [{:keys [user]}]
-;;               (let [by-uid [["uids" "!=" nil]
-;;                             ["uids" "array-contains" (or (-> user :id) "_")]]
-;;                     by-domain [["allow-domain" "!=" nil]
-;;                                ["allow-domain" "==" (or (-> user :auth-domain) "_")]]]
-;;                  [by-uid by-domain]))}])
-
-;; (def-model RadarsUserByUid
-;;   [m/ColSubset
-;;    {:col Radars
-;;     :wheres (fn [{:keys [user]}]
-;;               [["uids" "array-contains" (-> user :id)]])}])
-
-;; (def-model RadarsByDomain
-;;   [m/ColSubset
-;;    {:col Radars
-;;     :wheres (fn [{:keys [user]}]
-;;               [["allow-domain" "==" (-> user :auth-domain)]])}])
 
 (defn all-tags [radar]
   (->> radar :books vals (mapcat :tags) set))
