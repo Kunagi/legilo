@@ -40,11 +40,7 @@
                            :min-width "50px"
                            :border-top-left-radius "4px"
                            :border-bottom-left-radius "4px"
-                           :overflow "hidden"}})
-               #_($ :img
-                    {:src cover-url
-                     :width "50px"
-                     :style {:overflow "hidden"}}))
+                           :overflow "hidden"}}))
              ($ mui/CardContent
                 {:className "CardContent--book"}
                 ($ :div
@@ -53,18 +49,12 @@
                             :height "100%"
                             :align-items "center"}}
                    ($ :div
-                      #_{:style {:font-weight "bold"}}
                       (-> book :title))
                    (when (book/recommended-by-user? book uid)
                      ($ :div
                         {:className "material-icons"
                          :style {:color "#999"}}
-                        "thumb_up"))
-                   #_(when-let [author (-> book :author)]
-                       ($ :span
-                          {:style {:color "#666"
-                                   :margin-left "8px"}}
-                          author)))))))))
+                        "thumb_up")))))))))
 
 (def-ui Section [section books]
   ($ ui/Stack
