@@ -3,12 +3,13 @@
    [clojure.string :as str]
    [cljs.pprint :refer [pprint]]
    ["@material-ui/core" :as mui]
+   ["@material-ui/lab" :as mui-lab]
 
    [spark.utils :as u]
    [spark.logging :refer [log]]
 
    [spark.core :as spark :refer [def-page]]
-   [spark.ui :as ui :refer [def-ui $]]
+   [spark.ui :as ui :refer [def-ui def-ui-test $]]
 
    [radar.radar :as radar]
    [radar.book :as book]
@@ -115,7 +116,7 @@
           ($ ui/CommandButton
              {:command commands/AddBook
               :color "secondary"})
-          ($ ui/Button
+          #_($ ui/Button
              {:text "Add Book"
               :icon "add"
               :color "secondary"
@@ -207,3 +208,27 @@
 ;; searc
 ;;
 
+(def-ui TestChipInput []
+  ($ mui-lab/Autocomplete
+     {:multiple true
+      :freeSolo true
+      :disableClearable true
+      :id "test-id"
+      :options (clj->js [])
+      :getOptionLabel identity
+      :renderInput (fn [props]
+                     ($ mui/TextField
+                        {:label "lll"
+                         :id (-> props .-id)
+                         :onKeyDown (-> props .-onKeyDown)
+                         :disabled (-> props .-disabled)
+                         :fullWidth (-> props .-fullWidth)
+                         :size (-> props .-size)
+                         :InputLabelProps (-> props .-InputLabelProps)
+                         :InputProps (-> props .-InputProps)
+                         :inputProps (-> props .-inputProps)}))}))
+
+
+(def-ui-test [TestChipInput]
+  ($ TestChipInput
+     {:a "hallo"}))

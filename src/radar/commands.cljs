@@ -23,7 +23,11 @@
   {:label "Add Book"
    :icon "add"
 
-   :form {:fields [book/isbn book/title book/author book/asin book/tags]}
+   :form (fn [{:keys [radar]}]
+           {:fields [book/title book/isbn book/author book/asin
+                     (assoc-in book/tags
+                               [1 :options]
+                               (radar/all-tags radar))]})
 
    :f (fn [{:keys [radar values]}]
         [[:db/add-child radar [:books] values]])})
@@ -52,8 +56,9 @@
    :child-param :book
    :inner-path [:books]
 
-   :form (fn [{:keys [book]}]
-           {:fields [book/tags]
+   :form (fn [{:keys [book radar]}]
+           {:fields [(assoc-in  book/tags
+                                [1 :options] (radar/all-tags radar))]
             :fields-values book})
 
    :f (fn [{:keys [radar book values]}]
