@@ -194,14 +194,23 @@
                              {:open (not (nil? menu-anchor-el))
                               :onClose #(set-menu-anchor-el nil)
                               :anchorEl menu-anchor-el}
-                             ($ mui/MenuItem
-                                {:onClick #(do
-                                             (set-menu-anchor-el nil)
-                                             (ui/execute-command>
-                                              commands/HideBook
-                                              {:book book
-                                               :radar radar}))}
-                                "Löschen"))))
+                             (if (-> book :hidden)
+                               ($ mui/MenuItem
+                                  {:onClick #(do
+                                               (set-menu-anchor-el nil)
+                                               (ui/execute-command>
+                                                commands/UnhideBook
+                                                {:book book
+                                                 :radar radar}))}
+                                  "Restore")
+                               ($ mui/MenuItem
+                                  {:onClick #(do
+                                               (set-menu-anchor-el nil)
+                                               (ui/execute-command>
+                                                commands/HideBook
+                                                {:book book
+                                                 :radar radar}))}
+                                  "Delete")))))
 
         Cover (when image-url
                 ($ :img

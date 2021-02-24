@@ -50,10 +50,16 @@
         [[:db/update-child radar [:books] (-> book book/id) values]])})
 
 (def-cmd HideBook
-  {:label "Löschen"
+  {:label "Delete"
 
    :f (fn [{:keys [radar book]}]
         [[:db/update-child radar [:books] (-> book book/id) {:hidden [:db/timestamp]}]])})
+
+(def-cmd UnhideBook
+  {:label "Restore"
+
+   :f (fn [{:keys [radar book]}]
+        [[:db/update-child radar [:books] (-> book book/id) {:hidden nil}]])})
 
 (def-cmd UpdateBookTags
   {:label "Edit Book Tags"

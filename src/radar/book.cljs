@@ -60,13 +60,13 @@ picture of the book will be shown."
 
 (def-subdoc Book
   [{}
-   #_[:reviews {:optional true} [:map-of :string review/Review]]
-   #_[:recommendations {:optional true} [:set :string]]])
+   [:reviews {:optional true} [:map-of :string review/Review]]
+   [:recommendations {:optional true} [:set :string]]])
 
 
 
 (defn review-by-uid [book uid]
-  (get-in book [:reviews (keyword uid)]))
+  (get-in book [:reviews uid]))
 
 (defn recommendation-count [book]
   (-> book :recommendations count))
