@@ -158,6 +158,8 @@
   (let [isbn (-> book :isbn)
         image-url (book/cover-url book)
 
+        [menu-anchor-el set-menu-anchor-el] (ui/use-state nil)
+
         BookDataCard ($ mui/Card
                         ($ ui/CommandCardArea
                            {:command commands/UpdateBook
@@ -173,7 +175,33 @@
                               ($ ui/Stack
                                  ($ ui/FieldLabel
                                     {:text "Tags"})
-                                 ($ ui/StringVectorChips {:values (book/tags-in-order book)})))))
+                                 ($ ui/StringVectorChips {:values (book/tags-in-order book)}))))
+                        ($ mui/Divider)
+                        (ui/div
+                          {:display "flex"
+                           :justify-content "flex-end"
+                           :align-items "center"
+                           :padding "8px 8px 8px 0"}
+                          (when (-> book :hidden)
+                            (ui/div
+                             {:margin "0 8px 0 0"}
+                             "This book is marked for deletion."))
+                          ($ mui/IconButton
+                             {:onClick #(-> % .-currentTarget set-menu-anchor-el)
+                              :size "small"}
+                             (ui/icon "more_vert"))
+                          ($ mui/Menu
+                             {:open (not (nil? menu-anchor-el))
+                              :onClose #(set-menu-anchor-el nil)
+                              :anchorEl menu-anchor-el}
+                             ($ mui/MenuItem
+                                {:onClick #(do
+                                             (set-menu-anchor-el nil)
+                                             (ui/execute-command>
+                                              commands/HideBook
+                                              {:book book
+                                               :radar radar}))}
+                                "Löschen"))))
 
         Cover (when image-url
                 ($ :img

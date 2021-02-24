@@ -79,7 +79,7 @@ All users from this domain will have access to this Radar."}])
     (-> title .toLowerCase)))
 
 (defn books [radar]
-  (-> radar :books vals))
+  (->> radar :books vals (remove #(-> % :hidden))))
 
 (defn book-by-id [radar book-id]
   (get-in radar [:books book-id]))
