@@ -137,7 +137,7 @@
           "What others say | "
           (counter book))
        (if (seq other-reviews)
-         (for [review other-reviews]
+         (for [review (->> other-reviews (sort-by :uid))]
            ($ Review
               {:key (-> review :uid)
                :review review}))
@@ -147,7 +147,7 @@
             "no reviews yet"))
        ($ ui/Flexbox
           {:style {:margin-top "1.33em"}}
-          (for [uid recommendations]
+          (for [uid (-> recommendations sort)]
             ($ Avatar
                {:key uid
                 :uid uid}))))))
