@@ -18,7 +18,8 @@
 (defn best-display-name [user]
   (or
    (-> user :auth-display-name)
-   (-> user :auth-email)))
+   (-> user :auth-email)
+   (-> user id)))
 
 (defn auth-email [this]
   (-> this :auth-email))

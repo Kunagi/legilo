@@ -1,6 +1,7 @@
 (ns radar.book-ui
   (:require
    [clojure.string :as str]
+   [clojure.set :as set]
    ["@material-ui/core" :as mui]
 
    [spark.ui :as ui :refer [def-ui $ <>]]
@@ -51,6 +52,16 @@
                       (user/best-display-name user))
                    ($ :div
                       (format-text (-> review :text))))))))))
+
+(def-ui Avatar [uid]
+  (let [user (ui/use-doc user/User uid)]
+    (when user
+      ($ mui/Tooltip
+         {:title (user/best-display-name user)}
+         ($ mui/Avatar
+            {:src (user/best-photo-url user)
+             :alt (user/best-display-name user)})))))
+
 
 (def-ui OwnReview [uid radar book review]
   {:from-context [uid radar book]}
@@ -111,8 +122,15 @@
   (let [reviews (-> book :reviews vals)
         reviews-grouped (->> reviews (group-by #(= uid (-> % :uid))))
         own-review (first (get reviews-grouped true))
-        other-reviews (get reviews-grouped false)]
+        other-reviews (get reviews-grouped false)
+        reviews-uids (->> reviews
+                          (map :uid)
+                          (into #{}))
+        recommendations (set/difference
+                         (->> book :recommendations (into #{}))
+                         reviews-uids)]
     ($ ui/Stack
+       (ui/data recommendations)
        ($ :h4
           "What I say")
        ($ OwnReview {:review own-review})
@@ -127,7 +145,14 @@
          ($ :div
             {:style {:color "grey"
                      :font-style "italic"}}
-            "no reviews yet")))))
+            "no reviews yet"))
+       ($ ui/Flexbox
+          {:style {:margin-top "1.33em"}}
+          (for [uid recommendations]
+            ($ Avatar
+               {:key uid
+                :uid uid}))))))
+
 
 (def-ui Book [radar book]
   {:from-context [radar book]}
