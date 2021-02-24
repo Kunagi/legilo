@@ -130,7 +130,6 @@
                          (->> book :recommendations (into #{}))
                          reviews-uids)]
     ($ ui/Stack
-       (ui/data recommendations)
        ($ :h4
           "What I say")
        ($ OwnReview {:review own-review})
