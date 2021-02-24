@@ -25,6 +25,7 @@
 
 
 (defn styles [theme]
+  (js/console.log "THEME" (-> theme .-palette))
   {"& .CardContent--book" {:padding-top (-> theme (.spacing 0.5))
                            :padding-bottom (-> theme (.spacing 0.5))
                            :min-height (-> theme (.spacing 7))
@@ -39,6 +40,11 @@
    "& .ml-1" {:margin-left (-> theme (.spacing 1))}
 
    "& .Color--Primary" {:color (-> theme .-palette .-primary .-main)}
+
+   ;; hack to fix header colors when using autocomplete in dialog
+   ;; https://github.com/mui-org/material-ui/issues/16102
+   "& header.MuiPaper-root" {:background-color (-> theme .-palette .-primary .-main)
+                             :color (-> theme .-palette .-primary .-contrastText)}
 
    "& .MuiAppBar-root a" {:color "white"
                           :text-decoration "none"}
