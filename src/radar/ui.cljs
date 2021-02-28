@@ -259,8 +259,7 @@
 (def-ui RadarConfigPageContent []
   ($ ui/Stack
      ($ RadarConfigCard)
-     ($ RadarBackupCard)
-     ($ CommandExec)))
+     ($ RadarBackupCard)))
 
 (def-page RadarConfigPage
   {:path "/ui/radars/:radar/config"
