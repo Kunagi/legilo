@@ -67,8 +67,6 @@
   {:from-context [uid radar book]}
   (let [recommended? (book/recommended-by-user? book uid)]
     ($ :div
-       ;; FIXME remove this
-       (ui/data review recommended?)
        ($ :div
           {:className "Recommendation"
            :style {:display :flex
@@ -267,6 +265,4 @@
 
        ($ Reviews)
 
-       ;; FIXME remove this
-       (ui/data book)
        )))

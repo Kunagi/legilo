@@ -1,6 +1,7 @@
 (ns radar.commands
   (:require
 
+   [spark.logging :refer [log]]
    [spark.core :as spark :refer [def-cmd]]
    [base.user :as user]
    [radar.radar :as radar]
@@ -92,6 +93,11 @@
    :f (fn [{:keys [radar book uid values]}]
         (let [review (book/review-by-uid book uid)
               path [:books (-> book :id) :reviews]]
+
+          (log ::UpdateBookReview
+               :review review
+               :values values)
+
           (if review
             [[:db/update-child radar path uid values]]
             [[:db/add-child radar path (assoc values
@@ -107,7 +113,10 @@
         [[:db/update-child radar [:books] (-> book book/id)
           {:recommendations [:db/array-union [uid]]
            (str "recommendations-times." uid) [:db/timestamp]
-           (str "reviews." uid ".ts-updated") [:db/timestamp]}]])})
+           (str "reviews." uid ".ts-updated") [:db/timestamp]
+           (str "reviews." uid ".id") uid
+           (str "reviews." uid ".uid") uid
+           }]])})
 
 (def-cmd UnRecommendBook
   {:label "Recommend Book"
