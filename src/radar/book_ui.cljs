@@ -67,6 +67,8 @@
   {:from-context [uid radar book]}
   (let [recommended? (book/recommended-by-user? book uid)]
     ($ :div
+       ;; FIXME remove this
+       (ui/data review recommended?)
        ($ :div
           {:className "Recommendation"
            :style {:display :flex
@@ -130,7 +132,8 @@
   {:from-context [radar book uid]}
   (let [recommendations (->> book :recommendations (into #{}))
         reviews (->> book :reviews vals
-                     (remove #(not (contains? recommendations (-> % :uid)))))
+                     (remove #(not (contains? recommendations (-> % :uid))))
+                     )
         reviews-grouped (->> reviews (group-by #(= uid (-> % :uid))))
         own-review (first (get reviews-grouped true))
         other-reviews (get reviews-grouped false)
@@ -262,4 +265,8 @@
 
        #_(counter book)
 
-       ($ Reviews))))
+       ($ Reviews)
+
+       ;; FIXME remove this
+       (ui/data book)
+       )))
