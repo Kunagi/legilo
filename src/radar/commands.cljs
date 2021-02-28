@@ -106,6 +106,7 @@
    :f (fn [{:keys [radar book uid]}]
         [[:db/update-child radar [:books] (-> book book/id)
           {:recommendations [:db/array-union [uid]]
+           :recommendations-times {uid [:db/timestamp]}
            :reviews {uid {:ts-updated [:db/timestamp]}}}]])})
 
 (def-cmd UnRecommendBook

@@ -61,7 +61,10 @@ picture of the book will be shown."
 (def-subdoc Book
   [{}
    [:reviews {:optional true} [:map-of :string review/Review]]
-   [:recommendations {:optional true} [:set :string]]])
+   [:recommendations {:optional true} [:set :string]]
+   [:recommendations-times
+    {:optional true}
+    [:map-of :string any?]]])
 
 
 
