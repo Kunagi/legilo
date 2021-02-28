@@ -149,6 +149,9 @@
           (counter book))
        (if (seq other-reviews)
          (for [review (->> other-reviews
+                           (sort-by (fn [review] [(-> review :ts-updated)
+                                                  (-> review :uid)]))
+
                            (sort-by :uid))]
            ($ Review
               {:key (-> review :uid)
