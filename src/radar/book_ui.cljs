@@ -128,7 +128,9 @@
 
 (def-ui Reviews [radar book uid]
   {:from-context [radar book uid]}
-  (let [reviews (-> book :reviews vals)
+  (let [recommendations (->> book :recommendations (into #{}))
+        reviews (->> book :reviews vals
+                     (remove #(not (contains? recommendations (-> % :uid)))))
         reviews-grouped (->> reviews (group-by #(= uid (-> % :uid))))
         own-review (first (get reviews-grouped true))
         other-reviews (get reviews-grouped false)
@@ -136,7 +138,7 @@
                           (map :uid)
                           (into #{}))
         recommendations (set/difference
-                         (->> book :recommendations (into #{}))
+                         recommendations
                          reviews-uids)]
     ($ ui/Stack
        ($ :h4
@@ -146,7 +148,8 @@
           "What others say | "
           (counter book))
        (if (seq other-reviews)
-         (for [review (->> other-reviews (sort-by :uid))]
+         (for [review (->> other-reviews
+                           (sort-by :uid))]
            ($ Review
               {:key (-> review :uid)
                :review review}))
