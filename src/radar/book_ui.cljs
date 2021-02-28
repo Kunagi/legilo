@@ -79,30 +79,39 @@
                    :context {:book book
                              :uid uid}
                    :as-icon? true
-                   :color "secondary"})
-               ($ ui/CommandButton
-                  {:command commands/RecommendBook
-                   :context {:book book
-                             :uid uid}
-                   :as-icon? true
-                   :icon-theme "outlined"})))
+                   :color "secondary"
+                   :class "RecommendationButton"})
+               (ui/div
+                ($ ui/CommandButton
+                   {:command commands/RecommendBook
+                    :context {:book book
+                              :uid uid}
+                    :as-icon? true
+                    :icon-theme "outlined"
+                    :class "RecommendationButton"
+                    :styles {:color "#aaa"}
+                    }))))
           ($ mui/Card
              {:className "flex-grow-1 ml-1"}
              ($ ui/CommandCardArea
-                {:command commands/UpdateBookReview
+                {:command (when (or recommended?
+                                    (-> review :text))
+                              commands/UpdateBookReview)
                  :context {:book book
                            :uid uid}}
                 ($ mui/CardContent
                    (if (-> review :text)
                      ($ :div
-                        {:style {:font-size "0.875rem"
-                                 :line-height "1.43"}}
+                        {:style {
+                                 ;; :font-size "0.875rem"
+                                 ;; :line-height "1.43"
+                                 }}
                         (-> review :text format-text))
                      ($ :p {:style {:color "grey"
                                     :font-style "italic"}}
                         (if recommended?
                           "Leave a review?"
-                          "Recommend this book?"))))))))))
+                          "Hit thumbs up to recommend this book."))))))))))
 
 (defn counter [book]
   (let [c (book/recommendation-count book)]
