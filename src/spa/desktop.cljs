@@ -49,7 +49,11 @@
    "& .MuiAppBar-root a" {:color "white"
                           :text-decoration "none"}
 
-   "& #App" {:position "absolute"
+   "& .MuiAppBar-root .MuiIconButton-root" {:color "white"}
+
+   "& .MuiAppBar-root .MuiToolbar-gutters" {:padding-left 0}
+
+   "& #App" {:position (when-not ^boolean js/goog.DEBUG "absolute")
              :height "100%"
              :width "100%"
              :display "flex"
@@ -105,36 +109,41 @@
   (let [page (ui/use-page)]
     ($ mui/AppBar
        {:position "static"}
-       ($ :div
-          {:style {:display :flex
-                   :justify-content "space-between"}}
-          ($ mui/Toolbar
-             ($ ui/Link
-                {:to "/"
-                 :stlye {:color "white"}}
-                ($ mui/Typography
-                   {:id "AppTitle"
-                    :variant "h6"}
-                   "Legilo"
-                   ))
-             (when-let [component (-> page :appbar-title-component)]
-               ($ mui/Typography
-                  {:variant "h6"}
-                  ($ :span {:style {:margin-left "8px"
-                                    :letter-spacing 1
-                                    :font-weight 300}}
-                     " | "
-                     ($ component)))))
-          ($ mui/Toolbar
-             (when ^boolean goog.DEBUG
-               ($ mui/IconButton
-                  {:component ui/Link
-                   :to "/ui/devcards"}
-                  ($ :div {:class "material-icons"} "developer_mode")))
-             ($ radar-ui/MenuIcon)
-             ($ SignInButtonOrMenu
-                {:to "/ui/menu"}))
-          ))))
+       (ui/div
+        {:display :flex
+         :justify-content "space-between"}
+        ($ mui/Toolbar
+           (if (= "/" js/location.pathname)
+             (ui/div
+              {:padding-left "24px"}
+              ($ ui/Link
+                 {:to "/"
+                  :stlye {:color "white"}}
+                 ($ mui/Typography
+                    {:id "AppTitle"
+                     :variant "h6"}
+                    "Legilo Book Radar")))
+             ($ mui/IconButton
+                {:onClick #(js/history.back)}
+                (ui/icon "arrow_back")))
+
+           (when-let [component (-> page :appbar-title-component)]
+             ($ mui/Typography
+                {:variant "h6"}
+                ($ :span {:style {:margin-left "8px"
+                                  :letter-spacing 1
+                                  :font-weight 300}}
+                   ($ component)))))
+        ($ mui/Toolbar
+           (when ^boolean goog.DEBUG
+             ($ mui/IconButton
+                {:component ui/Link
+                 :to "/ui/devcards"}
+                ($ :div {:class "material-icons"} "developer_mode")))
+           ($ radar-ui/MenuIcon)
+           ($ SignInButtonOrMenu
+              {:to "/ui/menu"}))))))
+
 
 
 (def-ui AppContent []

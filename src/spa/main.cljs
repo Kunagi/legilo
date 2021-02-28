@@ -40,11 +40,18 @@
            home/HomePage]
    :update-app-context update-app-context})
 
+(defn show-auth-error [^js error]
+  (let [error (js->clj error)
+        msg (or (-> error :message)
+                (str error))]
+    (ui/show-error msg)))
+
 (defn main! []
   (log ::main!)
   (auth/initialize
    {:user-doc-schema user/User
-    :sign-in auth/sign-in-with-microsoft})
+    :sign-in auth/sign-in-with-microsoft
+    :error-handler show-auth-error})
   (rdom/render ($ desktop/Desktop
                   {:spa Legilo})
                (js/document.getElementById "app")))
