@@ -158,7 +158,7 @@
                   nil)]
        (assoc context :book book)))
    :back-to (fn [{:keys [radar]}]
-              (str "/ui/radar/" (-> radar :id)))
+              (str "/ui/radars/" (-> radar :id)))
    })
 
 ;;;
@@ -206,7 +206,7 @@
    :appbar-title-component RadarAppbarTitle
    :use-docs {:radar radar/Radar}
    :back-to (fn [{:keys [radar]}]
-              (str "/ui/radar/" (-> radar :id)))})
+              (str "/ui/radars/" (-> radar :id)))})
 
 
 ;;
