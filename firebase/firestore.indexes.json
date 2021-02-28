@@ -1,4 +1,16 @@
 {
-  "indexes": [],
-  "fieldOverrides": []
+    "indexes": [{
+        "collectionGroup": "radars",
+        "queryScope": "COLLECTION",
+        "fields": [{
+                "fieldPath": "uids",
+                "arrayConfig": "CONTAINS"
+            },
+            {
+                "fieldPath": "uids",
+                "order": "ASCENDING"
+            }
+        ]
+    }],
+    "fieldOverrides": []
 }
