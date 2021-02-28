@@ -109,14 +109,17 @@
 
 
 (def-ui AppBar []
-  (let [page (ui/use-page)]
+  (let [page (ui/use-page)
+        context (ui/use-spark-context)
+        back-fn (-> page :back-to)
+        back-url (u/fn->value back-fn context)]
     ($ mui/AppBar
        {:position "static"}
        (ui/div
         {:display :flex
          :justify-content "space-between"}
         ($ mui/Toolbar
-           (if (= "/" js/location.pathname)
+           (if (or (= "/" js/location.pathname) (nil? back-url))
              (ui/div
               {:padding-left "24px"}
               ($ ui/Link
@@ -125,9 +128,10 @@
                  ($ mui/Typography
                     {:id "AppTitle"
                      :variant "h6"}
-                    "Legilo Book Radar")))
+                    "Legilo")))
              ($ mui/IconButton
-                {:onClick #(js/history.back)}
+                {:to back-url
+                 :component ui/Link}
                 (ui/icon "arrow_back")))
 
            (when-let [component (-> page :appbar-title-component)]

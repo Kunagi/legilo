@@ -156,7 +156,10 @@
      (let [book (if (string? book)
                   (-> radar (radar/book-by-id book))
                   nil)]
-       (assoc context :book book)))})
+       (assoc context :book book)))
+   :back-to (fn [{:keys [radar]}]
+              (str "/ui/radar/" (-> radar :id)))
+   })
 
 ;;;
 ;;; Radar Config
@@ -201,7 +204,9 @@
   {:path "/ui/radars/:radar/config"
    :content RadarConfigPageContent
    :appbar-title-component RadarAppbarTitle
-   :use-docs {:radar radar/Radar}})
+   :use-docs {:radar radar/Radar}
+   :back-to (fn [{:keys [radar]}]
+              (str "/ui/radar/" (-> radar :id)))})
 
 
 ;;
