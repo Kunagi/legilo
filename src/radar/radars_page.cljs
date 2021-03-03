@@ -1,12 +1,11 @@
-(ns spa.home-ui
+(ns radar.radars-page
   (:require
    ["@material-ui/core" :as mui]
 
    [spark.logging :refer [log]]
    [spark.auth :as auth]
 
-   [spark.core :as spark :refer [def-page]]
-   [spark.ui :as ui :refer [def-ui $]]
+   [spark.ui :as ui :refer [def-ui def-page $]]
 
    [base.user :as user]
 
@@ -41,12 +40,11 @@
             {:key (-> radar :firestore/id)
              :radar radar})))))
 
-(def-ui HomePageContent []
+(def-ui RadarsPageContent []
   (let [uid (ui/use-uid)]
     (when uid
       ($ Radars))))
 
-(def-page HomePage
+(def-page radars-page
   {:path "/"
-   :content HomePageContent})
-
+   :content RadarsPageContent})

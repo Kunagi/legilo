@@ -17,12 +17,13 @@
    [base.user :as user]
 
    [spa.desktop :as desktop]
-   [spa.home-ui :as home]
    [radar.ui :as radar]
    [spa.menu-page :refer [menu-page]]
+   [radar.radars-page :refer [radars-page]]
    [radar.config-page :refer [config-page]]
    [radar.book-page :refer [book-page]]
    ))
+
 
 (when js/goog.DEBUG
   (s/check-asserts true))
@@ -39,7 +40,7 @@
            book-page
            config-page
            radar/RadarPage
-           home/HomePage]
+           radars-page]
    :update-app-context update-app-context})
 
 (defn show-auth-error [^js error]
