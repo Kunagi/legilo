@@ -18,7 +18,6 @@
    [radar.radar :as radar]
    [radar.book :as book]
    [radar.commands :as commands]
-   [radar.book-ui :as book-ui]
    [radar.openlib-ui :as openlib]))
 
 
@@ -147,23 +146,6 @@
    :appbar-title-component RadarAppbarTitle
    :use-docs {:radar radar/Radar}})
 
-(def-ui BookPageContent []
-  ($ book-ui/Book))
-
-(def-page BookPage
-  {:path "/ui/radars/:radar/book/:book"
-   :content BookPageContent
-   :appbar-title-component RadarAppbarTitle
-   :use-docs {:radar radar/Radar}
-   :update-context
-   (fn [{:keys [radar book] :as context}]
-     (let [book (if (string? book)
-                  (-> radar (radar/book-by-id book))
-                  nil)]
-       (assoc context :book book)))
-   :back-to (fn [{:keys [radar]}]
-              (str "/ui/radars/" (-> radar :id)))
-   })
 
 
 (def-ui MenuIcon [radar]

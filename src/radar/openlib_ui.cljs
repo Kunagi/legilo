@@ -6,14 +6,9 @@
    [spark.ui :as ui :refer [def-ui def-ui-test $ <>]]
 
    [spark.logging :refer [log]]
-   [base.user :as user]
 
-   [amazon.service :as amazon-service]
-
-   [radar.radar :as radar]
    [radar.book :as book]
-   [radar.commands :as commands]
-   [radar.book-ui :as book-ui]))
+   [radar.commands :as commands]))
 
 (defn search-url [text]
   (str "http://openlibrary.org/search.json?title=" (js/encodeURIComponent text)))

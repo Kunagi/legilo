@@ -20,6 +20,7 @@
    [spa.home-ui :as home]
    [radar.ui :as radar]
    [radar.config-page :refer [config-page]]
+   [radar.book-page :refer [book-page]]
    ))
 
 (when js/goog.DEBUG
@@ -32,10 +33,9 @@
     (assoc context
            :user user)))
 
-
 (def-spa Legilo
   {:pages [home/MenuPage
-           radar/BookPage
+           book-page
            config-page
            radar/RadarPage
            home/HomePage]

@@ -1,10 +1,10 @@
-(ns radar.book-ui
+(ns radar.book-page
   (:require
    [clojure.string :as str]
    [clojure.set :as set]
    ["@material-ui/core" :as mui]
 
-   [spark.ui :as ui :refer [def-ui $ <>]]
+   [spark.ui :as ui :refer [def-ui def-page $ <>]]
 
    [base.user :as user]
 
@@ -12,7 +12,8 @@
 
    [radar.radar :as radar]
    [radar.book :as book]
-   [radar.commands :as commands]))
+   [radar.commands :as commands]
+   [radar.ui :as radar-ui]))
 
 
 (defn format-text [s]
@@ -266,3 +267,22 @@
        ($ Reviews)
 
        )))
+
+
+(def-ui BookPageContent []
+  ($ Book))
+
+(def-page book-page
+  {:path "/ui/radars/:radar/book/:book"
+   :content BookPageContent
+   :appbar-title-component radar-ui/RadarAppbarTitle
+   :use-docs {:radar radar/Radar}
+   :update-context
+   (fn [{:keys [radar book] :as context}]
+     (let [book (if (string? book)
+                  (-> radar (radar/book-by-id book))
+                  nil)]
+       (assoc context :book book)))
+   :back-to (fn [{:keys [radar]}]
+              (str "/ui/radars/" (-> radar :id)))
+   })
