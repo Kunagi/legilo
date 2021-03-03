@@ -91,7 +91,7 @@
              {:onClick #(do
                           (hide-dialog)
                           (ui/execute-command>
-                             commands/AddFoundBook
+                             commands/add-found-book
                              {:radar radar
                               :values book}
                              nil))}

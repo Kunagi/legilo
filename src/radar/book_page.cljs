@@ -76,16 +76,18 @@
           ($ :div
              (if recommended?
                ($ ui/CommandButton
-                  {:command commands/UnRecommendBook
-                   :context {:book book
+                  {:command commands/unrecommend-book
+                   :context {:radar radar
+                             :book book
                              :uid uid}
                    :as-icon? true
                    :color "secondary"
                    :class "RecommendationButton"})
                (ui/div
                 ($ ui/CommandButton
-                   {:command commands/RecommendBook
-                    :context {:book book
+                   {:command commands/recommend-book
+                    :context {:radar radar
+                              :book book
                               :uid uid}
                     :as-icon? true
                     :icon-theme "outlined"
@@ -97,8 +99,9 @@
              ($ ui/CommandCardArea
                 {:command (when (or recommended?
                                     (-> review :text))
-                              commands/UpdateBookReview)
-                 :context {:book book
+                              commands/update-book-review)
+                 :context {:radar radar
+                           :book book
                            :uid uid}}
                 ($ mui/CardContent
                    (if (-> review :text)
@@ -179,15 +182,17 @@
 
         BookDataCard ($ mui/Card
                         ($ ui/CommandCardArea
-                           {:command commands/UpdateBook
-                            :context {:book book}}
+                           {:command commands/update-book
+                            :context {:radar radar
+                                      :book book}}
                            ($ mui/CardContent
                               ($ :div (-> book :author))
                               ($ :h2 (-> book :title))))
                         ($ mui/Divider)
                         ($ ui/CommandCardArea
-                           {:command commands/UpdateBookTags
-                            :context {:book book}}
+                           {:command commands/update-book-tags
+                            :context {:book book
+                                      :radar radar}}
                            ($ mui/CardContent
                               ($ ui/Stack
                                  ($ ui/FieldLabel
@@ -216,7 +221,7 @@
                                   {:onClick #(do
                                                (set-menu-anchor-el nil)
                                                (ui/execute-command>
-                                                commands/UnhideBook
+                                                commands/unhide-book
                                                 {:book book
                                                  :radar radar}))}
                                   "Restore")
@@ -224,7 +229,7 @@
                                   {:onClick #(do
                                                (set-menu-anchor-el nil)
                                                (ui/execute-command>
-                                                commands/HideBook
+                                                commands/hide-book
                                                 {:book book
                                                  :radar radar}))}
                                   "Delete")))))

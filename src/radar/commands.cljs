@@ -8,21 +8,23 @@
    [radar.book :as book]
    [clojure.string :as str]))
 
-(def-cmd CreateRadar
+(def-cmd create-radar
   {:label "Create new Radar"
 
-   :context-args [[:user user/User]]
+   :context-args [[:uid :string]]
 
-   :form (fn [{:keys [user]}]
+   :form (fn [{:keys [uid]}]
            {:fields [radar/title radar/allow-domain]
-            :values {:uids [(-> user :id)]}})
+            :values {:uids [uid]}})
 
-   :f (fn [{:keys [user values]}]
+   :f (fn [{:keys [values]}]
         [[:db/create radar/Radar values]])})
 
-(def-cmd AddBook
+(def-cmd add-book
   {:label "Add Book"
    :icon "add"
+
+   :context-args [[:radar radar/Radar]]
 
    :form (fn [{:keys [radar]}]
            {:fields [book/title book/isbn book/author book/asin
@@ -33,15 +35,20 @@
    :f (fn [{:keys [radar values]}]
         [[:db/add-child radar [:books] values]])})
 
-(def-cmd AddFoundBook
+(def-cmd add-found-book
   {:label "Add Book"
    :icon "add"
+
+   :context-args [[:radar radar/Radar]]
 
    :f (fn [{:keys [radar values]}]
         [[:db/add-child radar [:books] values]])})
 
-(def-cmd UpdateBook
+(def-cmd update-book
   {:label "Edit Book"
+
+   :context-args [[:radar radar/Radar]
+                  [:book book/Book]]
 
    :form (fn [{:keys [book]}]
            {:fields [book/title book/author book/isbn book/asin]
@@ -50,24 +57,29 @@
    :f (fn [{:keys [radar book values]}]
         [[:db/update-child radar [:books] (-> book book/id) values]])})
 
-(def-cmd HideBook
+(def-cmd hide-book
   {:label "Delete"
+
+   :context-args [[:radar radar/Radar]
+                  [:book book/Book]]
 
    :f (fn [{:keys [radar book]}]
         [[:db/update-child radar [:books] (-> book book/id) {:hidden [:db/timestamp]}]])})
 
-(def-cmd UnhideBook
+(def-cmd unhide-book
   {:label "Restore"
+
+   :context-args [[:radar radar/Radar]
+                  [:book book/Book]]
 
    :f (fn [{:keys [radar book]}]
         [[:db/update-child radar [:books] (-> book book/id) {:hidden nil}]])})
 
-(def-cmd UpdateBookTags
+(def-cmd update-book-tags
   {:label "Edit Book Tags"
 
-   :doc-param :radar
-   :child-param :book
-   :inner-path [:books]
+   :context-args [[:radar radar/Radar]
+                  [:book book/Book]]
 
    :form (fn [{:keys [book radar]}]
            {:fields [(assoc-in  book/tags
@@ -78,7 +90,7 @@
         (let [values (update values :tags #(mapv str/lower-case %))]
           [[:db/update-child radar [:books] (-> book book/id) values]]))})
 
-(def-cmd UpdateBookReview
+(def-cmd update-book-review
   {:label "Edit Book Review"
 
    :context-args [[:radar radar/Radar]
@@ -94,20 +106,19 @@
         (let [review (book/review-by-uid book uid)
               path [:books (-> book :id) :reviews]]
 
-          (log ::UpdateBookReview
-               :review review
-               :values values)
-
           (if review
             [[:db/update-child radar path uid values]]
             [[:db/add-child radar path (assoc values
                                               :id uid
                                               :uid uid)]])))})
 
-(def-cmd RecommendBook
+(def-cmd recommend-book
   {:label "Recommend Book"
    :icon "thumb_up"
    :inconspicuous? true
+
+   :context-args [[:radar radar/Radar]
+                  [:book book/Book]]
 
    :f (fn [{:keys [radar book uid]}]
         [[:db/update-child radar [:books] (-> book book/id)
@@ -118,9 +129,12 @@
            (str "reviews." uid ".uid") uid
            }]])})
 
-(def-cmd UnRecommendBook
-  {:label "Recommend Book"
+(def-cmd unrecommend-book
+  {:label "Un-Recommend Book"
    :icon "thumb_up"
+
+   :context-args [[:radar radar/Radar]
+                  [:book book/Book]]
 
    :f (fn [{:keys [radar book uid]}]
         [[:db/update-child radar [:books] (-> book book/id)

@@ -24,7 +24,7 @@ All users from this domain will have access to this Radar."}])
 
 (def-doc Radar
   [{:firestore/collection "radars"}
-   [:books [:map-of :string book/Book]]])
+   [:books {:optional true} [:map-of :string book/Book]]])
 
 
 (defn col-path--by-uid [user]

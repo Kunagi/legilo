@@ -113,7 +113,8 @@
           (-> radar :title))
        ($ ui/Flexbox
           ($ ui/CommandButton
-             {:command commands/AddBook
+             {:command commands/add-book
+              :context {:radar radar}
               :color "secondary"})
           #_($ ui/Button
              {:text "Add Book"

@@ -3,19 +3,11 @@
    ["@material-ui/core" :as mui]
 
    [spark.logging :refer [log]]
-   [spark.auth :as auth]
 
    [spark.ui :as ui :refer [def-ui def-page $]]
 
-   [base.user :as user]
-
    [radar.radar :as radar]
-   [radar.commands :as radar-commands]))
-
-
-;;;
-;;; Radars
-;;;
+   [radar.commands :as commands]))
 
 
 (def-ui Radar [radar]
@@ -26,15 +18,15 @@
         ($ mui/CardContent
            (-> radar :title)))))
 
-(def-ui Radars [user]
-  {:from-context [user]}
+(def-ui Radars [uid user]
+  {:from-context [uid user]}
   (let [radars (ui/use-cols-union (radar/union-col-paths--for-user user))]
     ($ ui/Stack
        (when user
          ($ ui/Flexbox
             ($ ui/CommandButton
-               {:command radar-commands/CreateRadar
-                :context {:user user}})))
+               {:command commands/create-radar
+                :context {:uid uid}})))
        (for [radar (->> radars (sort-by radar/title-in-lowercase))]
          ($ Radar
             {:key (-> radar :firestore/id)
