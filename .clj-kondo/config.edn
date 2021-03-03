@@ -9,6 +9,7 @@
            spark.core/def-spa     clojure.core/def
            spark.core/def-test    clojure.core/fn
            spark.ui/def-ui        clojure.core/defn
+           spark.ui/def-page      clojure.core/def
            spark.ui/def-ui-test   clojure.core/fn
 
            spark.models/def-model clojure.core/def

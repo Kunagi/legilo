@@ -20,6 +20,7 @@
    [radar.ui :as radar]
    [spa.menu-page :refer [menu-page]]
    [radar.radars-page :refer [radars-page]]
+   [radar.radar-page :refer [radar-page]]
    [radar.config-page :refer [config-page]]
    [radar.book-page :refer [book-page]]
    ))
@@ -39,7 +40,7 @@
   {:pages [menu-page
            book-page
            config-page
-           radar/RadarPage
+           radar-page
            radars-page]
    :update-app-context update-app-context})
 
