@@ -19,6 +19,7 @@
    [spa.desktop :as desktop]
    [spa.home-ui :as home]
    [radar.ui :as radar]
+   [spa.menu-page :refer [menu-page]]
    [radar.config-page :refer [config-page]]
    [radar.book-page :refer [book-page]]
    ))
@@ -34,7 +35,7 @@
            :user user)))
 
 (def-spa Legilo
-  {:pages [home/MenuPage
+  {:pages [menu-page
            book-page
            config-page
            radar/RadarPage

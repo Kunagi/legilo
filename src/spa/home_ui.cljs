@@ -50,39 +50,3 @@
   {:path "/"
    :content HomePageContent})
 
-;;;
-;;; Sidebar Main Menu
-;;;
-
-(defn create-example-radar> [])
-
-(def-ui SignOutButton []
-  ($ mui/Button
-     {:onClick auth/sign-out
-      :variant "contained"
-      :color "secondary"}
-     "Sign Out"))
-
-(def-ui CurrentUserCard [user]
-  {:from-context [user]}
-  (when user
-    ($ mui/Card
-       ($ mui/CardContent
-          ($ :div
-             "Signed in as "
-             ($ :span
-                {:style {:font-weight :bold}}
-                (-> user :auth-email)
-                " / "
-                (-> user :auth-display-name))))
-       ($ mui/CardActions
-          ($ SignOutButton)))))
-
-(def-ui MenuPageContent []
-  ($ CurrentUserCard))
-
-(def-page MenuPage
-  {:path "/ui/menu"
-   :content MenuPageContent
-   :data {:uid :uid
-          :user :user}})
