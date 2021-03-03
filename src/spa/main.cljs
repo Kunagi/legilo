@@ -19,6 +19,7 @@
    [spa.desktop :as desktop]
    [spa.home-ui :as home]
    [radar.ui :as radar]
+   [radar.config-page :refer [config-page]]
    ))
 
 (when js/goog.DEBUG
@@ -35,7 +36,7 @@
 (def-spa Legilo
   {:pages [home/MenuPage
            radar/BookPage
-           radar/RadarConfigPage
+           config-page
            radar/RadarPage
            home/HomePage]
    :update-app-context update-app-context})
