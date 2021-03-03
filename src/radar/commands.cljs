@@ -1,12 +1,15 @@
 (ns radar.commands
   (:require
+   [clojure.string :as str]
 
    [spark.logging :refer [log]]
    [spark.core :as spark :refer [def-cmd]]
+   [spark.repository :as repository]
+
    [base.user :as user]
    [radar.radar :as radar]
    [radar.book :as book]
-   [clojure.string :as str]))
+   ))
 
 (def-cmd create-radar
   {:label "Create new Radar"
@@ -137,5 +140,6 @@
                   [:book book/Book]]
 
    :f (fn [{:keys [radar book uid]}]
-        [[:db/update-child radar [:books] (-> book book/id)
-          {:recommendations [:db/array-remove [uid]]}]])})
+        (repository/update-doc-child>
+         radar [:books] (-> book book/id)
+         {:recommendations [:db/array-remove [uid]]}))})
