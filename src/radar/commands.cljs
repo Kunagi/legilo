@@ -3,12 +3,14 @@
    [clojure.string :as str]
 
    [spark.logging :refer [log]]
-   [spark.core :as spark :refer [def-cmd]]
+   [spark.core :as spark :refer [def-cmd def-test expect]]
    [spark.repository :as repository]
+   [spark.form :as form]
 
    [base.user :as user]
    [radar.radar :as radar]
    [radar.book :as book]
+   [radar.queries :as queries]
    ))
 
 (def-cmd create-radar
@@ -38,6 +40,7 @@
    :f (fn [{:keys [radar values]}]
         [[:db/add-child radar [:books] values]])})
 
+
 (def-cmd add-found-book
   {:label "Add Book"
    :icon "add"
@@ -53,9 +56,6 @@
    :context-args [[:radar radar/Radar]
                   [:book book/Book]]
 
-   :form (fn [{:keys [book]}]
-           {:fields [book/title book/author book/isbn book/asin]
-            :fields-values book})
 
    :f (fn [{:keys [radar book values]}]
         [[:db/update-child radar [:books] (-> book book/id) values]])})

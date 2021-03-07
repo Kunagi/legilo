@@ -5,6 +5,7 @@
    ["@material-ui/core" :as mui]
 
    [spark.ui :as ui :refer [def-ui def-page $ <>]]
+   [spark.form :as form]
 
    [base.user :as user]
 
@@ -172,6 +173,27 @@
                {:key uid
                 :uid uid}))))))
 
+(defn- update-book-command []
+  (assoc commands/update-book
+         :form (fn [{:keys [book]}]
+                 {:fields [(assoc-in book/isbn [1 :action]
+                                     {:label "Abrufen"
+                                      :f (fn [form]
+                                           (let [update-form (-> form :update)]
+                                             (js/console.log "DEBUG" update-form)
+                                             (js/setTimeout
+                                              (fn []
+                                                (update-form
+                                                 (fn [form]
+                                                   (js/console.log "XXX" form)
+                                                   (form/on-field-value-change
+                                                    form
+                                                    :title "Boom"))))
+                                              2000)
+                                             form))})
+                           book/title book/author
+                           book/asin]
+                  :fields-values book})))
 
 (def-ui Book [radar book]
   {:from-context [radar book]}
@@ -182,7 +204,7 @@
 
         BookDataCard ($ mui/Card
                         ($ ui/CommandCardArea
-                           {:command commands/update-book
+                           {:command (update-book-command)
                             :context {:radar radar
                                       :book book}}
                            ($ mui/CardContent
@@ -200,39 +222,39 @@
                                  ($ ui/StringVectorChips {:values (book/tags-in-order book)}))))
                         ($ mui/Divider)
                         (ui/div
-                          {:display "flex"
-                           :justify-content "flex-end"
-                           :align-items "center"
-                           :padding "8px 8px 8px 0"}
-                          (when (-> book :hidden)
-                            (ui/div
-                             {:margin "0 8px 0 0"}
-                             "This book is marked for deletion."))
-                          ($ mui/IconButton
-                             {:onClick #(-> % .-currentTarget set-menu-anchor-el)
-                              :size "small"}
-                             (ui/icon "more_vert"))
-                          ($ mui/Menu
-                             {:open (not (nil? menu-anchor-el))
-                              :onClose #(set-menu-anchor-el nil)
-                              :anchorEl menu-anchor-el}
-                             (if (-> book :hidden)
-                               ($ mui/MenuItem
-                                  {:onClick #(do
-                                               (set-menu-anchor-el nil)
-                                               (ui/execute-command>
-                                                commands/unhide-book
-                                                {:book book
-                                                 :radar radar}))}
-                                  "Restore")
-                               ($ mui/MenuItem
-                                  {:onClick #(do
-                                               (set-menu-anchor-el nil)
-                                               (ui/execute-command>
-                                                commands/hide-book
-                                                {:book book
-                                                 :radar radar}))}
-                                  "Delete")))))
+                         {:display "flex"
+                          :justify-content "flex-end"
+                          :align-items "center"
+                          :padding "8px 8px 8px 0"}
+                         (when (-> book :hidden)
+                           (ui/div
+                            {:margin "0 8px 0 0"}
+                            "This book is marked for deletion."))
+                         ($ mui/IconButton
+                            {:onClick #(-> % .-currentTarget set-menu-anchor-el)
+                             :size "small"}
+                            (ui/icon "more_vert"))
+                         ($ mui/Menu
+                            {:open (not (nil? menu-anchor-el))
+                             :onClose #(set-menu-anchor-el nil)
+                             :anchorEl menu-anchor-el}
+                            (if (-> book :hidden)
+                              ($ mui/MenuItem
+                                 {:onClick #(do
+                                              (set-menu-anchor-el nil)
+                                              (ui/execute-command>
+                                               commands/unhide-book
+                                               {:book book
+                                                :radar radar}))}
+                                 "Restore")
+                              ($ mui/MenuItem
+                                 {:onClick #(do
+                                              (set-menu-anchor-el nil)
+                                              (ui/execute-command>
+                                               commands/hide-book
+                                               {:book book
+                                                :radar radar}))}
+                                 "Delete")))))
 
         Cover (when image-url
                 ($ :img
@@ -269,9 +291,7 @@
 
        #_(counter book)
 
-       ($ Reviews)
-
-       )))
+       ($ Reviews))))
 
 
 (def-ui BookPageContent []

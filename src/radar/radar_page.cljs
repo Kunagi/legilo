@@ -10,7 +10,7 @@
 
    [spark.ui :as ui :refer [def-ui def-page def-ui-test $]]
 
-
+   [radar.openlib-ui :as openlib]
    [radar.radar :as radar]
    [radar.book :as book]
    [radar.queries :as queries]
@@ -117,7 +117,7 @@
              {:command commands/add-book
               :context {:radar radar}
               :color "secondary"})
-          #_($ ui/Button
+          ($ ui/Button
              {:text "Add Book"
               :icon "add"
               :color "secondary"
