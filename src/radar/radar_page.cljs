@@ -13,6 +13,7 @@
 
    [radar.radar :as radar]
    [radar.book :as book]
+   [radar.queries :as queries]
    [radar.commands :as commands]
    [radar.ui :as radar-ui]))
 

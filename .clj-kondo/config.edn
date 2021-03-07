@@ -5,6 +5,7 @@
            spark.core/def-field   clojure.core/def
            spark.core/def-subdoc  clojure.core/def
            spark.core/def-cmd     clojure.core/def
+           spark.core/def-query   clojure.core/def
            spark.core/def-page    clojure.core/def
            spark.core/def-spa     clojure.core/def
            spark.core/def-test    clojure.core/fn

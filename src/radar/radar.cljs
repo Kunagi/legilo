@@ -27,23 +27,6 @@ All users from this domain will have access to this Radar."}])
    [:books {:optional true} [:map-of :string book/Book]]])
 
 
-(defn col-path--by-uid [user]
-  (when user
-    [{:id "radars"
-      :wheres [["uids" "!=" nil]
-               ["uids" "array-contains" (or (-> user user/id) "_")]]}]))
-
-(defn col-path--by-domain [user]
-  (when user
-    (when-let [domain (-> user user/auth-domain)]
-      [{:id "radars"
-        :wheres [["allow-domain" "==" domain]]}])))
-
-(defn union-col-paths--for-user [user]
-  [(col-path--by-uid user)
-   (col-path--by-domain user)])
-
-
 (defn all-tags [radar]
   (->> radar :books vals (mapcat :tags) set))
 

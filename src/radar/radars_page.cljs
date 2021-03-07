@@ -7,6 +7,7 @@
    [spark.ui :as ui :refer [def-ui def-page $]]
 
    [radar.radar :as radar]
+   [radar.queries :as queries]
    [radar.commands :as commands]))
 
 
@@ -20,7 +21,7 @@
 
 (def-ui Radars [uid user]
   {:from-context [uid user]}
-  (let [radars (ui/use-cols-union (radar/union-col-paths--for-user user))]
+  (let [radars (ui/use-query queries/radars-for-user {:user user})]
     ($ ui/Stack
        (when user
          ($ ui/Flexbox

@@ -2,7 +2,7 @@
   (:require
    [clojure.spec.alpha :as s]
    [helix.experimental.refresh :as helix-refresh]
-   [spark.devcards]
+   [spark.dev.devcards-page]
    [spark.logging :refer [log]]))
 
 
