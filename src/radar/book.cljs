@@ -28,8 +28,7 @@
 (def-field isbn
   [:string  
    {:label "ISBN"
-    :helptext "International Standard Book Number. If you provide this, a
-picture of the book will be shown."
+    :helptext "International Standard Book Number. Provide this to lookup data."
     ;; :action {:label "Load"
     ;;          :f (fn [form]
     ;;               (js/console.log "ACTION" form)

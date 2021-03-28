@@ -6,7 +6,6 @@
 
    [spark.logging :refer [log]]
    [spark.ui :as ui :refer [def-ui def-page $ <>]]
-   [spark.form :as form]
 
    [base.user :as user]
 
@@ -182,49 +181,6 @@
 ;;       #(resolve {:title "Boom"})
 ;;       1000))))
 
-(defn- on-isbn-lookup [form]
-  (let [update-form (-> form :update)
-        isbn (-> form :values :isbn)
-        form (assoc form :waiting? true)]
-    (log ::on-isbn-lookup
-         :isbn isbn
-         :form form)
-
-    (-> (openlib/lookup-isbn> isbn)
-        (.then (fn [book-data]
-                 (log ::on-isbn-lookup--result
-                      :book book-data)
-                 (update-form
-                  (fn [form]
-                    (-> form
-                        (assoc :waiting? false)
-                        (form/on-field-value-change
-                         :title (-> book-data :title))
-                        (form/on-field-value-change
-                         :subtitle (-> book-data :subtitle))
-                        (form/on-field-value-change
-                         :author (->> book-data
-                                      :authors
-                                      (map :name)
-                                      (str/join ", ")))))))
-               (fn [error]
-                 (update-form
-                  (fn [form]
-                    (-> form
-                        (assoc :waiting? false)
-                        (assoc-in [:errors :isbn] (str error))))))))
-
-    form))
-
-(defn- update-book-command []
-  (assoc commands/update-book
-         :form (fn [{:keys [book]}]
-                 {:fields [(assoc-in book/isbn [1 :action]
-                                     {:label "Lookup"
-                                      :f on-isbn-lookup})
-                           book/title book/subtitle book/author
-                           book/asin]
-                  :fields-values book})))
 
 (def-ui Book [radar book]
   {:from-context [radar book]}
@@ -235,7 +191,8 @@
 
         BookDataCard ($ mui/Card
                         ($ ui/CommandCardArea
-                           {:command (update-book-command)
+                           {:command (openlib/enhance-book-command
+                                      commands/update-book)
                             :context {:radar radar
                                       :book book}}
                            ($ mui/CardContent

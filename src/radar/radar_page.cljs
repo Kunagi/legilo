@@ -114,10 +114,11 @@
           (-> radar :title))
        ($ ui/Flexbox
           ($ ui/CommandButton
-             {:command commands/add-book
+             {:command (openlib/enhance-book-command
+                        commands/add-book)
               :context {:radar radar}
               :color "secondary"})
-          ($ ui/Button
+          #_($ ui/Button
              {:text "Add Book"
               :icon "add"
               :color "secondary"
