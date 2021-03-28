@@ -12,6 +12,10 @@
    {:label "Title"
     :required? true}])
 
+(def-field subtitle
+  [:string
+   {:label "Subtitle"}])
+
 (def-field author
   [:string 
    {:label "Author"}])

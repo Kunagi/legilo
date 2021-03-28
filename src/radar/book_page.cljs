@@ -12,6 +12,7 @@
 
    [amazon.service :as amazon-service]
 
+   [radar.openlib-ui :as openlib]
    [radar.radar :as radar]
    [radar.book :as book]
    [radar.commands :as commands]
@@ -174,25 +175,35 @@
                {:key uid
                 :uid uid}))))))
 
-(defn lookup-isbn> [isbn]
-  (js/Promise.
-   (fn [resolve reject]
-     (js/setTimeout
-      #(resolve {:title "Boom"})
-      1000))))
+;; (defn lookup-isbn> [isbn]
+;;   (js/Promise.
+;;    (fn [resolve reject]
+;;      (js/setTimeout
+;;       #(resolve {:title "Boom"})
+;;       1000))))
 
 (defn- on-isbn-lookup [form]
   (let [update-form (-> form :update)
         isbn (-> form :values :isbn)]
     (log ::on-isbn-lookup
          :isbn isbn)
-    (-> (lookup-isbn> isbn)
-        (.then (fn [book-data]
-                 (update-form
-                  (fn [form]
-                    (form/on-field-value-change
-                     form
-                     :title (-> book-data :title)))))))
+    (let [form form]
+      (-> (openlib/lookup-isbn> isbn)
+          (.then (fn [book-data]
+                   (log ::on-isbn-lookup--result
+                        :book book-data)
+                   (update-form
+                    (fn [form]
+                      (-> form
+                          (form/on-field-value-change
+                           :title (-> book-data :title))
+                          (form/on-field-value-change
+                           :subtitle (-> book-data :subtitle))
+                          (form/on-field-value-change
+                           :author (->> book-data
+                                        :authors
+                                        (map :name)
+                                        (str/join ", "))))))))))
     form))
 
 (defn- update-book-command []
@@ -201,7 +212,7 @@
                  {:fields [(assoc-in book/isbn [1 :action]
                                      {:label "Lookup"
                                       :f on-isbn-lookup})
-                           book/title book/author
+                           book/title book/subtitle book/author
                            book/asin]
                   :fields-values book})))
 
@@ -219,7 +230,8 @@
                                       :book book}}
                            ($ mui/CardContent
                               ($ :div (-> book :author))
-                              ($ :h2 (-> book :title))))
+                              ($ :h2 (-> book :title))
+                              ($ :h3 (-> book :subtitle))))
                         ($ mui/Divider)
                         ($ ui/CommandCardArea
                            {:command commands/update-book-tags

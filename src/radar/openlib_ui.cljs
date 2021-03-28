@@ -10,6 +10,71 @@
    [radar.book :as book]
    [radar.commands :as commands]))
 
+
+;;; isbn lookup
+
+;; https://openlibrary.org/dev/docs/api/books
+
+
+;; https://openlibrary.org/isbn/9780140328721.json
+
+
+(defn adopt-lookup-isbn-result [^js result]
+  (-> result
+      (js->clj :keywordize-keys true)
+      vals
+      first))
+
+(defn lookup-isbn> [isbn]
+  (log ::lookup-isbn>
+       :isbn isbn)
+  (js/Promise.
+   (fn [resolve reject]
+     (->  (js/fetch (str "https://openlibrary.org/api/books?&format=json&jscmd=data&bibkeys=ISBN:" isbn))
+          (.then (fn [^js result]
+                   (-> result .json
+                       (.then (fn [^js json]
+                                (resolve (adopt-lookup-isbn-result json))))))))
+     #_(-> (js/fetch (str "https://openlibrary.org/isbn/" isbn ".json"))
+         (.then (fn [^js result]
+                  (-> result .json
+                      (.then (fn [^js json]
+                               (resolve (adopt-lookup-isbn-result json)))))))))))
+
+(comment
+  (def isbn "9780140328721")
+  (-> (lookup-isbn> isbn)
+      (.then (fn [^js book]
+               (js/console.log "ISBN LOOKUP RESULT" book)))))
+
+
+;; ;; https://openlibrary.org/isbn/9780140328721.json
+
+
+;; (defn adopt-lookup-isbn-result [^js result]
+;;   (-> result
+;;       (js->clj :keywordize-keys true))
+;;   )
+
+;; (defn lookup-isbn> [isbn]
+;;   (log ::lookup-isbn>
+;;        :isbn isbn)
+;;   (js/Promise.
+;;    (fn [resolve reject]
+;;      (-> (js/fetch (str "https://openlibrary.org/isbn/" isbn ".json"))
+;;          (.then (fn [^js result]
+;;                   (-> result .json
+;;                       (.then (fn [^js json]
+;;                                (resolve (adopt-lookup-isbn-result json)))))))))))
+
+;; (comment
+;;   (def isbn "9780140328721")
+;;   (-> (lookup-isbn> isbn)
+;;       (.then (fn [^js book]
+;;                (js/console.log "ISBN LOOKUP RESULT" book)))))
+
+;;; search book
+
 (defn search-url [text]
   (str "http://openlibrary.org/search.json?title=" (js/encodeURIComponent text)))
 

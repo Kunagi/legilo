@@ -32,7 +32,7 @@
    :context-args [[:radar radar/Radar]]
 
    :form (fn [{:keys [radar]}]
-           {:fields [book/title book/isbn book/author book/asin
+           {:fields [book/title book/subtitle book/isbn book/author book/asin
                      (assoc-in book/tags
                                [1 :options]
                                (radar/all-tags radar))]})
