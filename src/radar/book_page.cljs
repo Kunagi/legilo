@@ -4,6 +4,7 @@
    [clojure.set :as set]
    ["@material-ui/core" :as mui]
 
+   [spark.logging :refer [log]]
    [spark.ui :as ui :refer [def-ui def-page $ <>]]
    [spark.form :as form]
 
@@ -173,24 +174,33 @@
                {:key uid
                 :uid uid}))))))
 
+(defn lookup-isbn> [isbn]
+  (js/Promise.
+   (fn [resolve reject]
+     (js/setTimeout
+      #(resolve {:title "Boom"})
+      1000))))
+
+(defn- on-isbn-lookup [form]
+  (let [update-form (-> form :update)
+        isbn (-> form :values :isbn)]
+    (log ::on-isbn-lookup
+         :isbn isbn)
+    (-> (lookup-isbn> isbn)
+        (.then (fn [book-data]
+                 (update-form
+                  (fn [form]
+                    (form/on-field-value-change
+                     form
+                     :title (-> book-data :title)))))))
+    form))
+
 (defn- update-book-command []
   (assoc commands/update-book
          :form (fn [{:keys [book]}]
                  {:fields [(assoc-in book/isbn [1 :action]
-                                     {:label "Abrufen"
-                                      :f (fn [form]
-                                           (let [update-form (-> form :update)]
-                                             (js/console.log "DEBUG" update-form)
-                                             (js/setTimeout
-                                              (fn []
-                                                (update-form
-                                                 (fn [form]
-                                                   (js/console.log "XXX" form)
-                                                   (form/on-field-value-change
-                                                    form
-                                                    :title "Boom"))))
-                                              2000)
-                                             form))})
+                                     {:label "Lookup"
+                                      :f on-isbn-lookup})
                            book/title book/author
                            book/asin]
                   :fields-values book})))
