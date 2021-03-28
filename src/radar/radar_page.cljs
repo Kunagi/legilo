@@ -50,7 +50,12 @@
                             :height "100%"
                             :align-items "center"}}
                    ($ :div
-                      (-> book :title))
+                      (-> book :title)
+                      (when-let [subtitle (-> book :subtitle)]
+                        ($ :span
+                           {:style {:margin-left "0.25rem"
+                                    :color "#666"}}
+                           subtitle)))
                    (when (book/recommended-by-user? book uid)
                      ($ :div
                         {:className "material-icons"
