@@ -20,6 +20,8 @@
 
 
 (defn adopt-lookup-isbn-result [^js result]
+  (log ::adopt-lookup-isbn-result
+       :result result)
   (-> result
       (js->clj :keywordize-keys true)
       vals
@@ -30,16 +32,18 @@
        :isbn isbn)
   (js/Promise.
    (fn [resolve reject]
-     (->  (js/fetch (str "https://openlibrary.org/api/books?&format=json&jscmd=data&bibkeys=ISBN:" isbn))
-          (.then (fn [^js result]
-                   (-> result .json
-                       (.then (fn [^js json]
-                                (resolve (adopt-lookup-isbn-result json))))))))
-     #_(-> (js/fetch (str "https://openlibrary.org/isbn/" isbn ".json"))
-         (.then (fn [^js result]
-                  (-> result .json
-                      (.then (fn [^js json]
-                               (resolve (adopt-lookup-isbn-result json)))))))))))
+     (if-not (str/blank? isbn)
+       (->  (js/fetch (str "https://openlibrary.org/api/books?&format=json&jscmd=data&bibkeys=ISBN:" isbn))
+            (.then (fn [^js result]
+                     (-> result .json
+                         (.then (fn [^js json]
+                                  (let [data (js->clj json :keywordize-keys true)]
+                                    (if (empty? data)
+                                      (reject "ISBN not found")
+                                      (resolve (adopt-lookup-isbn-result json)))))
+                                reject)))
+                   reject))
+       (reject "ISBN required")))))
 
 (comment
   (def isbn "9780140328721")

@@ -184,26 +184,36 @@
 
 (defn- on-isbn-lookup [form]
   (let [update-form (-> form :update)
-        isbn (-> form :values :isbn)]
+        isbn (-> form :values :isbn)
+        form (assoc form :waiting? true)]
     (log ::on-isbn-lookup
-         :isbn isbn)
-    (let [form form]
-      (-> (openlib/lookup-isbn> isbn)
-          (.then (fn [book-data]
-                   (log ::on-isbn-lookup--result
-                        :book book-data)
-                   (update-form
-                    (fn [form]
-                      (-> form
-                          (form/on-field-value-change
-                           :title (-> book-data :title))
-                          (form/on-field-value-change
-                           :subtitle (-> book-data :subtitle))
-                          (form/on-field-value-change
-                           :author (->> book-data
-                                        :authors
-                                        (map :name)
-                                        (str/join ", "))))))))))
+         :isbn isbn
+         :form form)
+
+    (-> (openlib/lookup-isbn> isbn)
+        (.then (fn [book-data]
+                 (log ::on-isbn-lookup--result
+                      :book book-data)
+                 (update-form
+                  (fn [form]
+                    (-> form
+                        (assoc :waiting? false)
+                        (form/on-field-value-change
+                         :title (-> book-data :title))
+                        (form/on-field-value-change
+                         :subtitle (-> book-data :subtitle))
+                        (form/on-field-value-change
+                         :author (->> book-data
+                                      :authors
+                                      (map :name)
+                                      (str/join ", ")))))))
+               (fn [error]
+                 (update-form
+                  (fn [form]
+                    (-> form
+                        (assoc :waiting? false)
+                        (assoc-in [:errors :isbn] (str error))))))))
+
     form))
 
 (defn- update-book-command []
