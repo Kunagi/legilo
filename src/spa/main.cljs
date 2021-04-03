@@ -7,7 +7,7 @@
    [spark.firestore-init-spa]
    [spark.effects]
 
-   [spark.logging :refer [log]]
+   [spark.logging :as logging :refer [log]]
 
    [spark.core :as spark :refer [def-spa]]
    [spark.auth :as auth]
@@ -28,6 +28,8 @@
 
 (when js/goog.DEBUG
   (s/check-asserts true))
+
+(logging/install-tap)
 
 
 (defn update-app-context [context]

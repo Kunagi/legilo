@@ -3,10 +3,11 @@
    [clojure.string :as str]
    ["@material-ui/core" :as mui]
 
-   [spark.ui :as ui :refer [def-ui def-ui-test $ <>]]
-
    [spark.logging :refer [log]]
+   [spark.utils :as u]
+   [spark.pipeline :refer [=>]]
    [spark.form :as form]
+   [spark.ui :as ui :refer [def-ui def-ui-test $ <>]]
 
    [radar.book :as book]
    [radar.commands :as commands]))
@@ -19,79 +20,50 @@
 
 ;; https://openlibrary.org/isbn/9780140328721.json
 
-
-(defn adopt-lookup-isbn-result [^js result]
-  (log ::adopt-lookup-isbn-result
-       :result result)
-  (-> result
-      (js->clj :keywordize-keys true)
-      vals
-      first))
-
 (defn lookup-isbn> [isbn]
-  (log ::lookup-isbn>
-       :isbn isbn)
-  (js/Promise.
-   (fn [resolve reject]
-     (if-not (str/blank? isbn)
-       (->  (js/fetch (str "https://openlibrary.org/api/books?&format=json&jscmd=data&bibkeys=ISBN:" isbn))
-            (.then (fn [^js result]
-                     (-> result .json
-                         (.then (fn [^js json]
-                                  (let [data (js->clj json :keywordize-keys true)]
-                                    (if (empty? data)
-                                      (reject "ISBN not found")
-                                      (resolve (adopt-lookup-isbn-result json)))))
-                                reject)))
-                   reject))
-       (reject "ISBN required")))))
+  (if (str/blank? isbn)
+    (u/reject> "ISBN required")
+    (let [url (str "https://openlibrary.org/api/books?format=json&jscmd=data"
+                   "&bibkeys=ISBN:" isbn)]
+      (-> (u/fetch-json> url)
+          (.then #(-> % vals first))))))
 
 (comment
-  (def isbn "9780140328721")
-  (-> (lookup-isbn> isbn)
-      (.then (fn [^js book]
-               (js/console.log "ISBN LOOKUP RESULT" book)))))
+  (u/tap> (lookup-isbn> "9780140328721"))
+  (u/tap> (lookup-isbn> ""))
+  (u/tap> (lookup-isbn> "gibts-nicht")))
 
-(defn- on-isbn-lookup [form]
-  (let [update-form (-> form :update)
-        isbn (-> form :values :isbn)
-        form (assoc form :waiting? true)]
+(defn- apply-book-data-to-form [book-data form]
+  (if book-data
+    (-> form
+        (form/set-waiting false)
+        (form/set-fields-values
+         {:title (-> book-data :title)
+          :subtitle (-> book-data :subtitle)
+          :author (->> book-data
+                       :authors
+                       (map :name)
+                       (str/join ", "))}))
+    (-> form
+        (form/set-waiting false)
+        (assoc-in [:errors :isbn] "ISBN not found"))))
+
+(defn- on-isbn-lookup> [form]
+  (let [isbn (-> form :values :isbn)]
     (log ::on-isbn-lookup
          :isbn isbn
          :form form)
 
     (-> (lookup-isbn> isbn)
         (.then (fn [book-data]
-                 (log ::on-isbn-lookup--result
-                      :book book-data)
-                 (update-form
-                  (fn [form]
-                    (-> form
-                        (assoc :waiting? false)
-                        (form/on-field-value-change
-                         :title (-> book-data :title))
-                        (form/on-field-value-change
-                         :subtitle (-> book-data :subtitle))
-                        (form/on-field-value-change
-                         :author (->> book-data
-                                      :authors
-                                      (map :name)
-                                      (str/join ", ")))))))
-               (fn [error]
-                 (update-form
-                  (fn [form]
-                    (-> form
-                        (assoc :waiting? false)
-                        (assoc-in [:errors :isbn] (str error))))))))
-
-    form))
+                 (partial apply-book-data-to-form book-data))))))
 
 (defn enhance-book-command [command]
   (assoc command
          :form (fn [{:keys [book]}]
                  {:fields [(assoc-in book/isbn [1 :action]
                                      {:label "Lookup"
-                                      :f on-isbn-lookup})
+                                      :f on-isbn-lookup>})
                            book/title book/subtitle book/author
                            book/asin]
                   :fields-values book})))
@@ -99,28 +71,6 @@
 
 ;; ;; https://openlibrary.org/isbn/9780140328721.json
 
-
-;; (defn adopt-lookup-isbn-result [^js result]
-;;   (-> result
-;;       (js->clj :keywordize-keys true))
-;;   )
-
-;; (defn lookup-isbn> [isbn]
-;;   (log ::lookup-isbn>
-;;        :isbn isbn)
-;;   (js/Promise.
-;;    (fn [resolve reject]
-;;      (-> (js/fetch (str "https://openlibrary.org/isbn/" isbn ".json"))
-;;          (.then (fn [^js result]
-;;                   (-> result .json
-;;                       (.then (fn [^js json]
-;;                                (resolve (adopt-lookup-isbn-result json)))))))))))
-
-;; (comment
-;;   (def isbn "9780140328721")
-;;   (-> (lookup-isbn> isbn)
-;;       (.then (fn [^js book]
-;;                (js/console.log "ISBN LOOKUP RESULT" book)))))
 
 ;;; search book
 
