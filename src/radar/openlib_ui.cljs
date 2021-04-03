@@ -5,7 +5,6 @@
 
    [spark.logging :refer [log]]
    [spark.utils :as u]
-   [spark.pipeline :refer [=>]]
    [spark.form :as form]
    [spark.ui :as ui :refer [def-ui def-ui-test $ <>]]
 
@@ -49,14 +48,9 @@
         (assoc-in [:errors :isbn] "ISBN not found"))))
 
 (defn- on-isbn-lookup> [form]
-  (let [isbn (-> form :values :isbn)]
-    (log ::on-isbn-lookup
-         :isbn isbn
-         :form form)
-
-    (-> (lookup-isbn> isbn)
-        (.then (fn [book-data]
-                 (partial apply-book-data-to-form book-data))))))
+  (-> (lookup-isbn> (-> form :values :isbn))
+      (.then (fn [book-data]
+               (partial apply-book-data-to-form book-data)))))
 
 (defn enhance-book-command [command]
   (assoc command
