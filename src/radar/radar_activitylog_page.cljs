@@ -26,11 +26,12 @@
         (ui/div
          {:font-weight 900}
          (-> book :title)))
-     (for [rec recommendations]
-       (let [uid (-> rec :id)]
-         ($ radar-ui/Avatar
-            {:key uid
-             :uid uid})))))
+     (ui/flex
+      (for [rec recommendations]
+        (let [uid (-> rec :id)]
+          ($ radar-ui/Avatar
+             {:key uid
+              :uid uid}))))))
   )
 
 (def-ui Date [date recommendations]
