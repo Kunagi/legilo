@@ -10,14 +10,22 @@
 
 
    [radar.radar :as radar]
-   [radar.ui :as radar-ui]))
+   [radar.ui :as radar-ui]
+   [clojure.string :as str]))
 
 
 (def-ui RadarConfigCard [radar]
   {:from-context [radar]}
   ($ ui/DocFieldsCard
      {:doc    radar
-      :fields [radar/title radar/allow-domain]}))
+      :fields [radar/title
+               radar/allow-domain
+               (-> radar/allow-emails
+                   ;; (assoc-in [1 :serialize] (fn [emails]
+                   ;;                            (->> emails (str/join ", "))))
+                   ;; (assoc-in [1 :deserialize] (fn [s]
+                   ;;                              (-> (str/split s #","))))
+                   )]}))
 
 (defn write-to-clipboard [text]
   (-> (js/navigator.clipboard.writeText text)))

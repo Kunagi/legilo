@@ -14,9 +14,16 @@
 
 (def-field allow-domain
   [:string
-   {:label "Allow Domain"
+   {:label    "Allow Domain"
     :helptext "Here you can specify a domain, like example.com or your-org.com.
 All users from this domain will have access to this Radar."}])
+
+(def-field allow-emails
+  [:vector
+   {:label "Allow E-Mails"
+    :type "chips"
+    :helptext "Here you can specify e-mail addresses of users which get access to this radar."}
+   :string])
 
 
 (def-doc Radar

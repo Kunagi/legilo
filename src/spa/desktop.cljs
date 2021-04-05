@@ -10,6 +10,7 @@
    [spark.ui :as ui :refer [def-ui $]]
 
    [spark.auth :as auth]
+   [spa.auth :as legilo-auth]
 
    [spa.devtools :as devtools]
    [radar.ui :as radar-ui]
@@ -164,10 +165,12 @@
 
 (def-ui Desktop [{:keys [spa]}]
   ($ ui/AppFrame
-     {:spa spa
-      :theme theme
+     {:spa    spa
+      :theme  theme
       :styles styles}
      ($ :div
         {:id "App"}
         ($ AppBar)
-        ($ AppContent))))
+        ($ AppContent)
+        ($ legilo-auth/LoginSelectorDialog)
+        )))
