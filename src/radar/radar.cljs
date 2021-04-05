@@ -20,8 +20,8 @@ All users from this domain will have access to this Radar."}])
 
 (def-field allow-emails
   [:vector
-   {:label "Allow E-Mails"
-    :type "chips"
+   {:label    "Allow E-Mails"
+    :type     "chips"
     :helptext "Here you can specify e-mail addresses of users which get access to this radar."}
    :string])
 
@@ -36,18 +36,18 @@ All users from this domain will have access to this Radar."}])
 
 
 (def sections
-  [{:key :must-read
+  [{:key  :must-read
     :name "Must Read"
-    :idx 0}
-   {:key :should-read
+    :idx  0}
+   {:key  :should-read
     :name "Should Read"
-    :idx 1}
-   {:key :trial
+    :idx  1}
+   {:key  :trial
     :name "Trial"
-    :idx 2}
-   {:key :assess
+    :idx  2}
+   {:key  :assess
     :name "Assess"
-    :idx 3}
+    :idx  3}
    ])
 
 
@@ -58,7 +58,7 @@ All users from this domain will have access to this Radar."}])
                       (>= c 5) :must-read
                       (>= c 3) :should-read
                       (>= c 1) :trial
-                      :else :assess)))))
+                      :else    :assess)))))
 
 
 (defn title-in-lowercase [radar]

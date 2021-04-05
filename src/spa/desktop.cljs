@@ -110,45 +110,46 @@
 
 
 (def-ui AppBar []
-  (let [page (ui/use-page)
-        context (ui/use-spark-context)
-        back-fn (-> page :back-to)
+  (let [page     (ui/use-page)
+        context  (ui/use-spark-context)
+        back-fn  (-> page :back-to)
         back-url (u/fn->value back-fn context)]
     ($ mui/AppBar
        {:position "static"}
        (ui/div
-        {:display :flex
+        {:display         :flex
          :justify-content "space-between"}
         ($ mui/Toolbar
            (if (or (= "/" js/location.pathname) (nil? back-url))
              (ui/div
               {:padding-left "24px"}
               ($ ui/Link
-                 {:to "/"
+                 {:to    "/"
                   :stlye {:color "white"}}
                  ($ mui/Typography
-                    {:id "AppTitle"
+                    {:id      "AppTitle"
                      :variant "h6"}
                     "Legilo")))
              ($ mui/IconButton
-                {:to back-url
+                {:to        back-url
                  :component ui/Link}
                 (ui/icon "arrow_back")))
 
            (when-let [component (-> page :appbar-title-component)]
              ($ mui/Typography
                 {:variant "h6"}
-                ($ :span {:style {:margin-left "8px"
+                ($ :span {:style {:margin-left    "8px"
                                   :letter-spacing 1
-                                  :font-weight 300}}
+                                  :font-weight    300}}
                    ($ component)))))
         ($ mui/Toolbar
            (when ^boolean goog.DEBUG
              ($ mui/IconButton
                 {:component ui/Link
-                 :to "/ui/devcards"}
+                 :to        "/ui/devcards"}
                 ($ :div {:class "material-icons"} "developer_mode")))
-           ($ radar-ui/MenuIcon)
+           ($ radar-ui/ActivitylogMenuIcon)
+           ($ radar-ui/ConfigMenuIcon)
            ($ SignInButtonOrMenu
               {:to "/ui/menu"}))))))
 

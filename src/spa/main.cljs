@@ -22,10 +22,10 @@
    [spa.menu-page :refer [menu-page]]
    [radar.radars-page :refer [radars-page]]
    [radar.radar-page :refer [radar-page]]
+   [radar.radar-activitylog-page :refer [radar-activitylog-page]]
    [radar.config-page :refer [config-page]]
    [radar.book-page :refer [book-page]]
    ))
-
 
 (when js/goog.DEBUG
   (s/check-asserts true))
@@ -40,11 +40,12 @@
            :user user)))
 
 (def-spa Legilo
-  {:pages [menu-page
-           book-page
-           config-page
-           radar-page
-           radars-page]
+  {:pages              [menu-page
+                        book-page
+                        config-page
+                        radar-activitylog-page
+                        radar-page
+                        radars-page]
    :update-app-context update-app-context})
 
 (defn show-auth-error [^js error]

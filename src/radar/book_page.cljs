@@ -36,9 +36,9 @@
     ($ :div
        ($ :div
           {:className "Recommendation"
-           :style {:display :flex
-                   :place-content :stretch
-                   :place-items :stretch}}
+           :style     {:display       :flex
+                       :place-content :stretch
+                       :place-items   :stretch}}
           ($ :div
              {:style {:padding "4px"}}
              ($ mui/Avatar
@@ -49,20 +49,12 @@
              ($ mui/CardContent
                 ($ ui/Stack
                    ($ :div
-                      {:style {:color "#666"
+                      {:style {:color      "#666"
                                :font-style "italic"}}
                       (user/best-display-name user))
                    ($ :div
                       (format-text (-> review :text))))))))))
 
-(def-ui Avatar [uid]
-  (let [user (ui/use-doc user/User uid)]
-    (when user
-      ($ mui/Tooltip
-         {:title (user/best-display-name user)}
-         ($ mui/Avatar
-            {:src (user/best-photo-url user)
-             :alt (user/best-display-name user)})))))
 
 
 (def-ui OwnReview [uid radar book review]
@@ -71,39 +63,39 @@
     ($ :div
        ($ :div
           {:className "Recommendation"
-           :style {:display :flex
-                   :place-content :stretch
-                   :place-items :stretch}}
+           :style     {:display       :flex
+                       :place-content :stretch
+                       :place-items   :stretch}}
           ($ :div
              (if recommended?
                ($ ui/CommandButton
-                  {:command commands/unrecommend-book
-                   :context {:radar radar
-                             :book book
-                             :uid uid}
+                  {:command  commands/unrecommend-book
+                   :context  {:radar radar
+                              :book  book
+                              :uid   uid}
                    :as-icon? true
-                   :color "secondary"
-                   :class "RecommendationButton"})
+                   :color    "secondary"
+                   :class    "RecommendationButton"})
                (ui/div
                 ($ ui/CommandButton
-                   {:command commands/recommend-book
-                    :context {:radar radar
-                              :book book
-                              :uid uid}
-                    :as-icon? true
+                   {:command    commands/recommend-book
+                    :context    {:radar radar
+                                 :book  book
+                                 :uid   uid}
+                    :as-icon?   true
                     :icon-theme "outlined"
-                    :class "RecommendationButton"
-                    :styles {:color "#aaa"}
+                    :class      "RecommendationButton"
+                    :styles     {:color "#aaa"}
                     }))))
           ($ mui/Card
              {:className "flex-grow-1 ml-1"}
              ($ ui/CommandCardArea
                 {:command (when (or recommended?
                                     (-> review :text))
-                              commands/update-book-review)
+                            commands/update-book-review)
                  :context {:radar radar
-                           :book book
-                           :uid uid}}
+                           :book  book
+                           :uid   uid}}
                 ($ mui/CardContent
                    (if (-> review :text)
                      ($ :div
@@ -112,7 +104,7 @@
                                  ;; :line-height "1.43"
                                  }}
                         (-> review :text format-text))
-                     ($ :p {:style {:color "grey"
+                     ($ :p {:style {:color      "grey"
                                     :font-style "italic"}}
                         (if recommended?
                           "Leave a review?"
@@ -134,15 +126,15 @@
 (def-ui Reviews [radar book uid]
   {:from-context [radar book uid]}
   (let [recommendations (->> book :recommendations (into #{}))
-        reviews (->> book :reviews vals
-                     (remove #(not (contains? recommendations (-> % :uid))))
-                     )
+        reviews         (->> book :reviews vals
+                             (remove #(not (contains? recommendations (-> % :uid))))
+                             )
         reviews-grouped (->> reviews (group-by #(= uid (-> % :uid))))
-        own-review (first (get reviews-grouped true))
-        other-reviews (get reviews-grouped false)
-        reviews-uids (->> reviews
-                          (map :uid)
-                          (into #{}))
+        own-review      (first (get reviews-grouped true))
+        other-reviews   (get reviews-grouped false)
+        reviews-uids    (->> reviews
+                             (map :uid)
+                             (into #{}))
         recommendations (set/difference
                          recommendations
                          reviews-uids)]
@@ -160,16 +152,16 @@
 
                            (sort-by :uid))]
            ($ Review
-              {:key (-> review :uid)
+              {:key    (-> review :uid)
                :review review}))
          ($ :div
-            {:style {:color "grey"
+            {:style {:color      "grey"
                      :font-style "italic"}}
             "no reviews yet"))
        ($ ui/Flexbox
           {:style {:margin-top "1.33em"}}
           (for [uid (-> recommendations sort)]
-            ($ Avatar
+            ($ radar-ui/Avatar
                {:key uid
                 :uid uid}))))))
 
