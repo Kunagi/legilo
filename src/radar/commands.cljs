@@ -2,15 +2,11 @@
   (:require
    [clojure.string :as str]
 
-   [spark.logging :refer [log]]
-   [spark.core :as spark :refer [def-cmd def-test expect]]
+   [spark.core :as spark :refer [def-cmd]]
    [spark.repository :as repository]
-   [spark.form :as form]
 
-   [base.user :as user]
    [radar.radar :as radar]
    [radar.book :as book]
-   [radar.queries :as queries]
    ))
 
 (def-cmd create-radar

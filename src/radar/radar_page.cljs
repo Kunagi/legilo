@@ -1,19 +1,14 @@
 (ns radar.radar-page
   (:require
-   [clojure.string :as str]
-   [clojure.edn :as edn]
-   [cljs.pprint :refer [pprint]]
    ["@material-ui/core" :as mui]
 
    [spark.utils :as u]
-   [spark.logging :refer [log]]
 
-   [spark.ui :as ui :refer [def-ui def-page def-ui-test $]]
+   [spark.ui :as ui :refer [def-ui def-page $]]
 
    [radar.openlib-ui :as openlib]
    [radar.radar :as radar]
    [radar.book :as book]
-   [radar.queries :as queries]
    [radar.commands :as commands]
    [radar.ui :as radar-ui]))
 

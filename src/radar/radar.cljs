@@ -1,10 +1,7 @@
 (ns radar.radar
   (:require
-   [clojure.spec.alpha :as s]
    [spark.core :as spark :refer [def-field def-doc]]
-    
 
-   [base.user :as user]
    [radar.book :as book]
    ))
 

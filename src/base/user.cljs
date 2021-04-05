@@ -37,6 +37,6 @@
   (or (-> this auth-photo-url)
       (-> this gravatar-photo-url)))
 
+
 (comment
-  (def user {:auth-email "wi@koczewski.de"})
   (md5 "test"))

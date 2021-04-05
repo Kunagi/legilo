@@ -4,7 +4,6 @@
    [clojure.set :as set]
    ["@material-ui/core" :as mui]
 
-   [spark.logging :refer [log]]
    [spark.ui :as ui :refer [def-ui def-page $ <>]]
 
    [base.user :as user]

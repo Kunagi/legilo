@@ -1,21 +1,21 @@
 (ns radar.queries
   (:require
 
-   [spark.core :refer [def-query def-test expect]]
+   [spark.core :refer [def-query def-test]]
 
    [base.user :as user]
    ))
 
 
-(def-query radar
-  {:path (fn [{:keys [id]}]
-           (when id
-             ["radars" id]))})
+;; (def-query radar
+;;   {:path (fn [{:keys [id]}]
+;;            (when id
+;;              ["radars" id]))})
 
 
-(def-test [radar execute-query>]
-  (expect (fn [radar] (= "hello world" (-> radar :title)))
-          (execute-query> radar {:id "10a8dd5c-2756-4fc1-80fc-ce9b65e389df"})))
+;; (def-test [radar execute-query>]
+;;   (expect (fn [radar] (= "hello world" (-> radar :title)))
+;;           (execute-query> radar {:id "10a8dd5c-2756-4fc1-80fc-ce9b65e389df"})))
 
 
 ;; (def-query radars-by-uid
@@ -44,13 +44,13 @@
   {:paths (fn [{:keys [user]}]
             [
              (when user
-               [{:id "radars"
+               [{:id     "radars"
                  :wheres [["uids" "!=" nil]
                           ["uids" "array-contains" (-> user user/id)]]}])
 
              (when user
                (when-let [domain (-> user user/auth-domain)]
-                 [{:id "radars"
+                 [{:id     "radars"
                    :wheres [["allow-domain" "==" domain]]}]))
              ])})
 

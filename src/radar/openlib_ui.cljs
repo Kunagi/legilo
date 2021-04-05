@@ -6,7 +6,7 @@
    [spark.logging :refer [log]]
    [spark.utils :as u]
    [spark.form :as form]
-   [spark.ui :as ui :refer [def-ui def-ui-test $ <>]]
+   [spark.ui :as ui :refer [def-ui def-ui-test $]]
 
    [radar.book :as book]
    [radar.commands :as commands]))
@@ -89,21 +89,21 @@
        {:style {:display "flex"}}
        (when cover-url
          ($ :div
-            {:style {:background-image (str "url(" cover-url ")")
-                     :background-position "center"
-                     :background-size "cover"
-                     :width "50px"
-                     :min-width "50px"
-                     :border-top-left-radius "4px"
+            {:style {:background-image          (str "url(" cover-url ")")
+                     :background-position       "center"
+                     :background-size           "cover"
+                     :width                     "50px"
+                     :min-width                 "50px"
+                     :border-top-left-radius    "4px"
                      :border-bottom-left-radius "4px"
-                     :overflow "hidden"}}))
+                     :overflow                  "hidden"}}))
        ($ mui/CardContent
           {:className "CardContent--book"}
           ($ :div
-             {:style {:display "flex"
+             {:style {:display         "flex"
                       :justify-content "space-between"
-                      :height "100%"
-                      :align-items "center"}}
+                      :height          "100%"
+                      :align-items     "center"}}
              ($ :div
                 (-> book :title))
              ($ :div
@@ -114,13 +114,12 @@
                 (-> book :publish-year))
              suffix-component)))))
 
-
 (def-ui SearchWidget [radar]
   {:from-context [radar]}
-  (let [[text set-text] (ui/use-state "the lord of the rings")
+  (let [[text set-text]       (ui/use-state "the lord of the rings")
         [results set-results] (ui/use-state [])
-        hide-dialog (ui/use-hide-dialog)
-        search (fn [text]
+        hide-dialog           (ui/use-hide-dialog)
+        search                (fn [text]
                  (when (-> text count (> 5))
                    (log ::search
                         :text text)
@@ -136,25 +135,25 @@
                                                  (->> (map result-item->book)
                                                       set-results))))))))))]
     (ui/stack
-     ($ mui/TextField
-        {:defaultValue text
-         :onChange #(-> % .-target .-value set-text)
-         :onKeyDown #(when (= "Enter" (-> ^js % .-nativeEvent .-code))
-                       (search text))
-         #_(js/console.log (-> % .-target .-value search))})
-     (for [book results]
-       ($ mui/Card
-          {:key book}
-          ($ mui/CardActionArea
-             {:onClick #(do
-                          (hide-dialog)
-                          (ui/execute-command>
+      ($ mui/TextField
+         {:defaultValue text
+          :onChange     #(-> % .-target .-value set-text)
+          :onKeyDown    #(when (= "Enter" (-> ^js % .-nativeEvent .-code))
+                        (search text))
+          #_            (js/console.log (-> % .-target .-value search))})
+      (for [book results]
+        ($ mui/Card
+           {:key book}
+           ($ mui/CardActionArea
+              {:onClick #(do
+                           (hide-dialog)
+                           (ui/execute-command>
                              commands/add-found-book
-                             {:radar radar
+                             {:radar  radar
                               :values book}
                              nil))}
-             ($ SearchBookCardContent
-                {:book book})))))))
+              ($ SearchBookCardContent
+                 {:book book})))))))
 
 
 (def-ui-test [SearchWidget]

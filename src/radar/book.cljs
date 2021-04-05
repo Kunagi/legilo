@@ -82,8 +82,9 @@
 
 (defn cover-url [book]
   (let [isbn (-> book :isbn)
-        asin (-> book :asin)]
+        ;; asin (-> book :asin)
+        ]
     (cond
-      isbn (str "https://covers.openlibrary.org/b/isbn/" isbn "-M.jpg")
+      isbn  (str "https://covers.openlibrary.org/b/isbn/" isbn "-M.jpg")
       ;; asin (amazon-service/cover-url-by-asin asin)
       :else nil)))
