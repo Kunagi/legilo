@@ -22,13 +22,15 @@
 (defn lookup-isbn> [isbn]
   (if (str/blank? isbn)
     (u/reject> "ISBN required")
-    (let [url (str "https://openlibrary.org/api/books?format=json&jscmd=data"
-                   "&bibkeys=ISBN:" isbn)]
+    (let [isbn (-> isbn str/trim)
+          url  (str "https://openlibrary.org/api/books?format=json&jscmd=data"
+                    "&bibkeys=ISBN:" isbn)]
       (-> (u/fetch-json> url)
           (.then #(-> % vals first))))))
 
 (comment
   (u/tap> (lookup-isbn> "9780140328721"))
+  (u/tap> (lookup-isbn> " 9780140328721"))
   (u/tap> (lookup-isbn> ""))
   (u/tap> (lookup-isbn> "gibts-nicht")))
 
