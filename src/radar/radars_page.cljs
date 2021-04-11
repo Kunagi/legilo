@@ -37,5 +37,6 @@
       ($ Radars))))
 
 (def-page radars-page
-  {:path "/"
-   :content RadarsPageContent})
+  {:path          "/"
+   :content       RadarsPageContent
+   :force-sign-in true})
