@@ -40,9 +40,10 @@
    ])
 
 (def-field tags
-  [:vector
-   {:label "Tags"
-    :type "chips"
+  [:set
+   {:label    "Tags"
+    :type     "chips"
+    :sort?    true
     :helptext "Type in a tag and submit with RETURN."}
    :string])
 
@@ -63,6 +64,7 @@
 
 (def-subdoc Book
   [{}
+   [:tags {:optional true} tags]
    [:reviews {:optional true} [:map-of :string review/Review]]
    [:recommendations {:optional true} [:set :string]]
    [:recommendations-times
