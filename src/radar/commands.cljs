@@ -9,17 +9,23 @@
    [radar.book :as book]
    ))
 
+(defn radar-create> [{:keys [uid values]}]
+  (let [radar (assoc values
+                     :uids [uid])]
+    (repository/create-doc> radar/Radar radar)))
+
+(comment
+  (radar-create> {:uid    "EjVVMSwxRtPR8ylOcYC5SCIsh5m2"
+                  :values {:title "Dummy Radar #1"}}))
+
 (def-cmd create-radar
   {:label "Create new Radar"
 
    :context-args [[:uid :string]]
 
-   :form (fn [{:keys [uid]}]
-           {:fields [radar/title radar/allow-domain]
-            :values {:uids [uid]}})
+   :form {:fields [radar/title radar/allow-domain]}
 
-   :f (fn [{:keys [values]}]
-        [[:db/create radar/Radar values]])})
+   :f radar-create>})
 
 (def-cmd add-book
   {:label "Add Book"
