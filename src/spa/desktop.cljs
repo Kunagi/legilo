@@ -12,7 +12,6 @@
    [spark.auth :as auth]
    [spa.auth :as legilo-auth]
 
-   [spa.devtools :as devtools]
    [radar.ui :as radar-ui]
    ))
 
@@ -144,10 +143,7 @@
                    ($ component)))))
         ($ mui/Toolbar
            (when ^boolean goog.DEBUG
-             ($ mui/IconButton
-                {:component ui/Link
-                 :to        "/ui/devcards"}
-                ($ :div {:class "material-icons"} "developer_mode")))
+             ($ ui/DevSidebarToggleIconButton))
            ($ radar-ui/ActivitylogMenuIcon)
            ($ radar-ui/ConfigMenuIcon)
            ($ SignInButtonOrMenu
@@ -157,10 +153,9 @@
 
 (def-ui AppContent []
   ($ :div
-     {:id "AppContent"
+     {:id    "AppContent"
       :style {:overflow-y "scroll"}}
      ($ ui/PageContent)
-     (when ^boolean js/goog.DEBUG ($ devtools/DevTools))
      ($ ui/VersionInfo)))
 
 
