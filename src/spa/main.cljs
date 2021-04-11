@@ -40,13 +40,14 @@
            :user user)))
 
 (def-spa Legilo
-  {:pages              [menu-page
-                        book-page
-                        config-page
-                        radar-activitylog-page
-                        radar-page
-                        radars-page]
-   :update-app-context update-app-context})
+  {:pages                     [menu-page
+                               book-page
+                               config-page
+                               radar-activitylog-page
+                               radar-page
+                               radars-page]
+   :update-app-context        update-app-context
+   :sign-in-request-component desktop/SignInRequest})
 
 (defn show-auth-error [^js error]
   (let [error (js->clj error)

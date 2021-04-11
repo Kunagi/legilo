@@ -3,6 +3,7 @@
    [clojure.string :as str]
 
    [spark.core :as spark :refer [def-cmd]]
+   [spark.utils :as u]
    [spark.repository :as repository]
 
    [radar.radar :as radar]
@@ -15,8 +16,10 @@
     (repository/create-doc> radar/Radar radar)))
 
 (comment
-  (radar-create> {:uid    "EjVVMSwxRtPR8ylOcYC5SCIsh5m2"
-                  :values {:title "Dummy Radar #1"}}))
+  (-> {:uid    "EjVVMSwxRtPR8ylOcYC5SCIsh5m2"
+       :values {:title "?"}}
+      radar-create>
+      tap>))
 
 (def-cmd create-radar
   {:label "Create new Radar"

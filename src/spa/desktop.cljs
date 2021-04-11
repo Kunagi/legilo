@@ -173,5 +173,11 @@
         {:id "App"}
         ($ AppBar)
         ($ AppContent)
-        ($ legilo-auth/LoginSelectorDialog)
         )))
+
+
+(def-ui SignInRequest []
+  ($ ui/Button
+     {:text    "Sign in"
+      :onClick #(legilo-auth/sign-in)
+      }))

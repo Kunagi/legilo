@@ -132,11 +132,14 @@
                 :section section
                 :books (get (radar/books-by-section-key books) (-> section :key))}))))))
 
-(def-ui RadarPageContent []
-  ($ Radar))
+(def-ui PageContent []
+  (ui/stack
+   (ui/data "hello")
+   ($ Radar)))
 
 (def-page radar-page
-  {:path "/ui/radars/:radar"
-   :content RadarPageContent
+  {:path                   "/ui/radars/:radar"
+   :content                PageContent
    :appbar-title-component radar-ui/RadarAppbarTitle
-   :use-docs {:radar radar/Radar}})
+   :use-docs               {:radar radar/Radar}
+   :force-sign-in          true})

@@ -38,7 +38,9 @@
   ($ CurrentUserCard))
 
 (def-page menu-page
-  {:path "/ui/menu"
-   :content MenuPageContent
-   :data {:uid :uid
-          :user :user}})
+  {:path          "/ui/menu"
+   :content       MenuPageContent
+   :data          {:uid  :uid
+                   :user :user}
+   :force-sign-in true
+   })

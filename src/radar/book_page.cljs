@@ -278,16 +278,17 @@
   ($ Book))
 
 (def-page book-page
-  {:path "/ui/radars/:radar/book/:book"
-   :content BookPageContent
+  {:path                   "/ui/radars/:radar/book/:book"
+   :content                BookPageContent
+   :force-sign-in          true
    :appbar-title-component radar-ui/RadarAppbarTitle
-   :use-docs {:radar radar/Radar}
+   :use-docs               {:radar radar/Radar}
    :update-context
    (fn [{:keys [radar book] :as context}]
      (let [book (if (string? book)
                   (-> radar (radar/book-by-id book))
                   nil)]
        (assoc context :book book)))
-   :back-to (fn [{:keys [radar]}]
-              (str "/ui/radars/" (-> radar :id)))
+   :back-to                (fn [{:keys [radar]}]
+                             (str "/ui/radars/" (-> radar :id)))
    })

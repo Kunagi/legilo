@@ -10,10 +10,6 @@
    ))
 
 
-(defonce LOGIN_DIALOG (atom nil))
-
-(def use-login-dialog (ui/atom-hook LOGIN_DIALOG))
-
 (defonce EMAIL_SIGN_IN (atom nil))
 
 (def use-email-sign-in (ui/atom-hook EMAIL_SIGN_IN))
@@ -41,11 +37,7 @@
   (reset! EMAIL_SIGN_IN {:status :input-email
                          :url    (-> js/window.location.href)}))
 
-(defn show-login-dialog []
-  (reset! LOGIN_DIALOG {:open? true}))
 
-(defn hide-login-dialog []
-  (reset! LOGIN_DIALOG nil))
 
 (def-ui LoginSelector []
   (let [email-sign-in     (use-email-sign-in)
@@ -93,16 +85,9 @@
          ($ :div)))))
 
 
-(def-ui LoginSelectorDialog []
-  (let [login-dialog (use-login-dialog)]
-    ($ mui/Dialog
-       {:open    (-> login-dialog :open? boolean)
-        :onClose hide-login-dialog}
-       ($ mui/DialogTitle
-          "Wie möchtest Du dich anmelden?")
-       ($ mui/DialogContent
-          ($ LoginSelector))
-       )))
-
 (defn sign-in []
-  (show-login-dialog))
+  (log ::sign-in)
+  (ui/show-dialog {:id      "sign-in"
+                   :title   "Wie möchtest Du dich anmelden?"
+                   :content ($ LoginSelector)})
+  )
