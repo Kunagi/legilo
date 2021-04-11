@@ -177,7 +177,9 @@
 
 
 (def-ui SignInRequest []
-  ($ ui/Button
-     {:text    "Sign in"
-      :onClick #(legilo-auth/sign-in)
-      }))
+  (ui/<>
+   ($ AppBar)
+   (ui/div
+    {:padding    "1rem"
+     :text-align "center"}
+    "Authentication required")))
