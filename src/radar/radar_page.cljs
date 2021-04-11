@@ -133,9 +133,7 @@
                 :books (get (radar/books-by-section-key books) (-> section :key))}))))))
 
 (def-ui PageContent []
-  (ui/stack
-   (ui/data "hello")
-   ($ Radar)))
+  (ui/data "hello"))
 
 (def-page radar-page
   {:path                   "/ui/radars/:radar"
