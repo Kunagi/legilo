@@ -1,0 +1,7 @@
+{
+ :source-paths                 #{"src" "dev" "test"
+                                 "../spark/src"}
+ :auto-add-ns-to-new-files?    false
+ :how-docs-arity-on-same-line? true
+ :linters                      {:unused-public-var {:level :off}}
+ }
