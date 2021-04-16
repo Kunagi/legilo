@@ -47,7 +47,11 @@
                                radar-page
                                radars-page]
    :update-app-context        update-app-context
-   :sign-in-request-component desktop/SignInRequest})
+   :sign-in-request-component desktop/SignInRequest
+   :theme                     desktop/theme
+   :styles                    #'desktop/styles
+   :root-component            desktop/Desktop
+   })
 
 (defn show-auth-error [^js error]
   (let [error (js->clj error)
@@ -62,6 +66,4 @@
    {:user-doc-schema user/User
     :sign-in         legilo-auth/sign-in
     :error-handler   show-auth-error})
-  (rdom/render ($ desktop/Desktop
-                  {:spa Legilo})
-               (js/document.getElementById "app")))
+  (ui/load-spa Legilo))

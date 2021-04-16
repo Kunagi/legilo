@@ -159,11 +159,8 @@
      ($ ui/VersionInfo)))
 
 
-(def-ui Desktop [{:keys [spa]}]
+(def-ui Desktop []
   ($ ui/AppFrame
-     {:spa    spa
-      :theme  theme
-      :styles styles}
      ($ :div
         {:id "App"}
         ($ AppBar)
