@@ -74,10 +74,9 @@
             :recommendations (get recs-by-day date)}))))))
 
 (def-page radar-activitylog-page
-  {:path                   "/ui/radars/:radar/activitylog"
+  {:path                   ["radars" radar/Radar "activitylog"]
    :content                PageContent
    :force-sign-in          true
    :appbar-title-component radar-ui/RadarAppbarTitle
-   :use-docs               {:radar radar/Radar}
    :back-to                (fn [{:keys [radar]}]
                              (str "/ui/radars/" (-> radar :id)))})

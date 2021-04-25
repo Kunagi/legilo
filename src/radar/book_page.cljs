@@ -275,20 +275,22 @@
 
 
 (def-ui BookPageContent []
-  ($ Book))
+  (ui/stack
+   ;; (ui/data (ui/use-params))
+   ;; (ui/data (-> (ui/use-spark-context) (select-keys [:radar :book])))
+   ($ Book)))
 
 (def-page book-page
-  {:path                   "/ui/radars/:radar/book/:book"
+  {:path                   ["radars" radar/Radar "book" book/Book]
    :content                BookPageContent
    :force-sign-in          true
    :appbar-title-component radar-ui/RadarAppbarTitle
-   :use-docs               {:radar radar/Radar}
+   :wait-for               [:book]
    :update-context
-   (fn [{:keys [radar book] :as context}]
-     (let [book (if (string? book)
-                  (-> radar (radar/book-by-id book))
-                  nil)]
-       (assoc context :book book)))
+   (fn [{:keys [radar book-id] :as context}]
+     (let [book (-> radar (radar/book-by-id book-id))]
+       (assoc context
+              :book  book)))
    :back-to                (fn [{:keys [radar]}]
                              (str "/ui/radars/" (-> radar :id)))
    })

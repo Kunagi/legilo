@@ -136,8 +136,7 @@
   ($ Radar))
 
 (def-page radar-page
-  {:path                   "/ui/radars/:radar"
+  {:path                   ["radars" radar/Radar]
    :content                PageContent
    :appbar-title-component radar-ui/RadarAppbarTitle
-   :use-docs               {:radar radar/Radar}
    :force-sign-in          true})

@@ -38,7 +38,7 @@
   ($ CurrentUserCard))
 
 (def-page menu-page
-  {:path          "/ui/menu"
+  {:path          ["menu"]
    :content       MenuPageContent
    :data          {:uid  :uid
                    :user :user}

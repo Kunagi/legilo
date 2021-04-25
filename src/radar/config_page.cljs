@@ -106,9 +106,8 @@
 
 
 (def-page config-page
-  {:path "/ui/radars/:radar/config"
-   :content RadarConfigPageContent
+  {:path                   ["radars" radar/Radar "config"]
+   :content                RadarConfigPageContent
    :appbar-title-component radar-ui/RadarAppbarTitle
-   :use-docs {:radar radar/Radar}
-   :back-to (fn [{:keys [radar]}]
-              (str "/ui/radars/" (-> radar :id)))})
+   :back-to                (fn [{:keys [radar]}]
+                             (str "/ui/radars/" (-> radar :id)))})
