@@ -14,35 +14,47 @@
           (js/console.log "DEBUG-1" result))))
 
 (defn write-string [path value]
-  (let [bucket   (-> admin .storage (.bucket "legilo-backups"))
+  (js/console.log "write-string" path)
+  (let [bucket   (-> admin .storage (.bucket "gs://legilo-backups"))
         file     (-> bucket (.file path))
         writable (-> file .createWriteStream)]
     (-> writable (.write value))
-    (-> writable .end)))
+    (-> writable .end)
+    path))
+
+(comment
+  (sequential? [])
+  (write-string "test.txt" "test"))
+
+
 
 (defn write-doc [path doc]
   (let [path (str path "/" (-> doc :firestore/path) ".edn")
         s    (u/->edn doc)]
     (write-string path s)))
 
-(defn backup-col [path col-name]
+(defn backup-col> [path col-name]
   (u/=> (firestore/col> [col-name])
         (fn [docs]
-          (doseq [doc docs]
-            (write-doc path doc)))))
+          (->> docs
+               (map #(write-doc path %))
+               doall))))
 
-(defn backup-all []
-  (let [path (-> (js/Date.) .toISOString)]
-    (->> ["radars" "users"]
-         (map #(backup-col path %))
-         doall)))
+(defn backup-all> []
+  (let [path (str (if goog.DEBUG "dev" "prod")
+                  "_"
+                  (-> (js/Date.) .toISOString))]
+    (u/all>
+     (->> ["radars" "users"]
+          (map #(backup-col> path %))))))
 
 (defn handle-on-backup> [^js _req]
-  (u/resolve> (backup-all)))
+  (u/=> (backup-all>)
+        clj->js))
 
 (comment
-  (backup-all)
-  (backup-col "test" "radars"))
+  (backup-all>)
+  (backup-col> "test" "radars"))
 
 (comment
   (let [bucket   (-> admin .storage (.bucket "legilo-backups"))
