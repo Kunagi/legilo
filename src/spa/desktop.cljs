@@ -97,8 +97,8 @@
 
 (def-ui MenuButton [{:keys [to]}]
   ($ mui/IconButton
-     {:component ui/Link
-      :to to}
+     {:component ui/RouterLink
+      :to        to}
      ($ :div {:class "material-icons"} "menu")))
 
 
@@ -131,7 +131,7 @@
                     "Legilo")))
              ($ mui/IconButton
                 {:to        back-url
-                 :component ui/Link}
+                 :component ui/RouterLink}
                 (ui/icon "arrow_back")))
 
            (when-let [component (-> page :appbar-title-component)]

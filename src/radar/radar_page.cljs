@@ -18,43 +18,43 @@
 
 (def-ui Book [radar book uid]
   {:from-context [radar book uid]}
-  (let [radar-id (-> radar :id)
-        book-id (-> book :id)
+  (let [radar-id  (-> radar :id)
+        book-id   (-> book :id)
         cover-url (book/cover-url book)]
     ($ mui/Card
        ($ mui/CardActionArea
-          {:component ui/Link
-           :to (str "/ui/radars/" radar-id "/book/" book-id)}
+          {:component ui/RouterLink
+           :to        (str "/ui/radars/" radar-id "/book/" book-id)}
           ($ :div
              {:style {:display "flex"}}
              (when cover-url
                ($ :div
-                  {:style {:background-image (str "url(" cover-url ")")
-                           :background-position "center"
-                           :background-size "cover"
-                           :width "50px"
-                           :min-width "50px"
-                           :border-top-left-radius "4px"
+                  {:style {:background-image          (str "url(" cover-url ")")
+                           :background-position       "center"
+                           :background-size           "cover"
+                           :width                     "50px"
+                           :min-width                 "50px"
+                           :border-top-left-radius    "4px"
                            :border-bottom-left-radius "4px"
-                           :overflow "hidden"}}))
+                           :overflow                  "hidden"}}))
              ($ mui/CardContent
                 {:className "CardContent--book"}
                 ($ :div
-                   {:style {:display "flex"
+                   {:style {:display         "flex"
                             :justify-content "space-between"
-                            :height "100%"
-                            :align-items "center"}}
+                            :height          "100%"
+                            :align-items     "center"}}
                    ($ :div
                       (-> book :title)
                       (when-let [subtitle (-> book :subtitle)]
                         ($ :span
                            {:style {:margin-left "0.25rem"
-                                    :color "#666"}}
+                                    :color       "#666"}}
                            subtitle)))
                    (when (book/recommended-by-user? book uid)
                      ($ :div
                         {:className "material-icons"
-                         :style {:color "#999"}}
+                         :style     {:color "#999"}}
                         "thumb_up")))))))))
 
 (def-ui Section [section books]

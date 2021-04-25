@@ -11,7 +11,7 @@
   {:from-context [radar]}
   (when radar
     ($ mui/IconButton
-       {:component ui/Link
+       {:component ui/RouterLink
         :to        (str "/ui/radars/" (-> radar :id) "/config")}
        ($ :div {:class "i material-icons"} "settings"))))
 
@@ -19,7 +19,7 @@
   {:from-context [radar]}
   (when radar
     ($ mui/IconButton
-       {:component ui/Link
+       {:component ui/RouterLink
         :to        (str "/ui/radars/" (-> radar :id) "/activitylog")}
        ($ :div {:class "i material-icons"} "history"))))
 

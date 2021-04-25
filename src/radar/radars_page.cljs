@@ -12,8 +12,8 @@
 (def-ui Radar [radar]
   ($ mui/Card
      ($ mui/CardActionArea
-        {:component ui/Link
-         :to (str "/ui/radars/" (-> radar :firestore/id))}
+        {:component ui/RouterLink
+         :to        (str "/ui/radars/" (-> radar :firestore/id))}
         ($ mui/CardContent
            (-> radar :title)))))
 

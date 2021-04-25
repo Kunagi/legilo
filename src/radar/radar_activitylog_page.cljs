@@ -22,7 +22,7 @@
      {:classes "ActivityLogBook"}
      ($ mui/Link
         {:to        (str "/ui/radars/" radar-id "/book/" book-id)
-         :component ui/Link}
+         :component ui/RouterLink}
         (ui/div
          {:font-weight 900}
          (-> book :title)))
