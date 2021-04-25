@@ -2,6 +2,10 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
+    match/devtest/{doument=**} {
+      allow read,write: if true;
+    }
+
     match /radars/{radarId}/{document=**} {
       allow create: if
           request.auth != null;

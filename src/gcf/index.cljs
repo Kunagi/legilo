@@ -1,14 +1,27 @@
 (ns gcf.index
   (:require
+   [clojure.spec.alpha :as s]
    ["firebase-admin" :as admin]
+
+   [spark.loggin-init-gcf]
+   [spark.logging :as logging]
+   [spark.firestore-init-gcf]
+
+   [gcf.backup :as backup]
    ))
 
 
-(-> admin .initializeApp)
 
+(when goog.DEBUG
+  (s/check-asserts true)
+  (logging/install-tap))
 
 
 (def exports
-  #js
-  {
-   })
+  (clj->js
+   (merge
+    {}
+
+    (backup/exports)
+
+    )))
