@@ -1,5 +1,8 @@
 (ns gcf.backup
   (:require
+   [tick.locale-en-us]
+   [tick.alpha.api :as tick]
+   [tick.format :as tick.format]
    ["firebase-admin" :as admin]
    [spark.firestore :as firestore]
    [spark.utils :as u]
@@ -52,10 +55,22 @@
   (u/=> (firestore/col> [col-name])
         #(u/all> (map (partial write-doc> path) %))))
 
+
+(def date-path-format (tick.format/formatter "yyyy/MM/dd"))
+
+(defn date-path []
+  (let [now  (tick/now)
+        date (tick/date now)]
+    (str
+     (tick/format date-path-format date)
+     "/"
+     (tick/now))))
+
+
 (defn backup-all> []
   (let [path (str (if goog.DEBUG "dev" "prod")
-                  "_"
-                  (-> (js/Date.) .toISOString))]
+                  "/"
+                  (date-path))]
     (u/all>
      (->> ["radars" "users"]
           (map #(backup-col> path %))))))
