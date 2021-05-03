@@ -7,7 +7,8 @@
    [spark.logging :as logging]
    [spark.firestore-init-gcf]
 
-   [gcf.backup :as backup]
+   [spark.firebase.backup :as backup]
+   ;; [gcf.backup :as backup]
    ))
 
 
@@ -22,6 +23,6 @@
    (merge
     {}
 
-    (backup/exports)
+    (backup/exports "legilo-backups")
 
     )))
