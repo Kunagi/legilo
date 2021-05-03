@@ -1,0 +1,6 @@
+#!/bin/bash -e
+
+cd firebase
+
+cp firestore.rules.lock firestore.rules
+firebase deploy --only firestore
