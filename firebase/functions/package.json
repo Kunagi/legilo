@@ -13,8 +13,11 @@
   },
   "main": "index.js",
   "dependencies": {
+    "@js-joda/core": "^3.2.0",
+    "@js-joda/locale_en-us": "3.1.1",
+    "@js-joda/timezone": "^2.5.0",
     "firebase-admin": "^9.4.2",
-    "firebase-functions": "^3.13.0",
+    "firebase-functions": "^3.13.2",
     "firebase-tools": "^9.2.1"
   },
   "devDependencies": {
