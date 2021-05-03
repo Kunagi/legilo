@@ -8,6 +8,7 @@
    [spark.firestore-init-gcf]
 
    [spark.firebase.backup :as backup]
+   [gcf.upgrade :as upgrade]
    ;; [gcf.backup :as backup]
    ))
 
@@ -24,5 +25,6 @@
     {}
 
     (backup/exports "legilo-backups")
+    (upgrade/exports)
 
     )))
