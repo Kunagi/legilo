@@ -1,9 +1,12 @@
 (ns spa.desktop
   (:require
+   [shadow.resource :as resource]
+
    ["react-router-dom" :as router]
 
    ["@material-ui/core" :as mui]
    ["@material-ui/core/colors" :as colors]
+
 
    [spark.logging :refer [log]]
    [spark.utils :as u]
@@ -12,8 +15,10 @@
    [spark.auth :as auth]
    [spa.auth :as legilo-auth]
 
+   [radar.sysconf :as sysconf]
    [radar.ui :as radar-ui]
-   ))
+
+   [clojure.string :as str]))
 
 
 ;;; MUI Theme
@@ -107,6 +112,23 @@
     ($ MenuButton {:to to})
     ($ SignInButton)))
 
+(def-ui UpgradeRequest []
+  (let [sysconf            (ui/use-doc sysconf/Sysconf "singleton")
+        available-version  (-> sysconf sysconf/spa-version)
+        current-version    (str/trim (str (resource/inline "../spa/version.txt")))
+        upgrade-available? (when available-version
+                             (not= available-version current-version))]
+    (when upgrade-available?
+      (ui/center
+       {:padding "8px"}
+       (ui/flex
+        {:align-items :center}
+        (ui/div "A new version is available")
+        ($ ui/Button
+           {:on-click #(js/window.location.reload)
+            :text     "Reload now"
+            :color    "secondary"
+            :variant  "text"}))))))
 
 (def-ui AppBar []
   (let [page     (ui/use-page)
@@ -147,7 +169,8 @@
            ($ radar-ui/ActivitylogMenuIcon)
            ($ radar-ui/ConfigMenuIcon)
            ($ SignInButtonOrMenu
-              {:to "/ui/menu"}))))))
+              {:to "/ui/menu"})))
+       ($ UpgradeRequest))))
 
 
 
