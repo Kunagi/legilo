@@ -31,10 +31,15 @@
 
 (defn styles [theme]
   (js/console.log "THEME" (-> theme .-palette))
-  {"& .CardContent--book" {:padding-top (-> theme (.spacing 0.5))
+  {"& .Link"       {:text-decoration :none
+                    :color           (-> theme .-palette .-primary .-main)
+                    :font-weight     900}
+   "& .Link:hover" {:text-decoration :underline}
+
+   "& .CardContent--book" {:padding-top    (-> theme (.spacing 0.5))
                            :padding-bottom (-> theme (.spacing 0.5))
-                           :min-height (-> theme (.spacing 7))
-                           :flex "1"}
+                           :min-height     (-> theme (.spacing 7))
+                           :flex           "1"}
 
    "& .MuiCard-root" {:overflow "unset"}
 
@@ -49,19 +54,19 @@
    ;; hack to fix header colors when using autocomplete in dialog
    ;; https://github.com/mui-org/material-ui/issues/16102
    "& header.MuiPaper-root" {:background-color (-> theme .-palette .-primary .-main)
-                             :color (-> theme .-palette .-primary .-contrastText)}
+                             :color            (-> theme .-palette .-primary .-contrastText)}
 
-   "& .MuiAppBar-root a" {:color "white"
+   "& .MuiAppBar-root a" {:color           "white"
                           :text-decoration "none"}
 
    "& .MuiAppBar-root .MuiIconButton-root" {:color "white"}
 
    "& .MuiAppBar-root .MuiToolbar-gutters" {:padding-left 0}
 
-   "& #App" {:position (when-not ^boolean js/goog.DEBUG "absolute")
-             :height "100%"
-             :width "100%"
-             :display "flex"
+   "& #App" {:position       (when-not ^boolean js/goog.DEBUG "absolute")
+             :height         "100%"
+             :width          "100%"
+             :display        "flex"
              :flex-direction "column"}
 
    "& #AppTitle" {:font-weight    900
@@ -69,15 +74,15 @@
 
    "& #AppContent" {:height   "100%"
                     :overflow "auto"
-                    :padding ((-> theme .-spacing) 1)}
+                    :padding  ((-> theme .-spacing) 1)}
 
-   "& .BookCardMedia" {:width "140px"
-                       :padding-bottom "150%"
-                              ;:background-size "cover"
-                              ;:background-position "center"
-                       }
+   "& .BookCardMedia"                    {:width          "140px"
+                                          :padding-bottom "150%"
+;:background-size "cover"
+;:background-position "center"
+                                          }
    "& .Recommendation .MuiPaper-rounded" {:border-top-left-radius 0
-                                          :border-radius (-> theme (.spacing 2))}
+                                          :border-radius          (-> theme (.spacing 2))}
 
 
    "& .RecommendationButton" {:box-shadow "0px 3px 1px -2px rgb(0 0 0 / 20%), 0px 2px 2px 0px rgb(0 0 0 / 14%), 0px 1px 5px 0px rgb(0 0 0 / 12%)"}})

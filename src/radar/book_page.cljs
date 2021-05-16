@@ -4,12 +4,15 @@
    [clojure.set :as set]
    ["@material-ui/core" :as mui]
 
+   [spark.logging :refer [log]]
    [spark.ui :as ui :refer [def-ui def-page $ <>]]
+   [spark.repository :as repository]
 
    [base.user :as user]
 
    [amazon.service :as amazon-service]
 
+   [radar.relation :as relation]
    [radar.openlib-ui :as openlib]
    [radar.radar :as radar]
    [radar.book :as book]
@@ -173,19 +176,81 @@
 ;;       1000))))
 
 
+(defn save-relation> [radar relation]
+  (log ::save-relation>
+       :relation relation)
+  (let [radar-id    (-> radar :id)
+        relation-id (or (-> relation :id)
+                        (str (random-uuid)))
+        relation    (assoc relation :id relation-id)]
+    (repository/update-doc>
+     ["radars" radar-id]
+     {(str "relations." relation-id) relation})))
+
+(defn edit-relation> [radar relation]
+  (log ::edit-relation
+       :radar radar
+       :books (->> radar radar/books))
+  (ui/show-form-dialog>
+   {:fields [{:id      :type
+              :label   "Relation Type"
+              :type    :select
+              :options (->> relation/relation-types
+                            (map (fn [[type relation]]
+                                   {:value (name type)
+                                    :label (-> relation :label)})))}
+             {:id      :target
+              :label   "Target Book"
+              :type    :select
+              ;; :options [{:value "aaa"
+              ;;            :label "bbb"}]
+              :options (->> radar
+                            radar/books
+                            (sort-by :title)
+                            (mapv (fn [book]
+                                    {:value (-> book :id)
+                                     :label (-> book :title)})))
+              }
+             ]
+    :values relation
+    :submit (fn [values]
+              (save-relation> radar values))}))
+
+(def-ui RelationCardArea [radar relation]
+  {:from-context [radar]}
+  (let [radar-id           (-> radar :id)
+        referenced-book-id (-> relation :target)
+        referenced-book    (-> radar (radar/book-by-id referenced-book-id))]
+    ($ mui/CardActionArea
+       {:onClick #(edit-relation> radar relation)}
+       ($ mui/CardContent
+          (ui/data relation)
+          ($ ui/FieldLabel
+             {:text (-> relation :label)})
+          ($ ui/Link
+             {:to        (str "/ui/radars/" radar-id "/book/" referenced-book-id)
+              :component ui/RouterLink}
+             (ui/div
+              (-> referenced-book :title)))))))
+
 (def-ui Book [radar book]
   {:from-context [radar book]}
-  (let [isbn (-> book :isbn)
+  (let [isbn      (-> book :isbn)
         image-url (book/cover-url book)
 
         [menu-anchor-el set-menu-anchor-el] (ui/use-state nil)
+
+        relations (->> radar :relations vals
+                       (map (fn [relation]
+                              (assoc relation
+                                     :label (-> relation relation/label)))))
 
         BookDataCard ($ mui/Card
                         ($ ui/CommandCardArea
                            {:command (openlib/enhance-book-command
                                       commands/update-book)
                             :context {:radar radar
-                                      :book book}}
+                                      :book  book}}
                            ($ mui/CardContent
                               ($ :div (-> book :author))
                               ($ :h2 (-> book :title))
@@ -193,30 +258,46 @@
                         ($ mui/Divider)
                         ($ ui/CommandCardArea
                            {:command commands/update-book-tags
-                            :context {:book book
+                            :context {:book  book
                                       :radar radar}}
                            ($ mui/CardContent
                               ($ ui/Stack
                                  ($ ui/FieldLabel
                                     {:text "Tags"})
                                  ($ ui/StringVectorChips {:values (book/tags-in-order book)}))))
+
+                        ;; ($ mui/Divider)
+
+                        ;; (for [relation relations]
+                        ;;   ($ RelationCardArea
+                        ;;      {:key      relation
+                        ;;       :relation relation}))
+                        ;; ($ mui/CardContent
+                        ;;    ($ ui/Button
+                        ;;       {:text     "Add relation"
+                        ;;        :icon     "add"
+                        ;;        :size     "small"
+                        ;;        :variant  "text"
+                        ;;        :on-click #(edit-relation> radar nil)}))
+
                         ($ mui/Divider)
+
                         (ui/div
-                         {:display "flex"
+                         {:display         "flex"
                           :justify-content "flex-end"
-                          :align-items "center"
-                          :padding "8px 8px 8px 0"}
+                          :align-items     "center"
+                          :padding         "8px 8px 8px 0"}
                          (when (-> book :hidden)
                            (ui/div
                             {:margin "0 8px 0 0"}
                             "This book is marked for deletion."))
                          ($ mui/IconButton
                             {:onClick #(-> % .-currentTarget set-menu-anchor-el)
-                             :size "small"}
+                             :size    "small"}
                             (ui/icon "more_vert"))
                          ($ mui/Menu
-                            {:open (not (nil? menu-anchor-el))
-                             :onClose #(set-menu-anchor-el nil)
+                            {:open     (not (nil? menu-anchor-el))
+                             :onClose  #(set-menu-anchor-el nil)
                              :anchorEl menu-anchor-el}
                             (if (-> book :hidden)
                               ($ mui/MenuItem
@@ -224,7 +305,7 @@
                                               (set-menu-anchor-el nil)
                                               (ui/execute-command>
                                                commands/unhide-book
-                                               {:book book
+                                               {:book  book
                                                 :radar radar}))}
                                  "Restore")
                               ($ mui/MenuItem
@@ -232,26 +313,26 @@
                                               (set-menu-anchor-el nil)
                                               (ui/execute-command>
                                                commands/hide-book
-                                               {:book book
+                                               {:book  book
                                                 :radar radar}))}
                                  "Delete")))))
 
         Cover (when image-url
                 ($ :img
-                   {:src image-url
+                   {:src             image-url
                     :referrer-policy "no-referrer"
-                    :class "MuiPaper-root MuiPaper-elevation1 MuiPaper-rounded"
-                    :style {:margin "0 auto"
-                            :max-width "30vw"}}))
+                    :class           "MuiPaper-root MuiPaper-elevation1 MuiPaper-rounded"
+                    :style           {:margin    "0 auto"
+                                      :max-width "30vw"}}))
 
         AmazonBuyButton ($ ui/Button
-                           {:text "Amazon"
-                            :icon "shopping_cart"
-                            :href (if-let [asin (-> book :asin)]
-                                    (amazon-service/href asin)
-                                    (amazon-service/search-href (or isbn (-> book :title))))
+                           {:text   "Amazon"
+                            :icon   "shopping_cart"
+                            :href   (if-let [asin (-> book :asin)]
+                                      (amazon-service/href asin)
+                                      (amazon-service/search-href (or isbn (-> book :title))))
                             :target :_blank
-                            :color "secondary"})]
+                            :color  "secondary"})]
 
     ($ ui/Stack
 
@@ -259,7 +340,7 @@
           {:style {:display :flex}}
 
           ($ :div
-             {:style {:flex "2"
+             {:style {:flex         "2"
                       :margin-right "8px"}}
              BookDataCard)
 

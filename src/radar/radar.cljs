@@ -3,6 +3,7 @@
    [spark.core :as spark :refer [def-field def-doc]]
 
    [radar.book :as book]
+   [radar.relation :as relation]
    ))
 
 
@@ -28,7 +29,8 @@ All users from this domain will have access to this Radar."}])
 
 (def-doc Radar
   [{:firestore/collection "radars"}
-   [:books {:optional true} [:map-of :string book/Book]]])
+   [:books {:optional true} [:map-of :string book/Book]]
+   [:relations {:optional true} [:map-of :string relation/Relation]]])
 
 
 (defn all-tags [radar]
