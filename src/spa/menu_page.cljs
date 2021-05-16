@@ -14,9 +14,9 @@
 
 (def-ui SignOutButton []
   ($ mui/Button
-     {:onClick auth/sign-out
+     {:onClick auth/sign-out>
       :variant "contained"
-      :color "secondary"}
+      :color   "secondary"}
      "Sign Out"))
 
 (def-ui CurrentUserCard [user]

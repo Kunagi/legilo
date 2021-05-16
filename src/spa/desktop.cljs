@@ -112,23 +112,12 @@
     ($ MenuButton {:to to})
     ($ SignInButton)))
 
+
 (def-ui UpgradeRequest []
-  (let [sysconf            (ui/use-doc sysconf/Sysconf "singleton")
-        available-version  (-> sysconf sysconf/spa-version)
-        current-version    (str/trim (str (resource/inline "../spa/version.txt")))
-        upgrade-available? (when available-version
-                             (not= available-version current-version))]
-    (when upgrade-available?
-      (ui/center
-       {:padding "8px"}
-       (ui/flex
-        {:align-items :center}
-        (ui/div "A new version is available")
-        ($ ui/Button
-           {:on-click #(js/window.location.reload)
-            :text     "Reload now"
-            :color    "secondary"
-            :variant  "text"}))))))
+  (let [sysconf           (ui/use-doc sysconf/Sysconf "singleton")
+        available-version (-> sysconf sysconf/spa-version)]
+    ($ ui/UpgradeRequest
+       {:available-version available-version})))
 
 (def-ui AppBar []
   (let [page     (ui/use-page)
