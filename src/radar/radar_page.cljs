@@ -44,13 +44,17 @@
                             :justify-content "space-between"
                             :height          "100%"
                             :align-items     "center"}}
-                   ($ :div
-                      (-> book :title)
-                      (when-let [subtitle (-> book :subtitle)]
-                        ($ :span
-                           {:style {:margin-left "0.25rem"
-                                    :color       "#666"}}
-                           subtitle)))
+                   (ui/div
+                    (ui/span
+                     {:font-weight :bold}
+                     (-> book :title))
+                    (when-let [subtitle (-> book :subtitle)]
+                      ($ :span
+                         {:style {:margin-left "0.25rem"
+                                  :font-weight 300
+                                  :color       "#555"
+                                  }}
+                         subtitle)))
                    (when (book/recommended-by-user? book uid)
                      ($ :div
                         {:className "material-icons"
