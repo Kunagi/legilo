@@ -1,5 +1,7 @@
 #!/bin/bash -e
 
+git push
+
 rm -rf .cpcache
 rm -rf .shadow-cljs
 clojure -M:build-release
