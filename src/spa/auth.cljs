@@ -78,7 +78,7 @@
              :onClick   c.auth/sign-in-with-google
              :startIcon :login })
 
-         ($ ui/Button
+         #_($ ui/Button
             {:text      "E-Mail"
              :onClick   sign-in-with-email
              :startIcon :login })
@@ -88,6 +88,6 @@
 (defn sign-in []
   (log ::sign-in)
   (ui/show-dialog {:id      "sign-in"
-                   :title   "Wie möchtest Du dich anmelden?"
+                   :title   "Select authentication method"
                    :content ($ LoginSelector)})
   )
