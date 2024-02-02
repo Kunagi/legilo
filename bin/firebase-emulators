@@ -1,0 +1,24 @@
+#!/bin/bash -e
+
+cd firebase
+touch functions/index.js
+
+DATA_DIR="./dev-data"
+
+function backup-dev-data {
+    if [[ -d $DATA_DIR/firestore_export ]]
+    then
+        BACKUP_DIR=$DATA_DIR.backups/$(($(date +%s%N)/1000000))
+        mkdir -p $DATA_DIR.backups
+        cp -r $DATA_DIR $BACKUP_DIR
+    fi
+}
+
+
+if [[ -d $DATA_DIR ]]
+then
+    backup-dev-data
+    firebase emulators:start --import=$DATA_DIR --export-on-exit=$DATA_DIR
+else
+    firebase emulators:start --export-on-exit=$DATA_DIR
+fi

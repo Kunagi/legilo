@@ -5,6 +5,7 @@ firebase/functions/*.js
 src/spa/version-time.txt
 .calva/output-window/
 .lsp/*.db
+.lsp/.cache
 *.~undo-tree*
 
 node_modules/

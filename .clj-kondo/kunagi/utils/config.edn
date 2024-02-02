@@ -1,0 +1,4 @@
+{:lint-as {;;
+           kunagi.utils.rct/rct clojure.core/def
+           ;;
+           }}

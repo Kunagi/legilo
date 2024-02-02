@@ -1,6 +1,45 @@
 {:paths ["src" "resources"]
  :deps  {
-         kunagi/spark {:local/root "../spark"}
+         ;; https://github.com/clojure/clojure
+         org.clojure/clojure {:mvn/version "1.11.1"}
+
+         ;; https://github.com/clojure/clojurescript
+         org.clojure/clojurescript {:mvn/version "1.11.60"}
+
+         org.clojure/spec.alpha    {:mvn/version "RELEASE"}
+
+         ;; com.github.seancorfield/expectations {:mvn/version "2.0.0-alpha2"}
+         ;; pjstadig/humane-test-output          {:mvn/version "0.11.0"}
+
+         ;; lilactown/helix                     {:mvn/version "0.0.15"}
+         ;; cljs-bean/cljs-bean                 {:mvn/version "1.6.0"}
+         ;; tick/tick                           {:mvn/version "0.4.30-alpha"}
+         ;; metosin/malli                       {:mvn/version "0.4.0"}
+         ;; camel-snake-kebab/camel-snake-kebab {:mvn/version "0.4.2"}
+
+
+         ;; https://github.com/lilactown/helix
+         lilactown/helix {:mvn/version "0.2.0"}
+
+         ;; https://github.com/clj-commons/camel-snake-kebab
+         camel-snake-kebab/camel-snake-kebab {:mvn/version "0.4.3"}
+
+         ;; https://github.com/funcool/promesa
+         ;; Vorsicht! Upgrades nicht kompatibel mit PayPal
+         funcool/promesa {:mvn/version "10.0.594"}
+
+         ;; https://github.com/clj-commons/ordered
+         org.flatland/ordered {:mvn/version "1.15.11"}
+
+         ;; https://github.com/mfikes/cljs-bean
+         cljs-bean/cljs-bean {:mvn/version "1.9.0"}
+
+         ;; https://github.com/juxt/tick
+         tick/tick {:mvn/version "0.7.5"}
+
+         ;; https://github.com/metosin/malli
+         metosin/malli {:mvn/version "0.14.0"}
+         
          }
 
  :aliases {
