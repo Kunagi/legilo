@@ -1,0 +1,11 @@
+#!/bin/bash -e
+
+rm -rf .cpcache
+rm -rf .shadow-cljs
+clojure -M:build-release
+
+cd firebase
+firebase deploy
+
+curl https://europe-west1-legilo.cloudfunctions.net/setSpaVersion
+
