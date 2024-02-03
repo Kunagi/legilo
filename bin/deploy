@@ -7,7 +7,7 @@ rm -rf .shadow-cljs
 clojure -M:build-release
 
 cd firebase
-firebase deploy
+firebase deploy --except functions
 
-curl https://europe-west1-legilo.cloudfunctions.net/setSpaVersion
+# curl https://europe-west1-legilo.cloudfunctions.net/setSpaVersion
 
