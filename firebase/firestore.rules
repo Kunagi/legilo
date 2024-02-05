@@ -22,6 +22,12 @@ service cloud.firestore {
             )
             ||
             (
+            resource.data["allow-domain-2"] != null
+              &&
+              request.auth.token.email.matches(".*@" + resource.data["allow-domain-2"] + "$")
+            )
+            ||
+            (
             resource.data["allow-emails"] != null
             &&
             request.auth.token.email in resource.data["allow-emails"]
