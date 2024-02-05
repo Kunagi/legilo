@@ -23,7 +23,7 @@
                                   "gmail.com"
                                   "xenium.com"))
 
-(def-ui XeniumReviewMigration [review book author user]
+(def-ui XeniumDoReviewMigration [review book author user]
 
   (ui/use-effect
     :once
@@ -53,7 +53,7 @@
   (when email
     (-> email (.substring 0 (-> email (.indexOf "@"))))))
 
-(def-ui XeniumMigrationReview [review book user]
+(def-ui XeniumReviewMigration [review book user]
   {:from-context [user]}
   (let [review-author (ui/use-doc user/User (-> review :uid))]
     ($ :div
@@ -68,7 +68,7 @@
               (-> user :auth-email (.endsWith xenium-migration-to-domain))
               (= (email-prefix (-> review-author :auth-email))
                  (email-prefix (-> user :auth-email))))
-         ($ XeniumReviewMigration
+         ($ XeniumDoReviewMigration
             {:review review
              :book book
              :author review-author
@@ -78,6 +78,47 @@
         (ui/DEBUG review))
        )))
 
+(def-ui XeniumDoRecommendationMigration [recommender-uid book user]
+
+  (ui/use-effect
+   :once
+   (let [old-uid recommender-uid
+         new-uid (-> user :id)]
+     (db/transact>
+      [(db/update-tx book {:recommendations [:db/array-remove [old-uid]]})
+       (db/update-tx book {:recommendations [:db/array-union [new-uid]]})
+
+       (db/update-tx book {(str "recommendations-times." old-uid) [:db/delete]
+                           (str "recommendations-times." new-uid) (-> book :recommendations-times (get old-uid))})
+       ]))
+
+   nil)
+
+  nil)
+
+(def-ui XeniumRecommendationMigration [recommender-uid book user]
+  {:from-context [user]}
+  (let [recommender (ui/use-doc user/User recommender-uid)]
+    ($ :div
+       ;; (ui/DEBUG review-author)
+       ;; (ui/DEBUG user)
+       ;; (ui/DEBUG (email-prefix (-> review-author :auth-email)))
+       ;; (ui/DEBUG (-> book :recommendations-times (get (-> review-author :uid))))
+
+       (when (and
+              (-> recommender :auth-email)
+              (-> recommender :auth-email (.endsWith xenium-migration-from-domain))
+              (-> user :auth-email (.endsWith xenium-migration-to-domain))
+              (= (email-prefix (-> recommender :auth-email))
+                 (email-prefix (-> user :auth-email))))
+         ($ XeniumDoRecommendationMigration
+            {:book book
+             :recommender-uid recommender-uid
+             :user user}))
+       
+       nil
+       )))
+
 (def-ui XeniumMigration [book]
   (let [recommendations (->> book :recommendations (into #{}))
         reviews         (->> book :reviews vals
@@ -85,9 +126,14 @@
                              )]
     (ui/<>
      (for [review reviews]
-       ($ XeniumMigrationReview
+       ($ XeniumReviewMigration
           {:key    (-> review :uid)
            :review review
+           :book book}))
+     (for [recommendation recommendations]
+       ($ XeniumRecommendationMigration
+          {:key recommendation
+           :recommender-uid recommendation
            :book book})))))
 
 ;;; UI Rendering
@@ -217,18 +263,27 @@
 
        ($ ui/Stack
 
-          (when-let [uids (->> radar radar/recommendation-uids sort)]
-            ($ :div
-               {:style {:display "flex"
-                        :gap "8px"}}
-               (for [uid uids]
-                 ($ radar.ui/Avatar {:key uid :uid uid}))))
-
           (for [section radar/sections]
             ($ Section
                {:key (-> section :idx)
                 :section section
-                :books (get (radar/books-by-section-key books) (-> section :key))}))))))
+                :books (get (radar/books-by-section-key books) (-> section :key))}))
+
+          
+          
+          )
+
+       (when-let [uids (->> radar radar/recommendation-uids sort)]
+         ($ ui/Stack
+            ($ mui/Divider)
+            ($ :div
+               "Books recommended by:")
+            ($ :div
+             {:style {:display "flex"
+                      :gap "8px"}}
+             (for [uid uids]
+               ($ radar.ui/Avatar {:key uid :uid uid})))))
+       )))
 
 (def-ui PageContent []
   ($ Radar))
