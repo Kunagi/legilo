@@ -68,7 +68,7 @@
 
 (defn update-user-doc [doc-schema auth-user update-user]
   (log ::update-user-doc
-       :doc-schema doc-schema )
+       :auth-user auth-user)
   (let [uid   (-> auth-user :uid)
         email (-> auth-user :email)]
     (repository/transact-doc-update>
@@ -79,6 +79,7 @@
                           :auth-email        email
                           :auth-domain       (email-domain email)
                           :auth-display-name (-> auth-user :display-name)
+                          :auth-photo-url    (-> auth-user :photo-url)
                           :auth-timestamp    [:db/timestamp]})
              user (u/update-if user update-user auth-user)]
          user)))))

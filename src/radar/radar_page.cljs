@@ -208,13 +208,22 @@
               :context {:radar radar}
               :color "secondary"})
           #_($ ui/Button
-             {:text "Add Book"
-              :icon "add"
-              :color "secondary"
-              :onClick #(ui/show-dialog
-                         {:content ($ openlib/SearchWidget)})}))
+               {:text "Add Book"
+                :icon "add"
+                :color "secondary"
+                :onClick #(ui/show-dialog
+                           {:content ($ openlib/SearchWidget)})}))
        ($ Filter)
+
        ($ ui/Stack
+
+          (when-let [uids (->> radar radar/recommendation-uids sort)]
+            ($ :div
+               {:style {:display "flex"
+                        :gap "8px"}}
+               (for [uid uids]
+                 ($ radar.ui/Avatar {:key uid :uid uid}))))
+
           (for [section radar/sections]
             ($ Section
                {:key (-> section :idx)

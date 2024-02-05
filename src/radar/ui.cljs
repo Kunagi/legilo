@@ -30,10 +30,12 @@
 
 
 (def-ui Avatar [uid]
-  (let [user (ui/use-doc user/User uid)]
+  (let [user (ui/use-doc user/User uid)
+        text (str (user/best-display-name user)
+                      " " (user/auth-email user))]
     (when user
       ($ mui/Tooltip
-         {:title (user/best-display-name user)}
+         {:title text}
          ($ mui/Avatar
             {:src (user/best-photo-url user)
-             :alt (user/best-display-name user)})))))
+             :alt text})))))

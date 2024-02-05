@@ -24,13 +24,27 @@
   (when user
     ($ mui/Card
        ($ mui/CardContent
-          ($ :div
-             "Signed in as "
-             ($ :span
+          ($ ui/Stack
+             ($ :center
+                {:style {:font-weight :bold
+                         :font-size "120%"}}
+                (-> user :auth-display-name))
+             ($ :center
                 {:style {:font-weight :bold}}
-                (-> user :auth-email)
-                " / "
-                (-> user :auth-display-name))))
+                (-> user :auth-email))
+             ($ :center
+                ($ mui/Avatar
+                   {:src (user/best-photo-url user)
+                    }))
+             (when (and (user/best-photo-url user)
+                        (-> (user/best-photo-url user) (.includes "gravatar.com")))
+               ($ :center
+                 ($ :a
+                    {:href "https://gravatar.com"
+                     :target "_blank"}
+                    "Photo loaded from gravatar.com"))))
+          (ui/DEBUG (user/best-photo-url user))
+          (ui/DEBUG user))
        ($ mui/CardActions
           ($ SignOutButton)))))
 

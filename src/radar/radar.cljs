@@ -72,3 +72,8 @@ All users from this domain will have access to this Radar."}])
 
 (defn book-by-id [radar book-id]
   (get-in radar [:books book-id]))
+
+(defn recommendation-uids [radar]
+  (into #{}
+        (->> radar books
+             (mapcat :recommendations))))
