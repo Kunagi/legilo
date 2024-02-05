@@ -124,7 +124,10 @@
         reviews         (->> book :reviews vals
                              (remove #(not (contains? recommendations (-> % :uid))))
                              )]
-    (ui/<>
+    ($ :div
+       {:style {:position "fixed"
+                :right 0
+                :bottom 0}}
      (for [review reviews]
        ($ XeniumReviewMigration
           {:key    (-> review :uid)
