@@ -333,7 +333,17 @@
                                       (amazon-service/href asin)
                                       (amazon-service/search-href (or isbn (-> book :title))))
                             :target :_blank
-                            :color  "secondary"})]
+                            :color  "secondary"})
+
+        Buch7Button ($ ui/Button
+                           {:text   "buch7"
+                            :icon   "shopping_cart"
+                            :href   (str "https://buch7.de/suche?search="
+                                         (js/encodeURIComponent (or isbn (-> book :title))))
+                            :target :_blank
+                            :color  "secondary"})
+        
+        ]
 
     ($ ui/Stack
 
@@ -349,7 +359,7 @@
              {:style {:flex "1"}}
              ($ ui/Stack
                 Cover
-                AmazonBuyButton)))
+                Buch7Button)))
 
        #_(counter book)
 
