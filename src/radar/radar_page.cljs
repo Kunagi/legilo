@@ -282,8 +282,9 @@
             ($ :div
                "Books recommended by:")
             ($ :div
-             {:style {:display "flex"
-                      :gap "8px"}}
+               {:style {:display "flex"
+                        :flex-wrap "wrap"
+                        :gap "8px"}}
              (for [uid uids]
                ($ radar.ui/Avatar {:key uid :uid uid})))))
        )))
