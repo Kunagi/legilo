@@ -19,6 +19,12 @@
     :helptext "Here you can specify a domain, like example.com or your-org.com.
 All users from this domain will have access to this Radar."}])
 
+(def-field allow-domain-2
+  [:string
+   {:label    "Allow Domain 2"
+    :helptext "Here you can specify another domain, like example.com or your-org.com.
+All users from this domain will have access to this Radar."}])
+
 (def-field allow-emails
   [:vector
    {:label    "Allow E-Mails"

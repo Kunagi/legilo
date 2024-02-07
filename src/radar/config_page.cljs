@@ -20,6 +20,7 @@
      {:doc    radar
       :fields [radar/title
                radar/allow-domain
+               radar/allow-domain-2
                (-> radar/allow-emails
                    ;; (assoc-in [1 :serialize] (fn [emails]
                    ;;                            (->> emails (str/join ", "))))

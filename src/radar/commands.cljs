@@ -26,7 +26,7 @@
 
    :context-args [[:uid :string]]
 
-   :form {:fields [radar/title radar/allow-domain]}
+   :form {:fields [radar/title radar/allow-domain radar/allow-domain-2]}
 
    :f radar-create>})
 
