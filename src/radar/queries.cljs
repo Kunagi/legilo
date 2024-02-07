@@ -54,6 +54,11 @@
                    :wheres [["allow-domain" "==" domain]]}]))
 
              (when user
+               (when-let [domain (-> user user/auth-domain)]
+                 [{:id     "radars"
+                   :wheres [["allow-domain-2" "==" domain]]}]))
+
+             (when user
                (when-let [email (-> user user/auth-email)]
                  [{:id     "radars"
                    :wheres [["allow-emails" "array-contains" email]]}]))
