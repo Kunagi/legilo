@@ -157,7 +157,7 @@
   ;; Object ID; 5275d8a6-c7de-4367-a67f-7955ff60c4d6
   (let [AuthProvider (-> firebase .-auth .-OAuthProvider)
         provider     (AuthProvider. "microsoft.com")]
-    (-> ^js provider (.setCustomParameters #js {:prompt "select_account" #_"login"}))
+    ;; (-> ^js provider (.setCustomParameters #js {:prompt "login"}))
     (provider-sign-in> provider)))
 
 
